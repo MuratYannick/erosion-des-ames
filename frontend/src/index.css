@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles de base pour L'Érosion des Âmes */
+@layer base {
+  body {
+    @apply bg-wasteland-900 text-slate-100 antialiased;
+  }
+}
+
+/* Composants personnalisés */
+@layer components {
+  .btn-primary {
+    @apply bg-mutant text-white px-4 py-2 rounded-lg font-medium 
+           hover:bg-mutant-dark transition-colors duration-200 
+           cursor-pointer border-none;
+  }
+  
+  .btn-secondary {
+    @apply bg-pure text-white px-4 py-2 rounded-lg font-medium 
+           hover:bg-pure-dark transition-colors duration-200 
+           cursor-pointer border-none;
+  }
+  
+  .card {
+    @apply bg-wasteland-800 border border-wasteland-700 
+           rounded-lg p-6 shadow-lg;
+  }
+  
+  .faction-mutant {
+    @apply border-l-4 border-mutant;
+  }
+  
+  .faction-pure {
+    @apply border-l-4 border-pure;
+  }
+  
+  .faction-neutral {
+    @apply border-l-4 border-neutral;
+  }
+}
