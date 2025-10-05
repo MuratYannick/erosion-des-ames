@@ -330,7 +330,7 @@ Ce projet est actuellement en développement actif. Les contributions seront bie
 
 ## 👨‍💻 Auteur
 
-Votre nom
+Yannick MURAT
 
 ## 🙏 Remerciements
 
