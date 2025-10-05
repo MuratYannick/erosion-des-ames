@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import factionRoutes from "./routes/factionRoutes.js";
 import clanRoutes from "./routes/clanRoutes.js";
 import characterRoutes from "./routes/characterRoutes.js";
+import portalRoutes from "./routes/portalRoutes.js";
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // URL du frontend
+    origin: ["http://localhost:5173", "http://localhost:5174"], // URLs du frontend
     credentials: true,
   })
 );
@@ -56,6 +57,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/factions", factionRoutes);
 app.use("/api/clans", clanRoutes);
 app.use("/api/characters", characterRoutes);
+app.use("/api/portal", portalRoutes);
 
 // Gestion des erreurs 404
 app.use((req, res) => {

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/models/**)",
+      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/**)",
+      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/pages/**)",
+      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/components/ui/**)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(node server.js)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
