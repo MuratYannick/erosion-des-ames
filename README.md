@@ -68,14 +68,39 @@ erosion-des-ames/
 │   └── settings.json              # Configuration VS Code (TailwindCSS)
 ├── frontend/                      # Application React
 │   ├── public/
+│   │   ├── images/               # Images (bannière)
+│   │   ├── illustrations/        # Illustrations (feu de camp)
+│   │   ├── logos/                # Logo du jeu
+│   │   └── masks/                # Masques pour effets visuels
 │   ├── src/
-│   │   ├── App.jsx               # Composant principal
+│   │   ├── components/
+│   │   │   ├── layouts/          # Composants de mise en page
+│   │   │   │   ├── PortalLayout.jsx  # Layout principal
+│   │   │   │   ├── PortalHeader.jsx  # En-tête avec navigation
+│   │   │   │   ├── PortalBody.jsx    # Corps principal
+│   │   │   │   └── PortalFooter.jsx  # Pied de page
+│   │   │   └── ui/               # Composants UI réutilisables
+│   │   │       ├── BurgerButton.jsx  # Menu hamburger
+│   │   │       ├── BurgerPanel.jsx   # Panneau mobile
+│   │   │       ├── Navbar.jsx        # Navigation desktop
+│   │   │       ├── ConnectBar.jsx    # Boutons connexion/inscription
+│   │   │       ├── PrimaryButton.jsx # Bouton principal
+│   │   │       ├── SecondaryButton.jsx # Bouton secondaire
+│   │   │       ├── Card.jsx          # Carte de contenu
+│   │   │       └── Aside.jsx         # Barre latérale
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx      # Page d'accueil
+│   │   │   ├── IntroPage.jsx     # Page d'introduction
+│   │   │   ├── LorePage.jsx      # Page lore/univers
+│   │   │   ├── RulesPage.jsx     # Page règles
+│   │   │   └── WikiPage.jsx      # Page wiki
+│   │   ├── App.jsx               # Composant principal avec routes
 │   │   ├── index.css             # Styles TailwindCSS
 │   │   └── main.jsx              # Point d'entrée
 │   ├── index.html
 │   ├── package.json
 │   ├── postcss.config.js
-│   ├── tailwind.config.js        # Configuration TailwindCSS
+│   ├── tailwind.config.js        # Configuration TailwindCSS personnalisée
 │   └── vite.config.js            # Configuration Vite
 │
 ├── backend/                       # API Express
@@ -93,12 +118,14 @@ erosion-des-ames/
 │   │   ├── Clan.js               # Modèle Clan
 │   │   ├── Faction.js            # Modèle Faction
 │   │   ├── User.js               # Modèle Utilisateur
+│   │   ├── IntroModel.js         # Contenu page Intro
 │   │   └── index.js              # Relations entre modèles
 │   ├── routes/
 │   │   ├── authRoutes.js         # Routes authentification
 │   │   ├── characterRoutes.js    # Routes personnages
 │   │   ├── clanRoutes.js         # Routes clans
-│   │   └── factionRoutes.js      # Routes factions
+│   │   ├── factionRoutes.js      # Routes factions
+│   │   └── portalRoutes.js       # Routes portail (intro, lore, etc.)
 │   ├── utils/
 │   │   ├── auth.js               # Utilitaires JWT/bcrypt
 │   │   └── seed.js               # Script de seeding
@@ -212,6 +239,13 @@ Le frontend démarre sur **http://localhost:5173**
 
 ## 📡 API Endpoints
 
+### Portail (Pages publiques)
+- `GET /api/portal/home` - Page d'accueil
+- `GET /api/portal/intro` - Page d'introduction
+- `GET /api/portal/lore` - Page lore/univers
+- `GET /api/portal/rules` - Page règles et CGU
+- `GET /api/portal/wiki` - Wiki
+
 ### Authentification
 - `POST /api/auth/register` - Inscription
 - `POST /api/auth/login` - Connexion
@@ -250,22 +284,48 @@ Authorization: Bearer <votre_token_jwt>
 
 ## 🎨 Thème visuel
 
-### Palette de couleurs
+### Palette de couleurs personnalisée
 
-#### Wasteland (Post-apocalyptique)
-- `wasteland-950` : #010409 (Fond principal)
-- `wasteland-900` : #0d1117 (Fond secondaire)
-- `wasteland-800` : #212529 (Cartes)
-- `wasteland-700` : #343a40 (Bordures)
+#### City (Tons urbains post-apocalyptiques)
+- `city-50` à `city-950` : Du blanc cassé (#f8f9fa) au noir profond (#010409)
+- Utilisé pour les fonds, cartes, et éléments structurels
+
+#### Ochre (Teintes sable, terre, rouille)
+- `ochre-50` : #fffbeb (Sable pâle)
+- `ochre-300` : #fcd34d (Jaune sable)
+- `ochre-500` : #f97316 (Orange rouille)
+- `ochre-700` : #c2410c (Ocre foncé/terre cuite)
+- `ochre-900` : #7c2d12 (Rouille profonde)
+
+#### Blood (Rouge sang)
+- `blood-700` : #991b1b (Rouge sang principal)
+- Utilisé pour les accents dramatiques (titre du jeu, bordures, liens actifs)
+
+#### Nature (Tons verts verdure/forêt)
+- `nature-500` : #22c55e (Vert herbe)
+- `nature-700` : #15803d (Vert forêt)
+- `nature-900` : #052e16 (Vert très foncé/mousse)
 
 #### Factions
 - **Mutants** : `mutant` #22c55e (Vert)
 - **Purs** : `pure` #3b82f6 (Bleu)
 - **Neutres** : `neutral` #78716c (Gris)
 
+### Polices
+
+- **Titre du jeu** : Metal Mania (cursive dramatique)
+- **Corps de texte** : Permanent Marker (écriture manuscrite)
+- **Alternatives** : Bangers, Creepster
+
+### Effets visuels
+
+- **Effet sépia dynamique** : Les images passent de sépia(65%) à sépia(0%) au hover (transition 5s)
+- **Animations** : Menu burger avec transitions fluides (duration-500ms à 1000ms)
+- **Responsive** : Design adaptatif avec breakpoints Tailwind (sm, md, lg, xl, 2xl)
+
 ## ✅ État d'avancement
 
-### Backend (Complété ✅)
+### Backend (En cours 🚧)
 - [x] Configuration Express + Sequelize
 - [x] Modèles de données (User, Faction, Clan, Character)
 - [x] Système d'authentification JWT
@@ -273,12 +333,23 @@ Authorization: Bearer <votre_token_jwt>
 - [x] Middleware de protection
 - [x] Script de seeding
 - [x] Gestion des personnages
+- [x] Routes portail (intro, lore, rules, wiki)
+- [x] Modèle de contenu statique (IntroModel)
+- [ ] Modèles de contenu pour lore, rules, wiki
 
 ### Frontend (En cours 🚧)
 - [x] Configuration Vite + React
-- [x] Configuration TailwindCSS v3
-- [x] Routing avec React Router
-- [x] Page d'accueil thématique
+- [x] Configuration TailwindCSS v3 avec palette personnalisée
+- [x] Routing avec React Router v7
+- [x] Architecture composants (layouts + ui)
+- [x] Header avec navigation responsive
+  - [x] Menu burger animé pour mobile
+  - [x] Navigation desktop avec liens actifs
+  - [x] Barre de connexion/inscription
+- [x] Système de Cards modulaires
+- [x] Page d'introduction complète avec contenu dynamique
+- [x] Effets visuels (sépia hover, transitions)
+- [ ] Pages lore, rules, wiki
 - [ ] Formulaires inscription/connexion
 - [ ] Interface de création de personnage
 - [ ] Tableau de bord des personnages
