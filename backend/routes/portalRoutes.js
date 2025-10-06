@@ -1,15 +1,13 @@
 import express from "express";
+import homeContent from "../models/HomeModel.js";
 import introContent from "../models/IntroModel.js";
+import loreContent from "../models/LoreModel.js";
 
 const router = express.Router();
 
 // Route pour la page d'Accueil
 router.get("/home", (req, res) => {
-  res.json({
-    title: "Survivre est une victoire...",
-    slogan: "et revivre est un mythe.",
-    content: "",
-  });
+  res.json(homeContent);
 });
 
 // Route pour la présentation
@@ -19,11 +17,7 @@ router.get("/intro", (req, res) => {
 
 // Route pour la description du lore
 router.get("/lore", (req, res) => {
-  res.json({
-    title: "L'Univers de l'Érosion des Âmes",
-    content: "Le monde post-apocalyptique...",
-    // TODO: Créer LoreModel.js
-  });
+  res.json(loreContent);
 });
 
 // Route pour le règlement et les CGU

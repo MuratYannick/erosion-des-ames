@@ -28,7 +28,7 @@ function PortalHeader() {
               className="flex size-12 sm:size-16 md:size-20 lg:size-24 xl:size-28 2xl:size-32"
             />
             <p className="text-blood-700 font-titre-Jeu text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-              Érosion des Âmes
+              L'Érosion des Âmes
             </p>
           </Link>
 
