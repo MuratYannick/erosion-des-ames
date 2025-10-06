@@ -87,7 +87,7 @@ function CardImage({ src, className = "", alt = "", imageStyle = {}, imageHoverS
       <img
         src={src}
         alt={alt}
-        className="w-full h-auto object-cover rounded"
+        className="w-3/5 h-auto object-cover rounded"
         style={combinedStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

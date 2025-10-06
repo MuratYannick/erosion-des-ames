@@ -83,17 +83,23 @@ erosion-des-ames/
 │   │   │       ├── BurgerButton.jsx  # Menu hamburger
 │   │   │       ├── BurgerPanel.jsx   # Panneau mobile
 │   │   │       ├── Navbar.jsx        # Navigation desktop
-│   │   │       ├── ConnectBar.jsx    # Boutons connexion/inscription
+│   │   │       ├── ConnectBar.jsx    # Barre connexion/inscription/profil
 │   │   │       ├── PrimaryButton.jsx # Bouton principal
 │   │   │       ├── SecondaryButton.jsx # Bouton secondaire
-│   │   │       ├── Card.jsx          # Carte de contenu
+│   │   │       ├── Card.jsx          # Carte de contenu (modulaire)
+│   │   │       ├── InputField.jsx    # Champ de formulaire réutilisable
+│   │   │       ├── CloseButton.jsx   # Bouton fermeture (X en Permanent Marker)
 │   │   │       └── Aside.jsx         # Barre latérale
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx      # Page d'accueil
 │   │   │   ├── IntroPage.jsx     # Page d'introduction
 │   │   │   ├── LorePage.jsx      # Page lore/univers
 │   │   │   ├── RulesPage.jsx     # Page règles
-│   │   │   └── WikiPage.jsx      # Page wiki
+│   │   │   ├── WikiPage.jsx      # Page wiki
+│   │   │   ├── LoginPage.jsx     # Page de connexion
+│   │   │   └── RegisterPage.jsx  # Page d'inscription
+│   │   ├── contexts/
+│   │   │   └── AuthContext.jsx   # Contexte d'authentification
 │   │   ├── App.jsx               # Composant principal avec routes
 │   │   ├── index.css             # Styles TailwindCSS
 │   │   └── main.jsx              # Point d'entrée
@@ -249,7 +255,7 @@ Le frontend démarre sur **http://localhost:5173**
 ### Authentification
 - `POST /api/auth/register` - Inscription
 - `POST /api/auth/login` - Connexion
-- `GET /api/auth/me` - Profil utilisateur (protégé)
+- `GET /api/auth/profile` - Profil utilisateur (protégé)
 
 ### Factions
 - `GET /api/factions` - Toutes les factions (avec clans)
@@ -311,16 +317,18 @@ Authorization: Bearer <votre_token_jwt>
 - **Purs** : `pure` #3b82f6 (Bleu)
 - **Neutres** : `neutral` #78716c (Gris)
 
-### Polices
+### Polices (Google Fonts)
 
-- **Titre du jeu** : Metal Mania (cursive dramatique)
-- **Corps de texte** : Permanent Marker (écriture manuscrite)
+- **Titre du jeu** : Metal Mania (cursive dramatique) - `font-titre-Jeu`
+- **Corps de texte** : Permanent Marker (écriture manuscrite) - `font-texte-corps`
 - **Alternatives** : Bangers, Creepster
 
 ### Effets visuels
 
-- **Effet sépia dynamique** : Les images passent de sépia(65%) à sépia(0%) au hover (transition 5s)
+- **Effet sépia dynamique** : Les images passent de sépia(65%) à sépia(0%) au hover (transition 5s ease-in-out)
 - **Animations** : Menu burger avec transitions fluides (duration-500ms à 1000ms)
+- **Hover effects** : Scale-105, shadow transitions, color shifts
+- **Bouton fermeture** : SVG text "X" en Permanent Marker (ochre-400 → blood-700)
 - **Responsive** : Design adaptatif avec breakpoints Tailwind (sm, md, lg, xl, 2xl)
 
 ## ✅ État d'avancement
@@ -328,14 +336,14 @@ Authorization: Bearer <votre_token_jwt>
 ### Backend (En cours 🚧)
 - [x] Configuration Express + Sequelize
 - [x] Modèles de données (User, Faction, Clan, Character)
-- [x] Système d'authentification JWT
+- [x] Système d'authentification JWT complet
 - [x] Routes API complètes
 - [x] Middleware de protection
 - [x] Script de seeding
 - [x] Gestion des personnages
 - [x] Routes portail (intro, lore, rules, wiki)
-- [x] Modèle de contenu statique (IntroModel)
-- [ ] Modèles de contenu pour lore, rules, wiki
+- [x] Modèles de contenu statique (HomeModel, IntroModel, LoreModel)
+- [ ] Modèles de contenu pour rules, wiki
 
 ### Frontend (En cours 🚧)
 - [x] Configuration Vite + React
@@ -345,12 +353,20 @@ Authorization: Bearer <votre_token_jwt>
 - [x] Header avec navigation responsive
   - [x] Menu burger animé pour mobile
   - [x] Navigation desktop avec liens actifs
-  - [x] Barre de connexion/inscription
-- [x] Système de Cards modulaires
+  - [x] Barre de connexion/inscription/profil dynamique
+- [x] Système de Cards modulaires (Card.Title, Card.Text, Card.Image, Card.Subtitle)
+- [x] Composants UI réutilisables (InputField, CloseButton, PrimaryButton, SecondaryButton)
+- [x] Page d'accueil avec containers cliquables
 - [x] Page d'introduction complète avec contenu dynamique
-- [x] Effets visuels (sépia hover, transitions)
-- [ ] Pages lore, rules, wiki
-- [ ] Formulaires inscription/connexion
+- [x] Page Lore/Univers avec sections multiples
+- [x] Effets visuels (sépia hover 5s, transitions fluides)
+- [x] Système d'authentification complet
+  - [x] Context API pour gestion état utilisateur
+  - [x] Formulaire d'inscription avec validation
+  - [x] Formulaire de connexion avec validation
+  - [x] Affichage conditionnel (connecté/déconnecté)
+  - [x] Gestion token JWT et localStorage
+- [ ] Pages rules, wiki
 - [ ] Interface de création de personnage
 - [ ] Tableau de bord des personnages
 - [ ] Système de jeu (combat, exploration, etc.)
@@ -369,10 +385,12 @@ Authorization: Bearer <votre_token_jwt>
 
 - Mots de passe hashés avec bcryptjs (10 rounds)
 - Authentification par JWT (expire après 7 jours)
-- Routes API protégées par middleware
-- Validation des données côté serveur
-- CORS configuré
+- Routes API protégées par middleware authMiddleware
+- Validation des données côté serveur et client
+- CORS configuré pour localhost:5173 et 5174
 - Variables sensibles dans `.env` (non commité)
+- Token stocké dans localStorage
+- Vérification automatique du profil au chargement de l'app
 
 ## 📝 Scripts disponibles
 
