@@ -2,6 +2,8 @@
 
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
+> **🆕 Dernières mises à jour** : Système de forum complet avec architecture hiérarchique (catégories/sections/topics/posts), système d'acceptation des CGU, layouts forum dédiés, composants Breadcrumb et UserBar, refactorisation des modèles en modules (game/forum/content).
+
 ## 📖 Description
 
 Dans un monde ravagé par un mystérieux cataclysme, l'humanité s'est scindée en deux factions ennemies : les **Éveillés** (mutants) et les **Purs** (non-mutants). Entre eux, des **clans neutres** tentent de survivre en refusant de prendre parti. Ce jeu de rôle textuel propose une expérience immersive dans un univers post-apocalyptique sombre et hostile.
@@ -65,8 +67,8 @@ Dans un monde ravagé par un mystérieux cataclysme, l'humanité s'est scindée 
 ```
 erosion-des-ames/
 ├── .vscode/
-│   └── settings.json              # Configuration VS Code (TailwindCSS)
-├── frontend/                      # Application React
+│   └── settings.json             # Configuration VS Code (TailwindCSS)
+├── frontend/                     # Application React
 │   ├── public/
 │   │   ├── images/               # Images (bannière)
 │   │   ├── illustrations/        # Illustrations (feu de camp)
@@ -75,31 +77,45 @@ erosion-des-ames/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── layouts/          # Composants de mise en page
-│   │   │   │   ├── PortalLayout.jsx  # Layout principal
-│   │   │   │   ├── PortalHeader.jsx  # En-tête avec navigation
-│   │   │   │   ├── PortalBody.jsx    # Corps principal
-│   │   │   │   └── PortalFooter.jsx  # Pied de page
+│   │   │   │   ├── PortalLayout.jsx    # Layout portail (pages statiques)
+│   │   │   │   ├── PortalHeader.jsx    # En-tête portail avec navigation
+│   │   │   │   ├── PortalBody.jsx      # Corps portail
+│   │   │   │   ├── PortalFooter.jsx    # Pied de page portail
+│   │   │   │   ├── ForumLayout.jsx     # Layout forum
+│   │   │   │   ├── ForumHeader.jsx     # En-tête forum avec UserBar
+│   │   │   │   ├── ForumBody.jsx       # Corps forum (styles unifiés)
+│   │   │   │   └── ForumFooter.jsx     # Pied de page forum
 │   │   │   └── ui/               # Composants UI réutilisables
-│   │   │       ├── BurgerButton.jsx  # Menu hamburger
-│   │   │       ├── BurgerPanel.jsx   # Panneau mobile
-│   │   │       ├── Navbar.jsx        # Navigation desktop
-│   │   │       ├── ConnectBar.jsx    # Barre connexion/inscription/profil
-│   │   │       ├── PrimaryButton.jsx # Bouton principal
-│   │   │       ├── SecondaryButton.jsx # Bouton secondaire
-│   │   │       ├── Card.jsx          # Carte de contenu (modulaire)
-│   │   │       ├── InputField.jsx    # Champ de formulaire réutilisable
-│   │   │       ├── CloseButton.jsx   # Bouton fermeture (X en Permanent Marker)
-│   │   │       └── Aside.jsx         # Barre latérale
+│   │   │       ├── BurgerButton.jsx        # Menu hamburger
+│   │   │       ├── BurgerPanel.jsx         # Panneau mobile
+│   │   │       ├── Navbar.jsx              # Navigation desktop
+│   │   │       ├── ConnectBar.jsx          # Barre connexion/inscription
+│   │   │       ├── UserBar.jsx             # Barre utilisateur forum
+│   │   │       ├── PrimaryButton.jsx       # Bouton principal
+│   │   │       ├── SecondaryButton.jsx     # Bouton secondaire
+│   │   │       ├── Card.jsx                # Carte de contenu (modulaire)
+│   │   │       ├── InputField.jsx          # Champ de formulaire réutilisable
+│   │   │       ├── CloseButton.jsx         # Bouton fermeture (X)
+│   │   │       ├── Aside.jsx               # Barre latérale
+│   │   │       ├── Breadcrumb.jsx          # Fil d'Ariane
+│   │   │       ├── TermsAcceptance.jsx     # Alerte CGU (wrapper)
+│   │   │       ├── TermsAcceptanceBox.jsx  # Boîte d'acceptation CGU
+│   │   │       ├── TermsGuard.jsx          # Protection routes par CGU
+│   │   │       └── TermsModal.jsx          # Modal CGU
 │   │   ├── pages/
-│   │   │   ├── HomePage.jsx      # Page d'accueil
-│   │   │   ├── IntroPage.jsx     # Page d'introduction
-│   │   │   ├── LorePage.jsx      # Page lore/univers
-│   │   │   ├── RulesPage.jsx     # Page règles
-│   │   │   ├── WikiPage.jsx      # Page wiki
-│   │   │   ├── LoginPage.jsx     # Page de connexion
-│   │   │   └── RegisterPage.jsx  # Page d'inscription
+│   │   │   ├── HomePage.jsx              # Page d'accueil
+│   │   │   ├── IntroPage.jsx             # Page d'introduction
+│   │   │   ├── LorePage.jsx              # Page lore/univers
+│   │   │   ├── RulesPage.jsx             # Page règles
+│   │   │   ├── WikiPage.jsx              # Page wiki
+│   │   │   ├── LoginPage.jsx             # Page de connexion
+│   │   │   ├── RegisterPage.jsx          # Page d'inscription
+│   │   │   ├── ForumGeneralPage.jsx      # Vue générale forum (sections)
+│   │   │   ├── ForumCategoryPage.jsx     # Vue catégorie
+│   │   │   ├── ForumSectionPage.jsx      # Vue section (topics)
+│   │   │   └── ForumTopicPage.jsx        # Vue topic (posts)
 │   │   ├── contexts/
-│   │   │   └── AuthContext.jsx   # Contexte d'authentification
+│   │   │   └── AuthContext.jsx           # Contexte d'authentification
 │   │   ├── App.jsx               # Composant principal avec routes
 │   │   ├── index.css             # Styles TailwindCSS
 │   │   └── main.jsx              # Point d'entrée
@@ -109,32 +125,44 @@ erosion-des-ames/
 │   ├── tailwind.config.js        # Configuration TailwindCSS personnalisée
 │   └── vite.config.js            # Configuration Vite
 │
-├── backend/                       # API Express
+├── backend/                      # API Express
 │   ├── config/
 │   │   └── database.js           # Configuration Sequelize/MySQL
 │   ├── controllers/
-│   │   ├── authController.js     # Authentification
+│   │   ├── authController.js     # Authentification & profil utilisateur
 │   │   ├── characterController.js # Gestion des personnages
 │   │   ├── clanController.js     # Gestion des clans
-│   │   └── factionController.js  # Gestion des factions
+│   │   ├── factionController.js  # Gestion des factions
+│   │   └── forumController.js    # Gestion forum (CRUD categories/sections/topics/posts)
 │   ├── middleware/
 │   │   └── authMiddleware.js     # Protection des routes (JWT)
 │   ├── models/
-│   │   ├── Character.js          # Modèle Personnage
-│   │   ├── Clan.js               # Modèle Clan
-│   │   ├── Faction.js            # Modèle Faction
-│   │   ├── User.js               # Modèle Utilisateur
-│   │   ├── IntroModel.js         # Contenu page Intro
+│   │   ├── game/                 # Modèles du jeu
+│   │   │   ├── User.js           # Utilisateur (+ terms_accepted)
+│   │   │   ├── Character.js      # Personnage
+│   │   │   ├── Faction.js        # Faction
+│   │   │   └── Clan.js           # Clan/Caste
+│   │   ├── forum/                # Modèles du forum
+│   │   │   ├── Category.js       # Catégorie forum
+│   │   │   ├── Section.js        # Section (hiérarchique avec sous-sections)
+│   │   │   ├── Topic.js          # Sujet de discussion
+│   │   │   └── Post.js           # Message dans un topic
+│   │   ├── content/              # Modèles de contenu statique
+│   │   │   ├── Home.js           # Contenu page d'accueil
+│   │   │   ├── Intro.js          # Contenu page d'introduction
+│   │   │   └── Lore.js           # Contenu page lore
 │   │   └── index.js              # Relations entre modèles
 │   ├── routes/
 │   │   ├── authRoutes.js         # Routes authentification
 │   │   ├── characterRoutes.js    # Routes personnages
 │   │   ├── clanRoutes.js         # Routes clans
 │   │   ├── factionRoutes.js      # Routes factions
-│   │   └── portalRoutes.js       # Routes portail (intro, lore, etc.)
+│   │   ├── portalRoutes.js       # Routes portail (intro, lore, etc.)
+│   │   └── forumRoutes.js        # Routes forum
 │   ├── utils/
 │   │   ├── auth.js               # Utilitaires JWT/bcrypt
-│   │   └── seed.js               # Script de seeding
+│   │   ├── seed.js               # Script de seeding production
+│   │   └── seedDev.js            # Script de seeding développement (+ forum)
 │   ├── .env                      # Variables d'environnement
 │   ├── package.json
 │   └── server.js                 # Serveur Express
@@ -147,15 +175,19 @@ erosion-des-ames/
 
 ### Modèle de données
 
-#### Users (Utilisateurs)
+#### Modèles de jeu (game/)
+
+**Users (Utilisateurs)**
 - `id` (PK)
 - `username` (unique)
 - `email` (unique)
 - `password_hash`
 - `is_active`
+- `terms_accepted` (boolean, défaut: false)
+- `terms_accepted_at` (datetime)
 - `last_login`
 
-#### Factions
+**Factions**
 - `id` (PK)
 - `name` (unique)
 - `type` (mutant/non_mutant/neutre)
@@ -164,7 +196,7 @@ erosion-des-ames/
 - `ideology`
 - `is_playable`
 
-#### Clans
+**Clans**
 - `id` (PK)
 - `faction_id` (FK → Factions, nullable pour clans neutres)
 - `name` (unique)
@@ -174,7 +206,7 @@ erosion-des-ames/
 - `max_members`
 - `is_recruitable`
 
-#### Characters (Personnages)
+**Characters (Personnages)**
 - `id` (PK)
 - `user_id` (FK → Users)
 - `faction_id` (FK → Factions)
@@ -187,11 +219,67 @@ erosion-des-ames/
 - Position : `position_x`, `position_y`, `current_zone`
 - `is_alive`, `death_count`, `last_death_at`
 
-### Relations
+#### Modèles de forum (forum/)
+
+**Categories**
+- `id` (PK)
+- `name` (unique)
+- `description`
+- `slug` (unique)
+- `display_order` (int, défaut: 0)
+- `is_visible` (boolean, défaut: true)
+
+**Sections**
+- `id` (PK)
+- `category_id` (FK → Categories)
+- `parent_section_id` (FK → Sections, nullable - pour sous-sections)
+- `name`
+- `description`
+- `slug` (unique)
+- `display_order` (int, défaut: 0)
+- `is_visible` (boolean, défaut: true)
+- `requires_terms` (boolean, défaut: false)
+
+**Topics**
+- `id` (PK)
+- `section_id` (FK → Sections)
+- `title`
+- `slug` (unique)
+- `author_user_id` (FK → Users, nullable)
+- `author_character_id` (FK → Characters, nullable)
+- `is_pinned` (boolean, défaut: false)
+- `is_locked` (boolean, défaut: false)
+- `is_visible` (boolean, défaut: true)
+- `view_count` (int, défaut: 0)
+
+**Posts**
+- `id` (PK)
+- `topic_id` (FK → Topics)
+- `author_user_id` (FK → Users, nullable)
+- `author_character_id` (FK → Characters, nullable)
+- `content` (TEXT)
+- `is_first_post` (boolean, défaut: false)
+- `is_visible` (boolean, défaut: true)
+- `edited_at` (datetime)
+
+#### Modèles de contenu (content/)
+
+**Home, Intro, Lore**
+- Modèles Sequelize pour contenu dynamique des pages statiques
+
+### Relations principales
 - User 1:N Characters
 - Faction 1:N Characters
 - Faction 1:N Clans
 - Clan 1:N Characters
+- Category 1:N Sections
+- Section 1:N Sections (hiérarchique)
+- Section 1:N Topics
+- Topic 1:N Posts
+- User 1:N Topics (auteur)
+- User 1:N Posts (auteur)
+- Character 1:N Topics (auteur RP)
+- Character 1:N Posts (auteur RP)
 
 ## 🚀 Installation et démarrage
 
@@ -256,6 +344,7 @@ Le frontend démarre sur **http://localhost:5173**
 - `POST /api/auth/register` - Inscription
 - `POST /api/auth/login` - Connexion
 - `GET /api/auth/profile` - Profil utilisateur (protégé)
+- `PUT /api/auth/accept-terms` - Accepter les CGU (protégé)
 
 ### Factions
 - `GET /api/factions` - Toutes les factions (avec clans)
@@ -275,6 +364,37 @@ Le frontend démarre sur **http://localhost:5173**
 - `PUT /api/characters/:id` - Modifier un personnage
 - `DELETE /api/characters/:id` - Supprimer un personnage
 
+### Forum (Routes publiques pour lecture, protégées pour écriture)
+
+**Catégories**
+- `GET /api/forum/categories` - Liste des catégories
+- `GET /api/forum/categories/:id` - Une catégorie
+- `POST /api/forum/categories` - Créer une catégorie (admin)
+- `PUT /api/forum/categories/:id` - Modifier une catégorie (admin)
+- `DELETE /api/forum/categories/:id` - Supprimer une catégorie (admin)
+
+**Sections**
+- `GET /api/forum/sections` - Liste des sections principales
+- `GET /api/forum/sections/:slug` - Une section par slug (avec sous-sections et topics)
+- `GET /api/forum/sections/category/:categoryId` - Sections d'une catégorie
+- `POST /api/forum/sections` - Créer une section (admin)
+- `PUT /api/forum/sections/:id` - Modifier une section (admin)
+- `DELETE /api/forum/sections/:id` - Supprimer une section (admin)
+
+**Topics**
+- `GET /api/forum/topics/:slug` - Un topic par slug (avec posts)
+- `GET /api/forum/topics/section/:sectionId` - Topics d'une section
+- `POST /api/forum/topics` - Créer un topic (protégé)
+- `PUT /api/forum/topics/:id` - Modifier un topic (protégé)
+- `DELETE /api/forum/topics/:id` - Supprimer un topic (protégé)
+- `POST /api/forum/topics/:id/view` - Incrémenter le compteur de vues
+
+**Posts**
+- `GET /api/forum/posts/topic/:topicId` - Posts d'un topic
+- `POST /api/forum/posts` - Créer un post (protégé)
+- `PUT /api/forum/posts/:id` - Modifier un post (protégé)
+- `DELETE /api/forum/posts/:id` - Supprimer un post (protégé)
+
 ### Exemple de requête authentifiée
 ```bash
 # Headers
@@ -285,6 +405,14 @@ Authorization: Bearer <votre_token_jwt>
   "name": "Guerrier des Ombres",
   "faction_id": 1,
   "clan_id": 4
+}
+
+# Body (POST /api/forum/topics)
+{
+  "section_id": 1,
+  "title": "Bienvenue dans le Wasteland",
+  "content": "Contenu du premier post...",
+  "author_user_id": 1
 }
 ```
 
@@ -335,43 +463,62 @@ Authorization: Bearer <votre_token_jwt>
 
 ### Backend (En cours 🚧)
 - [x] Configuration Express + Sequelize
-- [x] Modèles de données (User, Faction, Clan, Character)
+- [x] Architecture modulaire (game/forum/content)
+- [x] Modèles de jeu (User, Faction, Clan, Character)
+- [x] Modèles de forum (Category, Section, Topic, Post)
+- [x] Modèles de contenu (Home, Intro, Lore)
 - [x] Système d'authentification JWT complet
-- [x] Routes API complètes
-- [x] Middleware de protection
-- [x] Script de seeding
-- [x] Gestion des personnages
+- [x] Routes API jeu complètes (auth, characters, factions, clans)
+- [x] Routes API forum complètes (CRUD)
 - [x] Routes portail (intro, lore, rules, wiki)
-- [x] Modèles de contenu statique (HomeModel, IntroModel, LoreModel)
+- [x] Middleware de protection JWT
+- [x] Script de seeding production (`seed.js`)
+- [x] Script de seeding développement (`seedDev.js` avec forum)
+- [x] Système d'acceptation des CGU (champ `terms_accepted`)
 - [ ] Modèles de contenu pour rules, wiki
+- [ ] Système de rôles/permissions (admin, modérateur)
 
 ### Frontend (En cours 🚧)
-- [x] Configuration Vite + React
-- [x] Configuration TailwindCSS v3 avec palette personnalisée
-- [x] Routing avec React Router v7
-- [x] Architecture composants (layouts + ui)
-- [x] Header avec navigation responsive
-  - [x] Menu burger animé pour mobile
-  - [x] Navigation desktop avec liens actifs
-  - [x] Barre de connexion/inscription/profil dynamique
-- [x] Système de Cards modulaires (Card.Title, Card.Text, Card.Image, Card.Subtitle)
-- [x] Composants UI réutilisables (InputField, CloseButton, PrimaryButton, SecondaryButton)
-- [x] Page d'accueil avec containers cliquables
-- [x] Page d'introduction complète avec contenu dynamique
-- [x] Page Lore/Univers avec sections multiples
-- [x] Effets visuels (sépia hover 5s, transitions fluides)
-- [x] Système d'authentification complet
-  - [x] Context API pour gestion état utilisateur
-  - [x] Formulaire d'inscription avec validation
-  - [x] Formulaire de connexion avec validation
-  - [x] Affichage conditionnel (connecté/déconnecté)
-  - [x] Gestion token JWT et localStorage
-- [ ] Pages rules, wiki
+
+**Portail (Pages statiques) ✅**
+- [x] Configuration Vite + React + TailwindCSS personnalisé
+- [x] PortalLayout avec header/body/footer responsive
+- [x] Menu burger animé + navigation desktop
+- [x] ConnectBar dynamique (connecté/déconnecté)
+- [x] Pages : Home, Intro, Lore, Login, Register
+- [x] Système d'authentification complet (Context API + JWT)
+- [x] Composants UI réutilisables (Card, Buttons, InputField, etc.)
+- [x] Effets visuels (sépia hover, transitions fluides)
+
+**Forum (En cours 🚧)**
+- [x] ForumLayout avec header/body/footer dédié
+- [x] ForumHeader avec UserBar (profil + déconnexion)
+- [x] ForumBody avec système de styles unifiés
+- [x] Composant Breadcrumb (fil d'Ariane)
+- [x] Système d'acceptation des CGU
+  - [x] TermsAcceptance (alerte sur forum)
+  - [x] TermsAcceptanceBox (boîte de validation)
+  - [x] TermsGuard (protection de routes)
+  - [x] TermsModal (modal CGU)
+- [x] Pages forum de base
+  - [x] ForumGeneralPage (liste des sections)
+  - [x] ForumCategoryPage (sections par catégorie)
+  - [x] ForumSectionPage (topics d'une section)
+  - [x] ForumTopicPage (posts d'un topic)
+- [ ] Création de topics/posts avec formulaires
+- [ ] Édition/suppression de posts
+- [ ] Système de pagination pour topics/posts
+- [ ] Bouton "Répondre" et "Citer"
+- [ ] Affichage avatar/signature utilisateur
+- [ ] Système de likes/upvotes
+
+**Jeu (À venir 📋)**
 - [ ] Interface de création de personnage
 - [ ] Tableau de bord des personnages
+- [ ] Pages rules, wiki avec contenu dynamique
 - [ ] Système de jeu (combat, exploration, etc.)
 
-### À venir 📋
+### Fonctionnalités futures 📋
 - [ ] Système d'inventaire
 - [ ] Système de combat
 - [ ] Exploration des zones
@@ -380,6 +527,48 @@ Authorization: Bearer <votre_token_jwt>
 - [ ] Système de guildes/alliances
 - [ ] Marketplace/Commerce
 - [ ] Événements dynamiques
+- [ ] Système de notifications
+- [ ] Recherche forum/wiki
+- [ ] Système de modération (rapport, ban)
+- [ ] Statistiques utilisateur/forum
+
+## 🗨️ Système de forum
+
+### Architecture hiérarchique
+Le forum utilise une structure à 4 niveaux :
+1. **Catégories** : Regroupements thématiques (ex: "Général", "RP (rôle-play)", "Hors-RP")
+2. **Sections** : Espaces de discussion (ex: "Règlement", "Lore", "Taverne")
+   - Support des **sous-sections** (hiérarchie récursive)
+   - Chaque section peut avoir un slug unique pour URL propres
+3. **Topics** : Sujets de discussion créés par les utilisateurs
+   - Support topic épinglé (`is_pinned`)
+   - Support topic verrouillé (`is_locked`)
+   - Compteur de vues (`view_count`)
+4. **Posts** : Messages dans un topic
+   - Premier post marqué (`is_first_post`)
+   - Suivi des éditions (`edited_at`)
+
+### Auteurs multiples (User & Character)
+Chaque topic/post peut avoir deux types d'auteurs :
+- **`author_user_id`** : L'utilisateur réel (pour discussions HRP)
+- **`author_character_id`** : Le personnage (pour RP in-game)
+
+Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
+
+### Système de CGU (Conditions Générales d'Utilisation)
+- Champ `terms_accepted` + `terms_accepted_at` dans le modèle User
+- Route `PUT /api/auth/accept-terms` pour l'acceptation
+- Composants frontend :
+  - **TermsAcceptance** : Alerte rouge affichée sur le forum si non accepté
+  - **TermsAcceptanceBox** : Boîte avec checkbox pour valider
+  - **TermsGuard** : HOC pour protéger les routes nécessitant acceptation
+  - **TermsModal** : Modal d'affichage des CGU complètes
+- Les sections peuvent exiger l'acceptation (`requires_terms`)
+
+### Composants UI forum
+- **Breadcrumb** : Fil d'Ariane avec séparateurs "/"
+- **UserBar** : Barre utilisateur (avatar, username, bouton déconnexion)
+- **ForumBody.styles** : Système de styles unifiés exporté pour cohérence visuelle
 
 ## 🔒 Sécurité
 
@@ -391,6 +580,7 @@ Authorization: Bearer <votre_token_jwt>
 - Variables sensibles dans `.env` (non commité)
 - Token stocké dans localStorage
 - Vérification automatique du profil au chargement de l'app
+- Système d'acceptation obligatoire des CGU avant participation forum
 
 ## 📝 Scripts disponibles
 
@@ -398,7 +588,8 @@ Authorization: Bearer <votre_token_jwt>
 ```bash
 npm start         # Démarrer en production
 npm run dev       # Démarrer en développement (nodemon)
-npm run seed      # Réinitialiser et remplir la BDD
+npm run seed      # Réinitialiser et remplir la BDD (production - données minimales)
+npm run seed:dev  # Réinitialiser et remplir la BDD (dev - avec données forum de test)
 ```
 
 ### Frontend

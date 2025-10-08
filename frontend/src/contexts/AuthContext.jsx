@@ -41,13 +41,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (identifier, password) => {
     const response = await fetch("http://localhost:3000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ identifier, password }),
     });
 
     const result = await response.json();
@@ -61,6 +61,8 @@ export function AuthProvider({ children }) {
       id: result.data.id,
       username: result.data.username,
       email: result.data.email,
+      terms_accepted: result.data.terms_accepted,
+      terms_accepted_at: result.data.terms_accepted_at,
     });
     return result;
   };
@@ -85,6 +87,8 @@ export function AuthProvider({ children }) {
       id: result.data.id,
       username: result.data.username,
       email: result.data.email,
+      terms_accepted: result.data.terms_accepted,
+      terms_accepted_at: result.data.terms_accepted_at,
     });
     return result;
   };
@@ -94,12 +98,38 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const acceptTerms = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/auth/accept-terms", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Erreur lors de l'acceptation des CGU");
+    }
+
+    // Mettre à jour l'utilisateur avec terms_accepted = true
+    setUser((prev) => ({
+      ...prev,
+      terms_accepted: true,
+      terms_accepted_at: result.data.terms_accepted_at,
+    }));
+
+    return result;
+  };
+
   const value = {
     user,
     loading,
     login,
     register,
     logout,
+    acceptTerms,
     isAuthenticated: !!user,
   };
 

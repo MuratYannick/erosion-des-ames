@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../../config/database.js";
 
 const Character = sequelize.define(
   "Character",
@@ -11,21 +11,28 @@ const Character = sequelize.define(
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "users",
         key: "id",
       },
       onDelete: "CASCADE",
+      comment: "ID de l'utilisateur (null pour les PNJ)",
     },
     faction_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "factions",
         key: "id",
       },
       onDelete: "RESTRICT",
+      comment: "ID de la faction (null pour les neutres)",
+    },
+    ethnic_group: {
+      type: DataTypes.ENUM("Les Eveillés", "Les Inaltérés"),
+      allowNull: false,
+      comment: "Groupe ethnique du personnage",
     },
     clan_id: {
       type: DataTypes.INTEGER,
@@ -133,6 +140,11 @@ const Character = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
       comment: "Date de la dernière mort",
+    },
+    is_playable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      comment: "Le personnage est jouable (false pour les PNJ)",
     },
   },
   {

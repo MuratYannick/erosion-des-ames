@@ -4,8 +4,8 @@ const homeContent = {
   containers: [
     {
       id: 1,
-      title: "Découvrir l'Univers",
-      image: "/illustrations/discoverUniverse.png",
+      title: "Accéder à la communauté",
+      image: "/illustrations/communityAccess.png",
       imageStyle: {
         filter: "sepia(65%)",
         transition: "filter 5s ease-in-out",
@@ -13,7 +13,7 @@ const homeContent = {
       imageHoverStyle: {
         filter: "sepia(0%)",
       },
-      link: "/intro",
+      link: "/forum/general",
     },
     {
       id: 2,
