@@ -15,6 +15,15 @@ export const register = async (req, res) => {
       });
     }
 
+    // Validation du pseudo (username)
+    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(username)) {
+      return res.status(400).json({
+        success: false,
+        message: "Le pseudo n'est pas valide. Seuls les lettres (minuscules et majuscules), chiffres, tirets (-) et underscores (_) sont autorisés",
+      });
+    }
+
     // Validation du mot de passe
     if (password.length < 6) {
       return res.status(400).json({
@@ -65,6 +74,8 @@ export const register = async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        terms_accepted: user.terms_accepted,
+        terms_accepted_at: user.terms_accepted_at,
         token,
       },
     });
@@ -81,23 +92,27 @@ export const register = async (req, res) => {
 // Connexion d'un utilisateur
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
     // Validation des champs
-    if (!email || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email et mot de passe sont obligatoires",
+        message: "Pseudo/Email et mot de passe sont obligatoires",
       });
     }
 
-    // Trouver l'utilisateur
-    const user = await User.findOne({ where: { email } });
+    // Trouver l'utilisateur par pseudo ou email
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ username: identifier }, { email: identifier }],
+      },
+    });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Email ou mot de passe incorrect",
+        message: "Pseudo/Email ou mot de passe incorrect",
       });
     }
 
@@ -107,7 +122,7 @@ export const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: "Email ou mot de passe incorrect",
+        message: "Pseudo/Email ou mot de passe incorrect",
       });
     }
 
@@ -132,6 +147,8 @@ export const login = async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        terms_accepted: user.terms_accepted,
+        terms_accepted_at: user.terms_accepted_at,
         token,
       },
     });
@@ -161,6 +178,48 @@ export const getMe = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erreur lors de la récupération du profil",
+      error: error.message,
+    });
+  }
+};
+
+// Accepter les conditions d'utilisation
+export const acceptTerms = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Utilisateur non trouvé",
+      });
+    }
+
+    if (user.terms_accepted) {
+      return res.status(400).json({
+        success: false,
+        message: "Les conditions ont déjà été acceptées",
+      });
+    }
+
+    await user.update({
+      terms_accepted: true,
+      terms_accepted_at: new Date(),
+    });
+
+    res.json({
+      success: true,
+      message: "Conditions d'utilisation acceptées",
+      data: {
+        terms_accepted: true,
+        terms_accepted_at: user.terms_accepted_at,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur acceptTerms:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'acceptation des conditions",
       error: error.message,
     });
   }

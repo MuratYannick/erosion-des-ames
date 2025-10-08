@@ -1,7 +1,7 @@
 import express from "express";
-import homeContent from "../models/HomeModel.js";
-import introContent from "../models/IntroModel.js";
-import loreContent from "../models/LoreModel.js";
+import homeContent from "../models/content/Home.js";
+import introContent from "../models/content/Intro.js";
+import loreContent from "../models/content/Lore.js";
 
 const router = express.Router();
 

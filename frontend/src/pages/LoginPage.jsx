@@ -10,7 +10,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
@@ -35,11 +35,9 @@ function LoginPage() {
   const validateForm = () => {
     const newErrors = {};
 
-    // Validation email
-    if (!formData.email) {
-      newErrors.email = "L'email est requis";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email invalide";
+    // Validation identifiant (pseudo ou email)
+    if (!formData.identifier) {
+      newErrors.identifier = "Le pseudo ou l'email est requis";
     }
 
     // Validation mot de passe
@@ -64,7 +62,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      await login(formData.email, formData.password);
+      await login(formData.identifier, formData.password);
       navigate("/");
     } catch (err) {
       console.error("Erreur de connexion:", err);
@@ -93,14 +91,14 @@ function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <InputField
-            label="Email"
-            type="email"
-            name="email"
-            value={formData.email}
+            label="Pseudo ou Email"
+            type="text"
+            name="identifier"
+            value={formData.identifier}
             onChange={handleChange}
-            placeholder="votre@email.com"
+            placeholder="Votre pseudo ou email"
             required
-            error={errors.email}
+            error={errors.identifier}
           />
 
           <InputField

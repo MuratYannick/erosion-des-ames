@@ -10,7 +10,10 @@
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
-      "Bash(node server.js)"
+      "Bash(node server.js)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(npm run seed:*)"
     ],
     "deny": [],
     "ask": []

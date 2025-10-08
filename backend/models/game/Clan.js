@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../../config/database.js";
 
 const Clan = sequelize.define(
   "Clan",
@@ -26,30 +26,40 @@ const Clan = sequelize.define(
       comment:
         "Nom du clan (Les Symbiotes, Les Sentinelles, Les Veilleurs des Ruines, etc.)",
     },
-    type: {
-      type: DataTypes.ENUM("caste_mutant", "caste_non_mutant", "clan_neutre"),
-      allowNull: false,
-      comment: "Type de clan",
+    ethnic_group: {
+      type: DataTypes.ENUM("Les Eveillés", "Les Inaltérés"),
+      allowNull: true,
+      comment: "Groupe ethnique du clan (null pour les clans mixtes)",
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
       comment: "Description du clan et de ses activités",
     },
-    specialization: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      comment: "Spécialisation du clan (Ressources, Combat, Exploration, etc.)",
-    },
-    max_members: {
-      type: DataTypes.INTEGER,
-      defaultValue: 50,
-      comment: "Nombre maximum de membres",
+    is_playable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      comment: "Le clan peut être choisi par les joueurs",
     },
     is_recruitable: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
       comment: "Le clan recrute de nouveaux membres",
+    },
+    leader_name: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: "Nom du chef du clan",
+    },
+    leader_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "characters",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+      comment: "ID du personnage chef du clan",
     },
   },
   {
