@@ -31,8 +31,10 @@ function App() {
             <Route path="register" element={<RegisterPage />} />
           </Route>
           <Route path="/forum" element={<ForumLayout />}>
-            <Route index element={<ForumGeneralPage />} />
-            <Route path="general" element={<ForumGeneralPage />} />
+            <Route index element={<ForumCategoryPage />} />
+            <Route path="general" element={<ForumCategoryPage />} />
+            <Route path="hrp" element={<ForumCategoryPage />} />
+            <Route path="rp" element={<ForumCategoryPage />} />
             <Route path="category/:slug" element={<ForumCategoryPage />} />
             <Route path="section/:slug" element={<ForumSectionPage />} />
             <Route path="topic/:id" element={<ForumTopicPage />} />

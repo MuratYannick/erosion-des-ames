@@ -13,7 +13,8 @@
       "Bash(node server.js)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(npm run seed:*)"
+      "Bash(npm run seed:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

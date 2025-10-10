@@ -7,8 +7,8 @@ function ForumHeader() {
 
   const categories = [
     { name: "Général", path: "/forum/general", requireAuth: false },
-    { name: "Jeu", path: "/forum/game", requireAuth: true },
-    { name: "Support", path: "/forum/support", requireAuth: true },
+    { name: "HRP (Hors-Rôle-Play)", path: "/forum/hrp", requireAuth: true },
+    { name: "RP (Rôle-Play)", path: "/forum/rp", requireAuth: true },
   ];
 
   return (

@@ -1,14 +1,31 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
+import Modal from "../components/ui/Modal";
+import CreateSectionForm from "../components/forum/CreateSectionForm";
+import CreateTopicForm from "../components/forum/CreateTopicForm";
+import EditSectionForm from "../components/forum/EditSectionForm";
+import MoveSectionForm from "../components/forum/MoveSectionForm";
 
 function ForumSectionPage() {
   const styles = ForumBody.styles;
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [section, setSection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
+  const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Vérifier l'authentification
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   useEffect(() => {
     const fetchSection = async () => {
@@ -37,20 +54,101 @@ function ForumSectionPage() {
     fetchSection();
   }, [slug]);
 
-  const breadcrumbItems = section
-    ? [
-        { label: "Accueil", path: "/" },
-        ...(section.category
-          ? [
-              {
-                label: section.category.name,
-                path: `/forum/category/${section.category.slug}`,
-              },
-            ]
-          : []),
-        { label: section.name },
-      ]
-    : [];
+  const handleSubsectionCreated = (newSubsection) => {
+    // Ajouter la nouvelle sous-section à la liste
+    setSection((prev) => ({
+      ...prev,
+      subsections: [...(prev.subsections || []), newSubsection],
+    }));
+    setIsSectionModalOpen(false);
+
+    // Recharger la section pour avoir les données à jour
+    window.location.reload();
+  };
+
+  const handleTopicCreated = (newTopic) => {
+    // Fermer le modal
+    setIsTopicModalOpen(false);
+
+    // Recharger la section pour avoir les données à jour
+    window.location.reload();
+  };
+
+  const handleSectionUpdated = (updatedSection) => {
+    // Si updatedSection est null, c'est une suppression
+    if (!updatedSection) {
+      setIsEditModalOpen(false);
+
+      // Rediriger vers la catégorie parente ou la page d'accueil
+      if (section.category) {
+        navigate(`/forum/category/${section.category.slug}`);
+      } else if (section.parentSection) {
+        navigate(`/forum/section/${section.parentSection.slug}`);
+      } else {
+        navigate("/");
+      }
+      return;
+    }
+
+    // Sinon, c'est une mise à jour
+    setIsEditModalOpen(false);
+
+    // Recharger la section pour avoir les données à jour
+    window.location.reload();
+  };
+
+  const handleSectionMoved = (movedSection) => {
+    // Fermer le modal
+    setIsMoveModalOpen(false);
+
+    // Rediriger vers la nouvelle destination
+    if (movedSection.category_id) {
+      // Déplacée vers une catégorie, recharger pour voir la section dans la nouvelle catégorie
+      window.location.reload();
+    } else if (movedSection.parent_section_id) {
+      // Déplacée comme sous-section, recharger
+      window.location.reload();
+    }
+  };
+
+  // Construire le fil d'Ariane en remontant la hiérarchie
+  const buildBreadcrumb = (section) => {
+    if (!section) return [];
+
+    const items = [{ label: "Accueil", path: "/" }];
+
+    // Ajouter la catégorie
+    if (section.category) {
+      items.push({
+        label: section.category.name,
+        path: `/forum/category/${section.category.slug}`,
+      });
+    }
+
+    // Construire la chaîne des sections parentes (du plus haut au plus bas)
+    const parentChain = [];
+    let currentParent = section.parentSection;
+
+    while (currentParent) {
+      parentChain.unshift(currentParent); // Ajouter au début pour inverser l'ordre
+      currentParent = currentParent.parentSection;
+    }
+
+    // Ajouter les sections parentes
+    parentChain.forEach((parent) => {
+      items.push({
+        label: parent.name,
+        path: `/forum/section/${parent.slug}`,
+      });
+    });
+
+    // Ajouter la section actuelle
+    items.push({ label: section.name });
+
+    return items;
+  };
+
+  const breadcrumbItems = buildBreadcrumb(section);
 
   return (
     <div>
@@ -66,10 +164,46 @@ function ForumSectionPage() {
 
       {!loading && !error && section && (
         <>
-          <h1 className={styles.pageTitle}>{section.name}</h1>
-          {section.description && (
-            <p className={`${styles.text} mb-6`}>{section.description}</p>
-          )}
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex-1">
+              <h1 className={styles.pageTitle}>{section.name}</h1>
+              {section.description && (
+                <p className={`${styles.text} mb-6`}>{section.description}</p>
+              )}
+            </div>
+            {isAuthenticated && (
+              <div className="ml-4 flex gap-3">
+                <button
+                  onClick={() => setIsTopicModalOpen(true)}
+                  className="px-4 py-2 bg-ochre-600 text-city-950 rounded font-texte-corps hover:bg-ochre-500 transition-colors flex items-center gap-2"
+                >
+                  <span className="text-xl">+</span>
+                  <span>Nouveau sujet</span>
+                </button>
+                <button
+                  onClick={() => setIsSectionModalOpen(true)}
+                  className="px-4 py-2 bg-city-700 text-ochre-500 rounded font-texte-corps hover:bg-city-600 transition-colors flex items-center gap-2 border border-ochre-700"
+                >
+                  <span className="text-xl">+</span>
+                  <span>Sous-section</span>
+                </button>
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="px-4 py-2 bg-city-800 text-city-300 rounded font-texte-corps hover:bg-city-700 transition-colors flex items-center gap-2 border border-city-600"
+                >
+                  <span>✏️</span>
+                  <span>Éditer</span>
+                </button>
+                <button
+                  onClick={() => setIsMoveModalOpen(true)}
+                  className="px-4 py-2 bg-city-800 text-city-300 rounded font-texte-corps hover:bg-city-700 transition-colors flex items-center gap-2 border border-city-600"
+                >
+                  <span>📦</span>
+                  <span>Déplacer</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Sous-sections */}
           {section.subsections && section.subsections.length > 0 && (
@@ -136,6 +270,62 @@ function ForumSectionPage() {
           )}
         </>
       )}
+
+      {/* Modal de création de topic */}
+      <Modal
+        isOpen={isTopicModalOpen}
+        onClose={() => setIsTopicModalOpen(false)}
+        title="Créer un nouveau sujet"
+      >
+        <CreateTopicForm
+          sectionId={section?.id}
+          onSuccess={handleTopicCreated}
+          onCancel={() => setIsTopicModalOpen(false)}
+        />
+      </Modal>
+
+      {/* Modal de création de sous-section */}
+      <Modal
+        isOpen={isSectionModalOpen}
+        onClose={() => setIsSectionModalOpen(false)}
+        title="Créer une nouvelle sous-section"
+      >
+        <CreateSectionForm
+          parentSectionId={section?.id}
+          onSuccess={handleSubsectionCreated}
+          onCancel={() => setIsSectionModalOpen(false)}
+        />
+      </Modal>
+
+      {/* Modal d'édition de section */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Éditer la section"
+      >
+        {section && (
+          <EditSectionForm
+            section={section}
+            onSuccess={handleSectionUpdated}
+            onCancel={() => setIsEditModalOpen(false)}
+          />
+        )}
+      </Modal>
+
+      {/* Modal de déplacement de section */}
+      <Modal
+        isOpen={isMoveModalOpen}
+        onClose={() => setIsMoveModalOpen(false)}
+        title="Déplacer la section"
+      >
+        {section && (
+          <MoveSectionForm
+            section={section}
+            onSuccess={handleSectionMoved}
+            onCancel={() => setIsMoveModalOpen(false)}
+          />
+        )}
+      </Modal>
     </div>
   );
 }

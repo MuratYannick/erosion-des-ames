@@ -1,21 +1,36 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
+import TermsAcceptance from "../components/ui/TermsAcceptance";
+import Modal from "../components/ui/Modal";
+import CreateSectionForm from "../components/forum/CreateSectionForm";
 
 function ForumCategoryPage() {
   const styles = ForumBody.styles;
   const { slug } = useParams();
+  const location = useLocation();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Déterminer le slug de la catégorie depuis l'URL
+  const categorySlug = slug || location.pathname.split('/').pop() || 'general';
+
+  // Vérifier l'authentification
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:3000/api/forum/categories/${slug}`
+          `http://localhost:3000/api/forum/categories/${categorySlug}`
         );
         const result = await response.json();
 
@@ -35,7 +50,19 @@ function ForumCategoryPage() {
     };
 
     fetchCategory();
-  }, [slug]);
+  }, [categorySlug]);
+
+  const handleSectionCreated = (newSection) => {
+    // Ajouter la nouvelle section à la liste
+    setCategory((prev) => ({
+      ...prev,
+      sections: [...(prev.sections || []), newSection],
+    }));
+    setIsModalOpen(false);
+
+    // Recharger la catégorie pour avoir les données à jour
+    window.location.reload();
+  };
 
   const breadcrumbItems = category
     ? [
@@ -58,10 +85,26 @@ function ForumCategoryPage() {
 
       {!loading && !error && category && (
         <>
-          <h1 className={styles.pageTitle}>{category.name}</h1>
-          {category.description && (
-            <p className={`${styles.text} mb-6`}>{category.description}</p>
-          )}
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex-1">
+              <h1 className={styles.pageTitle}>{category.name}</h1>
+              {category.description && (
+                <p className={`${styles.text} mb-6`}>{category.description}</p>
+              )}
+            </div>
+            {isAuthenticated && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="ml-4 px-4 py-2 bg-ochre-600 text-city-950 rounded font-texte-corps hover:bg-ochre-500 transition-colors flex items-center gap-2"
+              >
+                <span className="text-xl">+</span>
+                <span>Créer une section</span>
+              </button>
+            )}
+          </div>
+
+          {/* Composant d'acceptation des CGU pour les utilisateurs connectés non validés */}
+          <TermsAcceptance />
 
           {/* Sections */}
           {category.sections && category.sections.length > 0 ? (
@@ -108,6 +151,19 @@ function ForumCategoryPage() {
           )}
         </>
       )}
+
+      {/* Modal de création de section */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Créer une nouvelle section"
+      >
+        <CreateSectionForm
+          categoryId={category?.id}
+          onSuccess={handleSectionCreated}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }
