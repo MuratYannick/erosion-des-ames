@@ -2,7 +2,7 @@
 
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
-> **🆕 Dernières mises à jour** : Système de forum complet avec architecture hiérarchique (catégories/sections/topics/posts), système d'acceptation des CGU, layouts forum dédiés, composants Breadcrumb et UserBar, refactorisation des modèles en modules (game/forum/content).
+> **🆕 Dernières mises à jour** : Système de forum **complet et interactif** avec CRUD total (Create, Read, Update, Delete, Move) pour sections, topics et posts. Gestion complète : création de sections/sous-sections, création de topics avec premier post, réponses aux topics, édition/suppression avec confirmations, verrouillage de topics, déplacement de sections et topics dans l'architecture du forum. Interface utilisateur avec modals, formulaires, dialogues de confirmation et protections contre les boucles infinies.
 
 ## 📖 Description
 
@@ -85,6 +85,14 @@ erosion-des-ames/
 │   │   │   │   ├── ForumHeader.jsx     # En-tête forum avec UserBar
 │   │   │   │   ├── ForumBody.jsx       # Corps forum (styles unifiés)
 │   │   │   │   └── ForumFooter.jsx     # Pied de page forum
+│   │   │   ├── forum/            # Composants spécifiques au forum
+│   │   │   │   ├── CreateSectionForm.jsx   # Formulaire création section
+│   │   │   │   ├── EditSectionForm.jsx     # Formulaire édition section
+│   │   │   │   ├── MoveSectionForm.jsx     # Formulaire déplacement section
+│   │   │   │   ├── CreateTopicForm.jsx     # Formulaire création topic
+│   │   │   │   ├── EditTopicForm.jsx       # Formulaire édition topic
+│   │   │   │   ├── MoveTopicForm.jsx       # Formulaire déplacement topic
+│   │   │   │   └── CreatePostForm.jsx      # Formulaire réponse (post)
 │   │   │   └── ui/               # Composants UI réutilisables
 │   │   │       ├── BurgerButton.jsx        # Menu hamburger
 │   │   │       ├── BurgerPanel.jsx         # Panneau mobile
@@ -98,6 +106,8 @@ erosion-des-ames/
 │   │   │       ├── CloseButton.jsx         # Bouton fermeture (X)
 │   │   │       ├── Aside.jsx               # Barre latérale
 │   │   │       ├── Breadcrumb.jsx          # Fil d'Ariane
+│   │   │       ├── Modal.jsx               # Modal réutilisable
+│   │   │       ├── ConfirmDialog.jsx       # Dialogue de confirmation
 │   │   │       ├── TermsAcceptance.jsx     # Alerte CGU (wrapper)
 │   │   │       ├── TermsAcceptanceBox.jsx  # Boîte d'acceptation CGU
 │   │   │       ├── TermsGuard.jsx          # Protection routes par CGU
@@ -367,33 +377,26 @@ Le frontend démarre sur **http://localhost:5173**
 ### Forum (Routes publiques pour lecture, protégées pour écriture)
 
 **Catégories**
-- `GET /api/forum/categories` - Liste des catégories
-- `GET /api/forum/categories/:id` - Une catégorie
-- `POST /api/forum/categories` - Créer une catégorie (admin)
-- `PUT /api/forum/categories/:id` - Modifier une catégorie (admin)
-- `DELETE /api/forum/categories/:id` - Supprimer une catégorie (admin)
+- `GET /api/forum/categories` - Liste des catégories avec leurs sections
+- `GET /api/forum/categories/:slug` - Une catégorie par slug
 
 **Sections**
-- `GET /api/forum/sections` - Liste des sections principales
+- `GET /api/forum/sections` - Liste de toutes les sections
 - `GET /api/forum/sections/:slug` - Une section par slug (avec sous-sections et topics)
-- `GET /api/forum/sections/category/:categoryId` - Sections d'une catégorie
-- `POST /api/forum/sections` - Créer une section (admin)
-- `PUT /api/forum/sections/:id` - Modifier une section (admin)
-- `DELETE /api/forum/sections/:id` - Supprimer une section (admin)
+- `POST /api/forum/sections` - Créer une section (protégé)
+- `PUT /api/forum/sections/:id` - Modifier une section (protégé)
+- `PUT /api/forum/sections/:id/move` - Déplacer une section (protégé)
+- `DELETE /api/forum/sections/:id` - Supprimer une section (protégé, avec vérifications)
 
 **Topics**
-- `GET /api/forum/topics/:slug` - Un topic par slug (avec posts)
-- `GET /api/forum/topics/section/:sectionId` - Topics d'une section
-- `POST /api/forum/topics` - Créer un topic (protégé)
-- `PUT /api/forum/topics/:id` - Modifier un topic (protégé)
-- `DELETE /api/forum/topics/:id` - Supprimer un topic (protégé)
-- `POST /api/forum/topics/:id/view` - Incrémenter le compteur de vues
+- `GET /api/forum/topics/:id` - Un topic par ID (avec posts)
+- `POST /api/forum/topics` - Créer un topic avec premier post (protégé)
+- `PUT /api/forum/topics/:id` - Modifier un topic (titre, verrouillage) (protégé, auteur uniquement)
+- `PUT /api/forum/topics/:id/move` - Déplacer un topic vers une autre section (protégé, auteur uniquement)
+- `DELETE /api/forum/topics/:id` - Supprimer un topic et tous ses posts (protégé, auteur uniquement)
 
 **Posts**
-- `GET /api/forum/posts/topic/:topicId` - Posts d'un topic
-- `POST /api/forum/posts` - Créer un post (protégé)
-- `PUT /api/forum/posts/:id` - Modifier un post (protégé)
-- `DELETE /api/forum/posts/:id` - Supprimer un post (protégé)
+- `POST /api/forum/posts` - Créer un post/réponse dans un topic (protégé, interdit si topic verrouillé)
 
 ### Exemple de requête authentifiée
 ```bash
@@ -490,7 +493,7 @@ Authorization: Bearer <votre_token_jwt>
 - [x] Composants UI réutilisables (Card, Buttons, InputField, etc.)
 - [x] Effets visuels (sépia hover, transitions fluides)
 
-**Forum (En cours 🚧)**
+**Forum (Opérationnel ✅)**
 - [x] ForumLayout avec header/body/footer dédié
 - [x] ForumHeader avec UserBar (profil + déconnexion)
 - [x] ForumBody avec système de styles unifiés
@@ -500,17 +503,37 @@ Authorization: Bearer <votre_token_jwt>
   - [x] TermsAcceptanceBox (boîte de validation)
   - [x] TermsGuard (protection de routes)
   - [x] TermsModal (modal CGU)
-- [x] Pages forum de base
+- [x] Pages forum complètes
   - [x] ForumGeneralPage (liste des sections)
   - [x] ForumCategoryPage (sections par catégorie)
-  - [x] ForumSectionPage (topics d'une section)
+  - [x] ForumSectionPage (topics d'une section + sous-sections)
   - [x] ForumTopicPage (posts d'un topic)
-- [ ] Création de topics/posts avec formulaires
-- [ ] Édition/suppression de posts
-- [ ] Système de pagination pour topics/posts
-- [ ] Bouton "Répondre" et "Citer"
+- [x] **CRUD complet Sections**
+  - [x] Création de sections et sous-sections (CreateSectionForm)
+  - [x] Édition de sections (EditSectionForm avec confirmation)
+  - [x] Déplacement de sections (MoveSectionForm - vers catégorie ou sous-section)
+  - [x] Suppression de sections (avec protection si contient sous-sections/topics)
+- [x] **CRUD complet Topics**
+  - [x] Création de topics avec premier post (CreateTopicForm)
+  - [x] Édition de topics avec verrouillage (EditTopicForm avec confirmation)
+  - [x] Déplacement de topics entre sections (MoveTopicForm)
+  - [x] Suppression de topics avec tous les posts (avec confirmation)
+  - [x] Système de verrouillage (is_locked bloque les réponses)
+- [x] **Système de posts**
+  - [x] Bouton "Répondre" avec formulaire (CreatePostForm)
+  - [x] Création de posts/réponses (bloqué si topic verrouillé)
+  - [x] Support personnages (poster en RP avec son personnage)
+- [x] **Composants UI avancés**
+  - [x] Modal réutilisable
+  - [x] ConfirmDialog (3 types : warning, danger, info)
+  - [x] Formulaires avec validation et gestion d'erreurs
+  - [x] Protections contre boucles infinies (déplacement sections)
+- [ ] Édition/suppression de posts individuels
+- [ ] Système de pagination pour topics/posts longs
+- [ ] Bouton "Citer" pour répondre à un post spécifique
 - [ ] Affichage avatar/signature utilisateur
 - [ ] Système de likes/upvotes
+- [ ] Recherche dans le forum
 
 **Jeu (À venir 📋)**
 - [ ] Interface de création de personnage
@@ -540,20 +563,63 @@ Le forum utilise une structure à 4 niveaux :
 2. **Sections** : Espaces de discussion (ex: "Règlement", "Lore", "Taverne")
    - Support des **sous-sections** (hiérarchie récursive)
    - Chaque section peut avoir un slug unique pour URL propres
+   - **Déplacement** : Une section peut être déplacée vers une catégorie ou comme sous-section
 3. **Topics** : Sujets de discussion créés par les utilisateurs
    - Support topic épinglé (`is_pinned`)
-   - Support topic verrouillé (`is_locked`)
-   - Compteur de vues (`view_count`)
+   - Support topic verrouillé (`is_locked`) - empêche les nouvelles réponses
+   - Compteur de vues (`views_count`)
+   - **Déplacement** : Un topic peut être déplacé vers n'importe quelle section
 4. **Posts** : Messages dans un topic
-   - Premier post marqué (`is_first_post`)
-   - Suivi des éditions (`edited_at`)
+   - Premier post créé automatiquement avec le topic
+   - Suivi des éditions (`is_edited`, `edited_at`)
+
+### Fonctionnalités interactives complètes
+
+**Pour les sections/sous-sections** :
+- ✅ **Créer** : Bouton "+ Créer une section" (dans catégories) et "+ Sous-section" (dans sections)
+- ✅ **Éditer** : Modifier nom, description, ordre d'affichage
+- ✅ **Déplacer** : Déplacer vers une autre catégorie ou comme sous-section d'une autre section
+- ✅ **Supprimer** : Avec protection (impossible si contient des sous-sections ou topics)
+
+**Pour les topics** :
+- ✅ **Créer** : Bouton "+ Nouveau sujet" avec titre et premier message
+- ✅ **Éditer** : Modifier titre, verrouiller/déverrouiller le topic
+- ✅ **Déplacer** : Déplacer vers une autre section (liste hiérarchique organisée)
+- ✅ **Supprimer** : Supprime le topic et tous ses posts associés
+- ✅ **Verrouiller** : Case à cocher pour empêcher les réponses
+
+**Pour les posts** :
+- ✅ **Répondre** : Bouton "Répondre à ce sujet" (masqué si topic verrouillé)
+- ✅ **Poster en RP** : Sélection de personnage pour poster avec son personnage
+- 🔄 **Éditer/Supprimer** : À venir
 
 ### Auteurs multiples (User & Character)
 Chaque topic/post peut avoir deux types d'auteurs :
 - **`author_user_id`** : L'utilisateur réel (pour discussions HRP)
 - **`author_character_id`** : Le personnage (pour RP in-game)
+- **`author_name`** : Nom préservé même si compte/personnage supprimé
 
 Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
+
+### Sécurité et validations
+
+**Confirmations obligatoires** :
+- Modification de section/topic → Dialogue de confirmation (⚠️ warning)
+- Suppression → Dialogue de confirmation (🔴 danger) avec avertissement
+- Déplacement → Dialogue de confirmation avec aperçu de la destination
+
+**Protections backend** :
+- Vérification d'autorisation (seul l'auteur peut modifier/supprimer son topic)
+- Protection contre les boucles infinies (déplacement de sections)
+- Blocage de suppression si section contient du contenu
+- Blocage des réponses sur topics verrouillés
+- Validation des données (champs requis, longueurs max)
+
+**Interface utilisateur** :
+- Messages d'erreur clairs et contextuels
+- Désactivation de la section/topic actuel dans les listes de déplacement
+- Affichage hiérarchique des destinations (catégories > sections > sous-sections)
+- Icônes distinctives (✏️ Éditer, 📦 Déplacer, 🔒 Verrouillé)
 
 ### Système de CGU (Conditions Générales d'Utilisation)
 - Champ `terms_accepted` + `terms_accepted_at` dans le modèle User
