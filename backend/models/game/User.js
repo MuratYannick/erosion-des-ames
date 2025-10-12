@@ -42,10 +42,16 @@ const User = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    role: {
-      type: DataTypes.ENUM("ADMIN", "MODERATOR", "GAME_MASTER", "PLAYER"),
-      defaultValue: "PLAYER",
+    role_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "roles",
+        key: "id",
+      },
+      onDelete: "RESTRICT",
+      onUpdate: "CASCADE",
+      comment: "Rôle de l'utilisateur (référence à la table roles)",
     },
     email_verified: {
       type: DataTypes.BOOLEAN,

@@ -14,7 +14,11 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(npm run seed:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwMTc0NTgzLCJleHAiOjE3NjA3NzkzODN9.pWVMyXiTqhyGaOKEPXhurjwMW3CucaAGwkalQypzHZQ\")",
+      "Bash(python3:*)",
+      "Bash(npm run seedDev:*)",
+      "Bash(npm run seed:dev:*)"
     ],
     "deny": [],
     "ask": []

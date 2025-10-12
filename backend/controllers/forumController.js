@@ -1,9 +1,12 @@
-import { Category, Section, Topic, Post, User, Character } from "../models/index.js";
+import { Category, Section, Topic, Post, User, Character, Faction, Clan } from "../models/index.js";
 import sequelize from "../config/database.js";
+import { filterSectionsByAccess, canAccessSection, getCategoryFromSection } from "../utils/forumPermissions.js";
 
 // Récupérer toutes les catégories avec leurs sections
 export const getCategories = async (req, res) => {
   try {
+    const user = req.user || null; // req.user existe si l'utilisateur est connecté
+
     const categories = await Category.findAll({
       where: { is_active: true },
       include: [
@@ -22,6 +25,16 @@ export const getCategories = async (req, res) => {
               where: { is_active: true },
               required: false,
             },
+            {
+              model: Faction,
+              as: "visibleByFaction",
+              required: false,
+            },
+            {
+              model: Clan,
+              as: "visibleByClan",
+              required: false,
+            },
           ],
         },
       ],
@@ -30,6 +43,17 @@ export const getCategories = async (req, res) => {
         [{ model: Section, as: "sections" }, "order", "ASC"],
       ],
     });
+
+    // Filtrer les sections selon les permissions de l'utilisateur
+    for (const category of categories) {
+      if (category.sections && category.sections.length > 0) {
+        category.sections = await filterSectionsByAccess(
+          category.sections,
+          user,
+          category
+        );
+      }
+    }
 
     res.json({
       success: true,
@@ -49,6 +73,7 @@ export const getCategories = async (req, res) => {
 export const getCategoryBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
+    const user = req.user || null;
 
     const category = await Category.findOne({
       where: { slug, is_active: true },
@@ -68,6 +93,16 @@ export const getCategoryBySlug = async (req, res) => {
               where: { is_active: true },
               required: false,
             },
+            {
+              model: Faction,
+              as: "visibleByFaction",
+              required: false,
+            },
+            {
+              model: Clan,
+              as: "visibleByClan",
+              required: false,
+            },
           ],
         },
       ],
@@ -79,6 +114,15 @@ export const getCategoryBySlug = async (req, res) => {
         success: false,
         message: "Catégorie non trouvée",
       });
+    }
+
+    // Filtrer les sections selon les permissions de l'utilisateur
+    if (category.sections && category.sections.length > 0) {
+      category.sections = await filterSectionsByAccess(
+        category.sections,
+        user,
+        category
+      );
     }
 
     res.json({
@@ -118,6 +162,16 @@ export const getSections = async (req, res) => {
           where: { is_active: true },
           required: false,
         },
+        {
+          model: Faction,
+          as: "visibleByFaction",
+          required: false,
+        },
+        {
+          model: Clan,
+          as: "visibleByClan",
+          required: false,
+        },
       ],
       order: [["order", "ASC"]],
     });
@@ -140,6 +194,7 @@ export const getSections = async (req, res) => {
 export const getSectionBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
+    const user = req.user || null;
 
     const section = await Section.findOne({
       where: { slug, is_active: true },
@@ -175,6 +230,16 @@ export const getSectionBySlug = async (req, res) => {
           required: false,
         },
         {
+          model: Faction,
+          as: "visibleByFaction",
+          required: false,
+        },
+        {
+          model: Clan,
+          as: "visibleByClan",
+          required: false,
+        },
+        {
           model: Topic,
           as: "topics",
           where: { is_active: true },
@@ -204,6 +269,27 @@ export const getSectionBySlug = async (req, res) => {
       });
     }
 
+    // Vérifier si l'utilisateur peut accéder à cette section
+    const category = await getCategoryFromSection(section);
+    if (category) {
+      const hasAccess = await canAccessSection(user, section, category);
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: "Vous n'avez pas accès à cette section",
+        });
+      }
+    }
+
+    // Filtrer les sous-sections selon les permissions
+    if (category && section.subsections && section.subsections.length > 0) {
+      section.subsections = await filterSectionsByAccess(
+        section.subsections,
+        user,
+        category
+      );
+    }
+
     res.json({
       success: true,
       data: section,
@@ -222,6 +308,7 @@ export const getSectionBySlug = async (req, res) => {
 export const getTopicById = async (req, res) => {
   try {
     const { id } = req.params;
+    const user = req.user || null;
 
     // Déterminer si c'est un ID numérique ou un slug
     const isNumeric = /^\d+$/.test(id);
@@ -239,6 +326,26 @@ export const getTopicById = async (req, res) => {
             {
               model: Category,
               as: "category",
+            },
+            {
+              model: Section,
+              as: "parentSection",
+              include: [
+                {
+                  model: Section,
+                  as: "parentSection",
+                  include: [
+                    {
+                      model: Category,
+                      as: "category",
+                    },
+                  ],
+                },
+                {
+                  model: Category,
+                  as: "category",
+                },
+              ],
             },
           ],
         },
@@ -279,6 +386,20 @@ export const getTopicById = async (req, res) => {
         success: false,
         message: "Topic non trouvé",
       });
+    }
+
+    // Vérifier si l'utilisateur peut accéder à la section du topic
+    if (topic.section) {
+      const category = await getCategoryFromSection(topic.section);
+      if (category) {
+        const hasAccess = await canAccessSection(user, topic.section, category);
+        if (!hasAccess) {
+          return res.status(403).json({
+            success: false,
+            message: "Vous n'avez pas accès à ce topic",
+          });
+        }
+      }
     }
 
     // Incrémenter le nombre de vues
@@ -514,7 +635,40 @@ export const createPost = async (req, res) => {
     }
 
     // Vérifier que le topic existe et n'est pas verrouillé
-    const topic = await Topic.findByPk(topic_id);
+    const topic = await Topic.findByPk(topic_id, {
+      include: [
+        {
+          model: Section,
+          as: "section",
+          include: [
+            {
+              model: Category,
+              as: "category",
+            },
+            {
+              model: Section,
+              as: "parentSection",
+              include: [
+                {
+                  model: Section,
+                  as: "parentSection",
+                  include: [
+                    {
+                      model: Category,
+                      as: "category",
+                    },
+                  ],
+                },
+                {
+                  model: Category,
+                  as: "category",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
     if (!topic) {
       return res.status(404).json({
         success: false,
@@ -527,6 +681,21 @@ export const createPost = async (req, res) => {
         success: false,
         message: "Ce topic est verrouillé, vous ne pouvez pas y répondre",
       });
+    }
+
+    // Vérifier si l'utilisateur peut accéder à la section du topic
+    if (topic.section) {
+      const category = await getCategoryFromSection(topic.section);
+      if (category) {
+        const user = req.user;
+        const hasAccess = await canAccessSection(user, topic.section, category);
+        if (!hasAccess) {
+          return res.status(403).json({
+            success: false,
+            message: "Vous n'avez pas accès à ce topic",
+          });
+        }
+      }
     }
 
     // Récupérer l'utilisateur
@@ -589,6 +758,7 @@ export const createTopic = async (req, res) => {
   try {
     const { title, content, section_id, author_character_id } = req.body;
     const userId = req.user.id; // Fourni par le middleware d'authentification
+    const user = req.user;
 
     // Validation
     if (!title || title.trim().length === 0) {
@@ -613,7 +783,34 @@ export const createTopic = async (req, res) => {
     }
 
     // Vérifier que la section existe
-    const section = await Section.findByPk(section_id);
+    const section = await Section.findByPk(section_id, {
+      include: [
+        {
+          model: Category,
+          as: "category",
+        },
+        {
+          model: Section,
+          as: "parentSection",
+          include: [
+            {
+              model: Section,
+              as: "parentSection",
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                },
+              ],
+            },
+            {
+              model: Category,
+              as: "category",
+            },
+          ],
+        },
+      ],
+    });
     if (!section) {
       return res.status(404).json({
         success: false,
@@ -621,9 +818,21 @@ export const createTopic = async (req, res) => {
       });
     }
 
-    // Récupérer l'utilisateur
-    const user = await User.findByPk(userId);
-    if (!user) {
+    // Vérifier si l'utilisateur peut accéder à cette section
+    const category = await getCategoryFromSection(section);
+    if (category) {
+      const hasAccess = await canAccessSection(user, section, category);
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: "Vous n'avez pas accès à cette section",
+        });
+      }
+    }
+
+    // Récupérer les détails complets de l'utilisateur
+    const fullUser = await User.findByPk(userId);
+    if (!fullUser) {
       return res.status(404).json({
         success: false,
         message: "Utilisateur non trouvé",
@@ -645,7 +854,7 @@ export const createTopic = async (req, res) => {
     }
 
     // Déterminer le nom de l'auteur
-    const authorName = character ? character.name : user.username;
+    const authorName = character ? character.name : fullUser.username;
 
     // Générer le slug à partir du titre
     const slug = title
@@ -805,7 +1014,7 @@ export const moveSection = async (req, res) => {
 export const updateSection = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, order } = req.body;
+    const { name, description, order, visible_by_faction_id, visible_by_clan_id } = req.body;
 
     // Récupérer la section
     const section = await Section.findByPk(id);
@@ -844,6 +1053,8 @@ export const updateSection = async (req, res) => {
       slug,
       description: description !== undefined ? description?.trim() || null : section.description,
       order: order !== undefined ? order : section.order,
+      visible_by_faction_id: visible_by_faction_id !== undefined ? visible_by_faction_id : section.visible_by_faction_id,
+      visible_by_clan_id: visible_by_clan_id !== undefined ? visible_by_clan_id : section.visible_by_clan_id,
     });
 
     res.json({
@@ -930,7 +1141,15 @@ export const deleteSection = async (req, res) => {
 // Créer une nouvelle section
 export const createSection = async (req, res) => {
   try {
-    const { name, description, category_id, parent_section_id, order } = req.body;
+    const {
+      name,
+      description,
+      category_id,
+      parent_section_id,
+      order,
+      visible_by_faction_id,
+      visible_by_clan_id,
+    } = req.body;
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -976,7 +1195,11 @@ export const createSection = async (req, res) => {
       }
     }
 
-    // Si parent_section_id est fourni, vérifier qu'elle existe
+    // Variables pour la visibilité héritée
+    let inheritedFactionId = null;
+    let inheritedClanId = null;
+
+    // Si parent_section_id est fourni, vérifier qu'elle existe et hériter de la visibilité
     if (parent_section_id) {
       const parentSection = await Section.findByPk(parent_section_id);
       if (!parentSection) {
@@ -985,7 +1208,19 @@ export const createSection = async (req, res) => {
           message: "Section parente non trouvée",
         });
       }
+
+      // Hériter de la visibilité de la section parente si non explicitement définie
+      inheritedFactionId = parentSection.visible_by_faction_id;
+      inheritedClanId = parentSection.visible_by_clan_id;
     }
+
+    // Utiliser la visibilité explicite du body, sinon celle héritée, sinon null
+    const finalFactionId =
+      visible_by_faction_id !== undefined
+        ? visible_by_faction_id
+        : inheritedFactionId;
+    const finalClanId =
+      visible_by_clan_id !== undefined ? visible_by_clan_id : inheritedClanId;
 
     // Créer la section
     const section = await Section.create({
@@ -996,6 +1231,8 @@ export const createSection = async (req, res) => {
       parent_section_id: parent_section_id || null,
       order: order || 0,
       is_active: true,
+      visible_by_faction_id: finalFactionId,
+      visible_by_clan_id: finalClanId,
     });
 
     res.status(201).json({

@@ -1,4 +1,4 @@
-import { User } from "../models/index.js";
+import { User, Role } from "../models/index.js";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth.js";
 import { Op } from "sequelize";
 
@@ -57,11 +57,21 @@ export const register = async (req, res) => {
     // Hasher le mot de passe
     const passwordHash = await hashPassword(password);
 
+    // Récupérer le rôle "player" par défaut
+    const playerRole = await Role.findOne({ where: { name: "player" } });
+    if (!playerRole) {
+      return res.status(500).json({
+        success: false,
+        message: "Erreur système: rôle par défaut introuvable",
+      });
+    }
+
     // Créer l'utilisateur
     const user = await User.create({
       username,
       email,
       password_hash: passwordHash,
+      role_id: playerRole.id,
     });
 
     // Générer le token
@@ -165,13 +175,10 @@ export const login = async (req, res) => {
 // Récupérer les informations de l'utilisateur connecté
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.id, {
-      attributes: { exclude: ["password_hash"] },
-    });
-
+    // req.user contient déjà l'utilisateur avec son rôle (chargé par authMiddleware)
     res.json({
       success: true,
-      data: user,
+      data: req.user,
     });
   } catch (error) {
     console.error("Erreur getMe:", error);

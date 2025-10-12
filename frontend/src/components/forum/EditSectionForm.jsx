@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
@@ -7,12 +7,41 @@ function EditSectionForm({ section, onSuccess, onCancel }) {
     name: section.name || "",
     description: section.description || "",
     order: section.order || 0,
+    visible_by_faction_id: section.visible_by_faction_id || "",
+    visible_by_clan_id: section.visible_by_clan_id || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUpdateConfirm, setShowUpdateConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [factions, setFactions] = useState([]);
+  const [clans, setClans] = useState([]);
+
+  // Charger les factions et clans
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Charger les factions
+        const factionsRes = await fetch("http://localhost:3000/api/factions");
+        const factionsData = await factionsRes.json();
+        if (factionsData.success) {
+          setFactions(factionsData.data);
+        }
+
+        // Charger les clans
+        const clansRes = await fetch("http://localhost:3000/api/clans");
+        const clansData = await clansRes.json();
+        if (clansData.success) {
+          setClans(clansData.data);
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement des factions/clans:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +61,25 @@ function EditSectionForm({ section, onSuccess, onCancel }) {
         throw new Error("Vous devez être connecté pour modifier une section");
       }
 
+      const requestBody = {
+        name: formData.name,
+        description: formData.description,
+        order: parseInt(formData.order, 10) || 0,
+      };
+
+      // Ajouter la visibilité si définie
+      if (formData.visible_by_faction_id) {
+        requestBody.visible_by_faction_id = parseInt(formData.visible_by_faction_id, 10);
+      } else {
+        requestBody.visible_by_faction_id = null;
+      }
+
+      if (formData.visible_by_clan_id) {
+        requestBody.visible_by_clan_id = parseInt(formData.visible_by_clan_id, 10);
+      } else {
+        requestBody.visible_by_clan_id = null;
+      }
+
       const response = await fetch(
         `http://localhost:3000/api/forum/sections/${section.id}`,
         {
@@ -40,11 +88,7 @@ function EditSectionForm({ section, onSuccess, onCancel }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            name: formData.name,
-            description: formData.description,
-            order: parseInt(formData.order, 10) || 0,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -197,6 +241,60 @@ function EditSectionForm({ section, onSuccess, onCancel }) {
           </p>
         </div>
 
+        {/* Visibilité par faction */}
+        <div>
+          <label
+            htmlFor="visible_by_faction_id"
+            className="block text-ochre-500 font-texte-corps mb-2"
+          >
+            Visibilité par faction (optionnel)
+          </label>
+          <select
+            id="visible_by_faction_id"
+            name="visible_by_faction_id"
+            value={formData.visible_by_faction_id}
+            onChange={handleChange}
+            className="w-full px-4 py-2 bg-city-900 border border-ochre-700 rounded text-city-200 font-texte-corps focus:outline-none focus:border-ochre-500 transition-colors"
+          >
+            <option value="">Visible par tous</option>
+            {factions.map((faction) => (
+              <option key={faction.id} value={faction.id}>
+                {faction.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-city-500 mt-1 font-texte-corps">
+            Si défini, seuls les membres de cette faction pourront voir cette section
+          </p>
+        </div>
+
+        {/* Visibilité par clan */}
+        <div>
+          <label
+            htmlFor="visible_by_clan_id"
+            className="block text-ochre-500 font-texte-corps mb-2"
+          >
+            Visibilité par clan (optionnel)
+          </label>
+          <select
+            id="visible_by_clan_id"
+            name="visible_by_clan_id"
+            value={formData.visible_by_clan_id}
+            onChange={handleChange}
+            className="w-full px-4 py-2 bg-city-900 border border-ochre-700 rounded text-city-200 font-texte-corps focus:outline-none focus:border-ochre-500 transition-colors"
+          >
+            <option value="">Visible par tous</option>
+            {clans.map((clan) => (
+              <option key={clan.id} value={clan.id}>
+                {clan.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-city-500 mt-1 font-texte-corps">
+            Si défini, seuls les membres de ce clan pourront voir cette section
+          </p>
+        </div>
+
         {/* Boutons */}
         <div className="flex justify-between pt-4">
           <button
@@ -259,6 +357,8 @@ EditSectionForm.propTypes = {
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
     order: PropTypes.number,
+    visible_by_faction_id: PropTypes.number,
+    visible_by_clan_id: PropTypes.number,
   }).isRequired,
   onSuccess: PropTypes.func,
   onCancel: PropTypes.func.isRequired,

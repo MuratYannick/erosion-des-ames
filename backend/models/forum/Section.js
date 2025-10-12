@@ -31,6 +31,28 @@ const Section = sequelize.define(
       allowNull: false,
       defaultValue: true,
     },
+    // Visibilité par faction (null = visible par tous)
+    visible_by_faction_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "factions",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+      comment: "Si défini, seule cette faction peut voir la section. Null = visible par tous",
+    },
+    // Visibilité par clan (null = visible par tous)
+    visible_by_clan_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "clans",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+      comment: "Si défini, seul ce clan peut voir la section. Null = visible par tous",
+    },
     // Relations
     category_id: {
       type: DataTypes.INTEGER,

@@ -4,6 +4,7 @@
 
 // Game models
 import User from "./game/User.js";
+import Role from "./game/Role.js";
 import Faction from "./game/Faction.js";
 import Character from "./game/Character.js";
 import Clan from "./game/Clan.js";
@@ -17,6 +18,17 @@ import Post from "./forum/Post.js";
 // ═══════════════════════════════════════════════════════════
 // RELATIONS ENTRE LES MODÈLES
 // ═══════════════════════════════════════════════════════════
+
+// Role ↔ User (1:N) - Un rôle peut avoir plusieurs utilisateurs
+Role.hasMany(User, {
+  foreignKey: "role_id",
+  as: "users",
+  onDelete: "RESTRICT",
+});
+User.belongsTo(Role, {
+  foreignKey: "role_id",
+  as: "role",
+});
 
 // User ↔ Character (1:N)
 User.hasMany(Character, {
@@ -86,6 +98,26 @@ Section.hasMany(Section, {
 Section.belongsTo(Section, {
   foreignKey: "parent_section_id",
   as: "parentSection",
+});
+
+// Section ↔ Faction (N:1 pour visibilité)
+Section.belongsTo(Faction, {
+  foreignKey: "visible_by_faction_id",
+  as: "visibleByFaction",
+});
+Faction.hasMany(Section, {
+  foreignKey: "visible_by_faction_id",
+  as: "restrictedSections",
+});
+
+// Section ↔ Clan (N:1 pour visibilité)
+Section.belongsTo(Clan, {
+  foreignKey: "visible_by_clan_id",
+  as: "visibleByClan",
+});
+Clan.hasMany(Section, {
+  foreignKey: "visible_by_clan_id",
+  as: "restrictedSections",
 });
 
 // Section ↔ Topic (1:N)
@@ -158,10 +190,11 @@ Post.belongsTo(Character, {
 // EXPORT DES MODÈLES
 // ═══════════════════════════════════════════════════════════
 
-export { User, Faction, Character, Clan, Category, Section, Topic, Post };
+export { User, Role, Faction, Character, Clan, Category, Section, Topic, Post };
 
 export default {
   User,
+  Role,
   Faction,
   Character,
   Clan,

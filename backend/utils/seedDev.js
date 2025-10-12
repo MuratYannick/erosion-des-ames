@@ -1,5 +1,5 @@
 import sequelize from "../config/database.js";
-import { User, Character, Faction, Clan } from "../models/index.js";
+import { User, Character, Faction, Clan, Role } from "../models/index.js";
 import { hashPassword } from "./auth.js";
 
 // Données de test pour les utilisateurs
@@ -8,279 +8,281 @@ const testUsersData = [
     username: "admin_test",
     email: "admin@test.com",
     password: "password123",
-    role: "ADMIN",
+    roleName: "admin",
     email_verified: true,
     terms_accepted: true,
+    characterConfig: null, // Pas de personnage
   },
   {
     username: "moderator_test",
     email: "moderator@test.com",
     password: "password123",
-    role: "MODERATOR",
+    roleName: "moderator",
     email_verified: true,
     terms_accepted: true,
+    characterConfig: null, // Pas de personnage
   },
   {
     username: "gm_test",
     email: "gm@test.com",
     password: "password123",
-    role: "GAME_MASTER",
+    roleName: "game_master",
     email_verified: true,
     terms_accepted: true,
+    characterConfig: {
+      type: "nonPlayableClan", // Personnage dans clan non-jouable
+      name: "Prophète Kael",
+      level: 10,
+      isAlive: true,
+    },
   },
   {
-    username: "player_mutant",
-    email: "mutant@test.com",
+    username: "player_no_terms",
+    email: "noterms@test.com",
     password: "password123",
-    role: "PLAYER",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: false, // N'a pas accepté les CGU
+    characterConfig: null,
+  },
+  {
+    username: "player_no_char",
+    email: "nochar@test.com",
+    password: "password123",
+    roleName: "player",
     email_verified: true,
     terms_accepted: true,
+    characterConfig: null, // Pas de personnage
   },
   {
-    username: "player_pure",
-    email: "pure@test.com",
+    username: "player_dead_char",
+    email: "deadchar@test.com",
     password: "password123",
-    role: "PLAYER",
-    email_verified: true,
-    terms_accepted: false, // Utilisateur qui n'a pas encore accepté les CGU
-  },
-  {
-    username: "player_neutral",
-    email: "neutral@test.com",
-    password: "password123",
-    role: "PLAYER",
+    roleName: "player",
     email_verified: true,
     terms_accepted: true,
+    characterConfig: {
+      type: "dead", // Personnage mort
+      name: "Ash le Déchu",
+      level: 6,
+      isAlive: false,
+    },
+  },
+  {
+    username: "player_mutant_clan",
+    email: "mutantclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "mutantPlayableClan", // Faction mutante + clan jouable
+      name: "Xarn le Symbiote",
+      level: 5,
+      isAlive: true,
+    },
+  },
+  {
+    username: "player_pure_clan",
+    email: "pureclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "purePlayableClan", // Faction non-mutante + clan jouable
+      name: "Marcus le Sentinelle",
+      level: 4,
+      isAlive: true,
+    },
+  },
+  {
+    username: "player_mutant_no_clan",
+    email: "mutantnoclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "mutantNoClan", // Faction mutante sans clan
+      name: "Zara la Solitaire",
+      level: 3,
+      isAlive: true,
+    },
+  },
+  {
+    username: "player_pure_no_clan",
+    email: "purenoclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "pureNoClan", // Faction non-mutante sans clan
+      name: "Elena l'Indépendante",
+      level: 3,
+      isAlive: true,
+    },
+  },
+  {
+    username: "player_neutral_clan",
+    email: "neutralclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "neutralClan", // Clan neutre (sans faction)
+      name: "Lyra la Vagabonde",
+      level: 3,
+      isAlive: true,
+    },
+  },
+  {
+    username: "player_no_faction_no_clan",
+    email: "nofactnoclan@test.com",
+    password: "password123",
+    roleName: "player",
+    email_verified: true,
+    terms_accepted: true,
+    characterConfig: {
+      type: "noFactionNoClan", // Sans faction ni clan
+      name: "Raven l'Errant",
+      level: 2,
+      isAlive: true,
+    },
   },
 ];
 
-// Fonction pour créer des personnages de test
-const createTestCharacters = async (users, factions, clans) => {
-  const mutantFaction = factions.find(
-    (f) => f.ethnic_group === "Les Eveillés"
-  );
-  const nonMutantFaction = factions.find(
-    (f) => f.ethnic_group === "Les Inaltérés"
-  );
+// Fonction pour créer les personnages selon la configuration
+const createCharacterForUser = async (userData, user, factions, clans) => {
+  if (!userData.characterConfig) {
+    return null;
+  }
+
+  const config = userData.characterConfig;
+  const mutantFaction = factions.find((f) => f.ethnic_group === "Les Eveillés");
+  const nonMutantFaction = factions.find((f) => f.ethnic_group === "Les Inaltérés");
 
   const mutantClans = clans.filter((c) => c.faction_id === mutantFaction?.id);
-  const nonMutantClans = clans.filter(
-    (c) => c.faction_id === nonMutantFaction?.id
-  );
+  const nonMutantClans = clans.filter((c) => c.faction_id === nonMutantFaction?.id);
   const neutralClans = clans.filter((c) => c.faction_id === null);
 
-  const playerMutant = users.find((u) => u.username === "player_mutant");
-  const playerPure = users.find((u) => u.username === "player_pure");
-  const playerNeutral = users.find((u) => u.username === "player_neutral");
-  const gameMaster = users.find((u) => u.username === "gm_test");
+  let characterData = {
+    name: config.name,
+    user_id: user.id,
+    level: config.level,
+    experience: config.level * 500,
+    strength: 10,
+    agility: 10,
+    intelligence: 10,
+    endurance: 10,
+    health: config.isAlive ? 100 : 0,
+    max_health: 100,
+    energy: config.isAlive ? 100 : 0,
+    max_energy: 100,
+    position_x: 0,
+    position_y: 0,
+    current_zone: "Zone de départ",
+    is_alive: config.isAlive,
+    is_playable: true,
+    death_count: config.isAlive ? 0 : 1,
+    last_death_at: config.isAlive ? null : new Date(),
+  };
 
-  // Trouver les clans jouables et non jouables
-  const casteSymbiotes = mutantClans.find((c) => c.name === "La Caste des Symbiotes");
-  const prophetesHarmonie = mutantClans.find((c) => c.name === "Les Prophètes de l'Harmonie");
-  const clanSentinelles = nonMutantClans.find((c) => c.name === "Le Clan des Sentinelles");
-  const vagabonds = neutralClans.find((c) => c.name === "Les Vagabonds du Vent");
-  const peupleOmbres = neutralClans.find((c) => c.name === "Le Peuple des Ombres");
+  // Configurer selon le type
+  switch (config.type) {
+    case "nonPlayableClan":
+      // Clan non-jouable de la faction mutante
+      const nonPlayableClan = mutantClans.find((c) => !c.is_playable);
+      characterData.faction_id = mutantFaction.id;
+      characterData.ethnic_group = "Les Eveillés";
+      characterData.clan_id = nonPlayableClan?.id || null;
+      characterData.is_playable = false;
+      characterData.current_zone = "L'Oasis des Transformés";
+      break;
 
-  const charactersData = [
-    // Personnage mutant dans une faction
-    {
-      name: "Xarn le Symbiote",
-      user_id: playerMutant.id,
-      faction_id: mutantFaction?.id,
-      ethnic_group: "Les Eveillés",
-      clan_id: casteSymbiotes?.id,
-      level: 5,
-      experience: 2500,
-      strength: 12,
-      agility: 8,
-      intelligence: 10,
-      endurance: 14,
-      health: 140,
-      max_health: 140,
-      energy: 100,
-      max_energy: 100,
-      position_x: 0,
-      position_y: 0,
-      current_zone: "L'Oasis des Transformés",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Personnage non-mutant dans une faction
-    {
-      name: "Marcus le Sentinelle",
-      user_id: playerPure.id,
-      faction_id: nonMutantFaction?.id,
-      ethnic_group: "Les Inaltérés",
-      clan_id: clanSentinelles?.id,
-      level: 4,
-      experience: 1800,
-      strength: 14,
-      agility: 10,
-      intelligence: 8,
-      endurance: 12,
-      health: 120,
-      max_health: 120,
-      energy: 80,
-      max_energy: 80,
-      position_x: 100,
-      position_y: 100,
-      current_zone: "La Citadelle du Renouveau",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Personnage neutre (mutant, sans faction)
-    {
-      name: "Lyra la Vagabonde",
-      user_id: playerNeutral.id,
-      faction_id: null,
-      ethnic_group: "Les Inaltérés",
-      clan_id: vagabonds?.id,
-      level: 3,
-      experience: 1200,
-      strength: 8,
-      agility: 14,
-      intelligence: 12,
-      endurance: 10,
-      health: 100,
-      max_health: 100,
-      energy: 120,
-      max_energy: 120,
-      position_x: 50,
-      position_y: 50,
-      current_zone: "Les Terres Sauvages",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Deuxième personnage neutre (mutant)
-    {
-      name: "Kira l'Ombre",
-      user_id: playerMutant.id,
-      faction_id: null,
-      ethnic_group: "Les Eveillés",
-      clan_id: peupleOmbres?.id,
-      level: 2,
-      experience: 500,
-      strength: 6,
-      agility: 16,
-      intelligence: 12,
-      endurance: 8,
-      health: 80,
-      max_health: 80,
-      energy: 140,
-      max_energy: 140,
-      position_x: 5,
-      position_y: 5,
-      current_zone: "Les Zones Sombres",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Personnage mort (pour tester la mécanique de mort)
-    {
-      name: "Ash le Déchu",
-      user_id: playerPure.id,
-      faction_id: nonMutantFaction?.id,
-      ethnic_group: "Les Inaltérés",
-      clan_id: clanSentinelles?.id,
-      level: 6,
-      experience: 3200,
-      strength: 10,
-      agility: 12,
-      intelligence: 10,
-      endurance: 10,
-      health: 0,
-      max_health: 120,
-      energy: 0,
-      max_energy: 100,
-      position_x: 200,
-      position_y: 150,
-      current_zone: "Les Ruines Toxiques",
-      is_alive: false,
-      is_playable: true,
-      death_count: 2,
-      last_death_at: new Date(),
-    },
-    // Personnage dans une faction SANS clan
-    {
-      name: "Zara la Solitaire",
-      user_id: playerMutant.id,
-      faction_id: mutantFaction?.id,
-      ethnic_group: "Les Eveillés",
-      clan_id: null, // Aucun clan
-      level: 3,
-      experience: 900,
-      strength: 10,
-      agility: 12,
-      intelligence: 11,
-      endurance: 10,
-      health: 100,
-      max_health: 100,
-      energy: 110,
-      max_energy: 110,
-      position_x: 25,
-      position_y: 30,
-      current_zone: "L'Oasis des Transformés",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Personnage SANS faction et SANS clan (neutre total)
-    {
-      name: "Raven l'Errant",
-      user_id: playerNeutral.id,
-      faction_id: null, // Aucune faction
-      ethnic_group: "Les Inaltérés",
-      clan_id: null, // Aucun clan
-      level: 2,
-      experience: 400,
-      strength: 10,
-      agility: 10,
-      intelligence: 10,
-      endurance: 10,
-      health: 100,
-      max_health: 100,
-      energy: 100,
-      max_energy: 100,
-      position_x: 75,
-      position_y: 80,
-      current_zone: "Les Terres Désolées",
-      is_alive: true,
-      is_playable: true,
-    },
-    // Personnage dans un clan non-jouable (pour le Game Master)
-    {
-      name: "Prophète Kael",
-      user_id: gameMaster.id,
-      faction_id: mutantFaction?.id,
-      ethnic_group: "Les Eveillés",
-      clan_id: prophetesHarmonie?.id, // Clan non-jouable
-      level: 10,
-      experience: 15000,
-      strength: 15,
-      agility: 10,
-      intelligence: 18,
-      endurance: 14,
-      health: 180,
-      max_health: 180,
-      energy: 200,
-      max_energy: 200,
-      position_x: 0,
-      position_y: 0,
-      current_zone: "L'Oasis des Transformés",
-      is_alive: true,
-      is_playable: false, // PNJ géré par le GM
-    },
-  ];
+    case "dead":
+      // Personnage mort dans faction non-mutante
+      const deadClan = nonMutantClans.find((c) => c.is_playable);
+      characterData.faction_id = nonMutantFaction.id;
+      characterData.ethnic_group = "Les Inaltérés";
+      characterData.clan_id = deadClan?.id || null;
+      characterData.current_zone = "Les Ruines Toxiques";
+      break;
 
-  return charactersData;
+    case "mutantPlayableClan":
+      // Faction mutante + clan jouable
+      const mutantPlayableClan = mutantClans.find((c) => c.is_playable);
+      characterData.faction_id = mutantFaction.id;
+      characterData.ethnic_group = "Les Eveillés";
+      characterData.clan_id = mutantPlayableClan?.id || null;
+      characterData.current_zone = "L'Oasis des Transformés";
+      break;
+
+    case "purePlayableClan":
+      // Faction non-mutante + clan jouable
+      const purePlayableClan = nonMutantClans.find((c) => c.is_playable);
+      characterData.faction_id = nonMutantFaction.id;
+      characterData.ethnic_group = "Les Inaltérés";
+      characterData.clan_id = purePlayableClan?.id || null;
+      characterData.current_zone = "La Citadelle du Renouveau";
+      break;
+
+    case "mutantNoClan":
+      // Faction mutante sans clan
+      characterData.faction_id = mutantFaction.id;
+      characterData.ethnic_group = "Les Eveillés";
+      characterData.clan_id = null;
+      characterData.current_zone = "L'Oasis des Transformés";
+      break;
+
+    case "pureNoClan":
+      // Faction non-mutante sans clan
+      characterData.faction_id = nonMutantFaction.id;
+      characterData.ethnic_group = "Les Inaltérés";
+      characterData.clan_id = null;
+      characterData.current_zone = "La Citadelle du Renouveau";
+      break;
+
+    case "neutralClan":
+      // Clan neutre (sans faction)
+      const neutralClan = neutralClans.find((c) => c.is_playable);
+      characterData.faction_id = null;
+      characterData.ethnic_group = "Les Inaltérés";
+      characterData.clan_id = neutralClan?.id || null;
+      characterData.current_zone = "Les Terres Sauvages";
+      break;
+
+    case "noFactionNoClan":
+      // Sans faction ni clan
+      characterData.faction_id = null;
+      characterData.ethnic_group = "Les Inaltérés";
+      characterData.clan_id = null;
+      characterData.current_zone = "Les Terres Désolées";
+      break;
+  }
+
+  return characterData;
 };
+
 
 // Fonction principale de seed de développement
 export const seedDevelopment = async () => {
   try {
     console.log("🌱 Début du seeding de développement...\n");
 
-    // Vérifier que les factions et clans existent
+    // Vérifier que les rôles, factions et clans existent
+    const roles = await Role.findAll();
     const factions = await Faction.findAll();
     const clans = await Clan.findAll();
+
+    if (roles.length === 0) {
+      console.log(
+        "⚠️  Aucun rôle trouvé. Veuillez d'abord exécuter 'npm run seed'"
+      );
+      return false;
+    }
 
     if (factions.length === 0 || clans.length === 0) {
       console.log(
@@ -289,50 +291,128 @@ export const seedDevelopment = async () => {
       return false;
     }
 
-    // 1. Créer les utilisateurs de test
+    // 1. Supprimer les utilisateurs de test existants
+    console.log("🗑️  Suppression des données de test existantes...");
+    const testUsernames = testUsersData.map(u => u.username);
+    await User.destroy({
+      where: {
+        username: testUsernames
+      }
+    });
+    console.log("✅ Données de test supprimées\n");
+
+    // 2. Créer les utilisateurs de test
     console.log("👥 Création des utilisateurs de test...");
     const users = [];
+    const usersWithCharacters = [];
+
     for (const userData of testUsersData) {
       const passwordHash = await hashPassword(userData.password);
+      const role = roles.find((r) => r.name === userData.roleName);
+
+      if (!role) {
+        console.log(`⚠️  Rôle ${userData.roleName} non trouvé pour ${userData.username}`);
+        continue;
+      }
+
       const user = await User.create({
         username: userData.username,
         email: userData.email,
         password_hash: passwordHash,
-        role: userData.role,
+        role_id: role.id,
         email_verified: userData.email_verified,
         terms_accepted: userData.terms_accepted,
         terms_accepted_at: userData.terms_accepted ? new Date() : null,
       });
+
       users.push(user);
       console.log(
-        `  ✅ ${userData.username} (${userData.role}) - ${userData.email} / ${userData.password}${userData.terms_accepted ? "" : " [CGU non acceptées]"}`
+        `  ✅ ${userData.username} (${role.label}) - ${userData.email} / ${userData.password}${userData.terms_accepted ? "" : " [CGU non acceptées]"}${userData.characterConfig ? " [avec personnage]" : ""}`
       );
+
+      // Stocker les utilisateurs qui ont besoin d'un personnage
+      if (userData.characterConfig) {
+        usersWithCharacters.push({ userData, user });
+      }
     }
     console.log(`✅ ${users.length} utilisateurs créés\n`);
 
-    // 2. Créer les personnages de test
+    // 3. Créer les personnages de test
     console.log("🎭 Création des personnages de test...");
-    const charactersData = await createTestCharacters(users, factions, clans);
-    const characters = await Character.bulkCreate(charactersData);
-    characters.forEach((char) => {
-      const userData = users.find((u) => u.id === char.user_id);
-      console.log(`  ✅ ${char.name} (${char.ethnic_group}) - ${userData?.username}`);
-    });
-    console.log(`✅ ${characters.length} personnages créés\n`);
+    let characterCount = 0;
+
+    for (const { userData, user } of usersWithCharacters) {
+      const characterData = await createCharacterForUser(userData, user, factions, clans);
+      if (characterData) {
+        const character = await Character.create(characterData);
+        characterCount++;
+
+        const statusStr = character.is_alive ? "vivant" : "mort";
+        const factionStr = character.faction_id
+          ? factions.find(f => f.id === character.faction_id)?.name || "?"
+          : "sans faction";
+        const clanStr = character.clan_id
+          ? clans.find(c => c.id === character.clan_id)?.name || "?"
+          : "sans clan";
+
+        console.log(`  ✅ ${character.name} (${statusStr}) - ${factionStr} / ${clanStr} - ${user.username}`);
+      }
+    }
+    console.log(`✅ ${characterCount} personnages créés\n`);
 
     // Afficher un résumé
     console.log("📋 RÉSUMÉ DES COMPTES DE TEST\n");
     console.log("Tous les mots de passe sont: password123\n");
-    console.log("Rôle           | Username         | Email");
-    console.log("---------------|------------------|-------------------");
-    testUsersData.forEach((user) => {
+    console.log("Type de compte                                  | Username                 | Email");
+    console.log("------------------------------------------------|--------------------------|---------------------------");
+
+    testUsersData.forEach((userData) => {
+      const role = roles.find((r) => r.name === userData.roleName);
+      let accountType = role.label;
+
+      if (userData.characterConfig) {
+        const config = userData.characterConfig;
+        if (!config.isAlive) {
+          accountType += " - Personnage mort";
+        } else {
+          switch (config.type) {
+            case "nonPlayableClan":
+              accountType += " - PNJ clan non-jouable";
+              break;
+            case "mutantPlayableClan":
+              accountType += " - Mutant avec clan";
+              break;
+            case "purePlayableClan":
+              accountType += " - Non-mutant avec clan";
+              break;
+            case "mutantNoClan":
+              accountType += " - Mutant sans clan";
+              break;
+            case "pureNoClan":
+              accountType += " - Non-mutant sans clan";
+              break;
+            case "neutralClan":
+              accountType += " - Clan neutre";
+              break;
+            case "noFactionNoClan":
+              accountType += " - Sans faction ni clan";
+              break;
+          }
+        }
+      } else if (!userData.terms_accepted) {
+        accountType += " - CGU non acceptées";
+      } else {
+        accountType += " - Sans personnage";
+      }
+
       console.log(
-        `${user.role.padEnd(14)} | ${user.username.padEnd(16)} | ${user.email}`
+        `${accountType.padEnd(47)} | ${userData.username.padEnd(24)} | ${userData.email}`
       );
     });
     console.log("\n");
 
     console.log("🎉 Seeding de développement terminé avec succès !\n");
+    console.log("💡 Utilisez ces comptes pour tester les différents cas d'accès au forum.\n");
 
     return true;
   } catch (error) {

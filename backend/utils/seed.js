@@ -1,5 +1,5 @@
 import sequelize from "../config/database.js";
-import { Faction, Clan, Category, Section, Topic, Post } from "../models/index.js";
+import { Role, Faction, Clan, Category, Section, Topic, Post } from "../models/index.js";
 
 // Import des données de seed modulaires
 import { factionsData } from "./seedData/factions.js";
@@ -30,15 +30,53 @@ async function seedDatabase() {
     console.log("✅ Base de données synchronisée\n");
 
     // ============================
+    // RÔLES
+    // ============================
+
+    // 2. Créer les rôles
+    console.log("📊 Création des rôles...");
+    const roles = await Role.bulkCreate([
+      {
+        name: "admin",
+        label: "Administrateur",
+        description: "Accès complet au système, peut gérer tous les aspects du jeu et des utilisateurs",
+        level: 100,
+        is_active: true,
+      },
+      {
+        name: "moderator",
+        label: "Modérateur",
+        description: "Peut modérer le forum, gérer les topics/posts, et appliquer les règles",
+        level: 50,
+        is_active: true,
+      },
+      {
+        name: "game_master",
+        label: "Maître du Jeu",
+        description: "Peut animer des événements RP, gérer des quêtes et scénarios",
+        level: 30,
+        is_active: true,
+      },
+      {
+        name: "player",
+        label: "Joueur",
+        description: "Peut jouer, créer des personnages et participer au forum",
+        level: 10,
+        is_active: true,
+      },
+    ], { ignoreDuplicates: true });
+    console.log(`✅ ${roles.length} rôles créés\n`);
+
+    // ============================
     // FACTIONS ET CLANS
     // ============================
 
-    // 2. Créer les factions
+    // 3. Créer les factions
     console.log("📊 Création des factions...");
     const factions = await Faction.bulkCreate(factionsData, { ignoreDuplicates: true });
     console.log(`✅ ${factions.length} factions créées\n`);
 
-    // 3. Récupérer les factions pour les relations
+    // 4. Récupérer les factions pour les relations
     const factionEclaireurs = await Faction.findOne({
       where: { name: "Les Éclaireurs de l'Aube Nouvelle" },
     });
@@ -46,7 +84,7 @@ async function seedDatabase() {
       where: { name: "Les Veilleurs de l'Ancien Monde" },
     });
 
-    // 4. Créer les clans mutants
+    // 5. Créer les clans mutants
     console.log("📊 Création des clans mutants...");
     const mutantClans = await Clan.bulkCreate(
       mutantClansData.map((clan) => ({
@@ -57,7 +95,7 @@ async function seedDatabase() {
     );
     console.log(`✅ ${mutantClans.length} clans mutants créés\n`);
 
-    // 5. Créer les clans non-mutants
+    // 6. Créer les clans non-mutants
     console.log("📊 Création des clans non-mutants...");
     const nonMutantClans = await Clan.bulkCreate(
       nonMutantClansData.map((clan) => ({
@@ -68,7 +106,7 @@ async function seedDatabase() {
     );
     console.log(`✅ ${nonMutantClans.length} clans non-mutants créés\n`);
 
-    // 6. Créer les clans neutres
+    // 7. Créer les clans neutres
     console.log("📊 Création des clans neutres...");
     const neutralClans = await Clan.bulkCreate(neutralClansData, { ignoreDuplicates: true });
     console.log(`✅ ${neutralClans.length} clans neutres créés\n`);
@@ -77,17 +115,17 @@ async function seedDatabase() {
     // STRUCTURE DU FORUM
     // ============================
 
-    // 7. Créer les catégories
+    // 8. Créer les catégories
     console.log("📊 Création des catégories...");
     const categories = await Category.bulkCreate(categoriesData, { ignoreDuplicates: true });
     console.log(`✅ ${categories.length} catégories créées\n`);
 
-    // 8. Récupérer les catégories
+    // 9. Récupérer les catégories
     const forumGeneral = await Category.findOne({ where: { slug: "general" } });
     const forumHRP = await Category.findOne({ where: { slug: "hrp" } });
     const forumRP = await Category.findOne({ where: { slug: "rp" } });
 
-    // 9. Créer les sections du Forum Général
+    // 10. Créer les sections du Forum Général
     console.log("📊 Création des sections du Forum Général...");
     const sectionsGeneral = await Section.bulkCreate(
       sectionsGeneralData.map((s) => ({ ...s, category_id: forumGeneral.id })),
