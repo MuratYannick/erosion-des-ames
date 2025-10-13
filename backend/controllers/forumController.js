@@ -737,6 +737,10 @@ export const moveSection = async (req, res) => {
       });
     }
 
+    let newClanId = null;
+    let newFactionId = null;
+    let newIsPublic = 1;
+
     // Si nouvelle catégorie, vérifier qu'elle existe
     if (new_category_id) {
       const category = await Category.findByPk(new_category_id);
@@ -746,6 +750,10 @@ export const moveSection = async (req, res) => {
           message: "Catégorie non trouvée",
         });
       }
+      // Réinitialiser les restrictions si on déplace vers une catégorie
+      newClanId = null;
+      newFactionId = null;
+      newIsPublic = 1;
     }
 
     // Si nouvelle section parente, vérifier qu'elle existe et éviter les boucles
@@ -778,12 +786,20 @@ export const moveSection = async (req, res) => {
         checkParent = await Section.findByPk(checkParent.parent_section_id);
         if (!checkParent) break;
       }
+
+      // Hériter les restrictions de la section parente
+      newClanId = parentSection.clan_id;
+      newFactionId = parentSection.faction_id;
+      newIsPublic = parentSection.is_public;
     }
 
-    // Déplacer la section
+    // Déplacer la section et mettre à jour les restrictions héritées
     await section.update({
       category_id: new_category_id || null,
       parent_section_id: new_parent_section_id || null,
+      clan_id: newClanId,
+      faction_id: newFactionId,
+      is_public: newIsPublic,
     });
 
     res.json({
@@ -805,7 +821,7 @@ export const moveSection = async (req, res) => {
 export const updateSection = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, order } = req.body;
+    const { name, description, order, clan_id, faction_id, is_public } = req.body;
 
     // Récupérer la section
     const section = await Section.findByPk(id);
@@ -844,6 +860,9 @@ export const updateSection = async (req, res) => {
       slug,
       description: description !== undefined ? description?.trim() || null : section.description,
       order: order !== undefined ? order : section.order,
+      clan_id: clan_id !== undefined ? clan_id : section.clan_id,
+      faction_id: faction_id !== undefined ? faction_id : section.faction_id,
+      is_public: is_public !== undefined ? is_public : section.is_public,
     });
 
     res.json({
@@ -930,7 +949,7 @@ export const deleteSection = async (req, res) => {
 // Créer une nouvelle section
 export const createSection = async (req, res) => {
   try {
-    const { name, description, category_id, parent_section_id, order } = req.body;
+    const { name, description, category_id, parent_section_id, order, clan_id, faction_id, is_public } = req.body;
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -976,7 +995,12 @@ export const createSection = async (req, res) => {
       }
     }
 
-    // Si parent_section_id est fourni, vérifier qu'elle existe
+    // Déterminer les valeurs de clan_id, faction_id et is_public
+    let finalClanId = clan_id !== undefined ? clan_id : null;
+    let finalFactionId = faction_id !== undefined ? faction_id : null;
+    let finalIsPublic = is_public !== undefined ? is_public : 1;
+
+    // Si parent_section_id est fourni, hériter les valeurs de la section parente
     if (parent_section_id) {
       const parentSection = await Section.findByPk(parent_section_id);
       if (!parentSection) {
@@ -985,6 +1009,11 @@ export const createSection = async (req, res) => {
           message: "Section parente non trouvée",
         });
       }
+
+      // Hériter les valeurs si elles ne sont pas explicitement définies
+      if (clan_id === undefined) finalClanId = parentSection.clan_id;
+      if (faction_id === undefined) finalFactionId = parentSection.faction_id;
+      if (is_public === undefined) finalIsPublic = parentSection.is_public;
     }
 
     // Créer la section
@@ -996,6 +1025,9 @@ export const createSection = async (req, res) => {
       parent_section_id: parent_section_id || null,
       order: order || 0,
       is_active: true,
+      clan_id: finalClanId,
+      faction_id: finalFactionId,
+      is_public: finalIsPublic,
     });
 
     res.status(201).json({

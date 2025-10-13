@@ -2,7 +2,10 @@
 
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
-> **🆕 Dernières mises à jour** : Système de forum **complet et interactif** avec CRUD total (Create, Read, Update, Delete, Move) pour sections, topics et posts. Gestion complète : création de sections/sous-sections, création de topics avec premier post, réponses aux topics, édition/suppression avec confirmations, verrouillage de topics, déplacement de sections et topics dans l'architecture du forum. Interface utilisateur avec modals, formulaires, dialogues de confirmation et protections contre les boucles infinies.
+> **🆕 Dernières mises à jour** :
+> - **Système de permissions avancé** : Mise en place d'un système de permissions granulaire avec 25 permissions pour le forum (sections, topics, posts, catégories). Support de 4 rôles (ADMIN, MODERATOR, GAME_MASTER, PLAYER) avec permissions dynamiques basées sur le statut du personnage (7 statuts différents). Restrictions d'accès par faction/clan aux sections privées, permissions spéciales pour les chefs de clan, et blocage de la catégorie RP pour les joueurs sans personnage vivant.
+> - **Vérification CGU obligatoire** : Les utilisateurs non-ADMIN doivent accepter les CGU avant de pouvoir créer, éditer, supprimer ou déplacer du contenu dans le forum. Consultation du contenu autorisée sans acceptation.
+> - **Organisation des données de seed** : Séparation des données du forum en trois fichiers (forumGeneral.js, forumHRP.js, forumRP.js) pour une meilleure maintenabilité.
 
 ## 📖 Description
 
@@ -154,9 +157,14 @@ erosion-des-ames/
 │   │   │   └── Clan.js           # Clan/Caste
 │   │   ├── forum/                # Modèles du forum
 │   │   │   ├── Category.js       # Catégorie forum
-│   │   │   ├── Section.js        # Section (hiérarchique avec sous-sections)
+│   │   │   ├── Section.js        # Section (+ clan_id, faction_id, is_public)
 │   │   │   ├── Topic.js          # Sujet de discussion
 │   │   │   └── Post.js           # Message dans un topic
+│   │   ├── permissions/          # Modèles de permissions
+│   │   │   ├── Permission.js     # Permission (25 permissions système)
+│   │   │   ├── RolePermission.js # Permissions par rôle
+│   │   │   ├── SectionPermission.js # Permissions par section
+│   │   │   └── TopicPermission.js   # Permissions par topic
 │   │   ├── content/              # Modèles de contenu statique
 │   │   │   ├── Home.js           # Contenu page d'accueil
 │   │   │   ├── Intro.js          # Contenu page d'introduction
@@ -170,9 +178,21 @@ erosion-des-ames/
 │   │   ├── portalRoutes.js       # Routes portail (intro, lore, etc.)
 │   │   └── forumRoutes.js        # Routes forum
 │   ├── utils/
-│   │   ├── auth.js               # Utilitaires JWT/bcrypt
-│   │   ├── seed.js               # Script de seeding production
-│   │   └── seedDev.js            # Script de seeding développement (+ forum)
+│   │   ├── auth.js                      # Utilitaires JWT/bcrypt
+│   │   ├── characterStatusHelper.js     # Détection statut personnage + permissions
+│   │   ├── permissionHelper.js          # Vérification permissions (logique centrale)
+│   │   ├── setupAdminPermissions.js     # Configuration permissions ADMIN
+│   │   ├── setupModeratorPermissions.js # Configuration permissions MODERATOR
+│   │   ├── setupGameMasterPermissions.js# Configuration permissions GAME_MASTER
+│   │   ├── setupPlayerPermissions.js    # Configuration permissions PLAYER
+│   │   ├── seed.js                      # Script de seeding principal
+│   │   └── seedData/                    # Données de seed modulaires
+│   │       ├── factions.js              # Données factions
+│   │       ├── clans.js                 # Données clans
+│   │       ├── forum.js                 # Hub forum (agrège les 3 fichiers)
+│   │       ├── forumGeneral.js          # Forum Général (CGU, Règlement, Bienvenue)
+│   │       ├── forumHRP.js              # Forum HRP (Discussions, Suggestions)
+│   │       └── forumRP.js               # Forum RP (sections faction/clan)
 │   ├── .env                      # Variables d'environnement
 │   ├── package.json
 │   └── server.js                 # Serveur Express
@@ -243,12 +263,14 @@ erosion-des-ames/
 - `id` (PK)
 - `category_id` (FK → Categories)
 - `parent_section_id` (FK → Sections, nullable - pour sous-sections)
+- `clan_id` (FK → Clans, nullable - restriction accès clan)
+- `faction_id` (FK → Factions, nullable - restriction accès faction)
+- `is_public` (tinyint, défaut: 1 - 0=privé, 1=public)
 - `name`
 - `description`
 - `slug` (unique)
-- `display_order` (int, défaut: 0)
-- `is_visible` (boolean, défaut: true)
-- `requires_terms` (boolean, défaut: false)
+- `order` (int, défaut: 0)
+- `is_active` (boolean, défaut: true)
 
 **Topics**
 - `id` (PK)
@@ -466,20 +488,32 @@ Authorization: Bearer <votre_token_jwt>
 
 ### Backend (En cours 🚧)
 - [x] Configuration Express + Sequelize
-- [x] Architecture modulaire (game/forum/content)
+- [x] Architecture modulaire (game/forum/content/permissions)
 - [x] Modèles de jeu (User, Faction, Clan, Character)
 - [x] Modèles de forum (Category, Section, Topic, Post)
+- [x] Modèles de permissions (Permission, RolePermission, SectionPermission, TopicPermission)
 - [x] Modèles de contenu (Home, Intro, Lore)
 - [x] Système d'authentification JWT complet
 - [x] Routes API jeu complètes (auth, characters, factions, clans)
 - [x] Routes API forum complètes (CRUD)
 - [x] Routes portail (intro, lore, rules, wiki)
 - [x] Middleware de protection JWT
-- [x] Script de seeding production (`seed.js`)
-- [x] Script de seeding développement (`seedDev.js` avec forum)
+- [x] Script de seeding principal avec données modulaires
+- [x] Organisation modulaire des données de seed (factions, clans, forum)
 - [x] Système d'acceptation des CGU (champ `terms_accepted`)
+- [x] **Système de permissions complet**
+  - [x] 25 permissions système pour forum (CRUD sections/topics/posts/categories)
+  - [x] 4 rôles (ADMIN, MODERATOR, GAME_MASTER, PLAYER)
+  - [x] Permissions dynamiques PLAYER basées sur statut personnage (7 statuts)
+  - [x] Helper de détection statut personnage (characterStatusHelper.js)
+  - [x] Helper de vérification permissions (permissionHelper.js)
+  - [x] Scripts de configuration permissions par rôle
+  - [x] Restrictions d'accès sections par faction/clan
+  - [x] Permissions spéciales chefs de clan
+  - [x] Blocage catégorie RP sans personnage vivant
+  - [x] Vérification CGU obligatoire pour actions (non-ADMIN)
 - [ ] Modèles de contenu pour rules, wiki
-- [ ] Système de rôles/permissions (admin, modérateur)
+- [ ] Application du système de permissions dans les contrôleurs forum
 
 ### Frontend (En cours 🚧)
 
@@ -601,6 +635,53 @@ Chaque topic/post peut avoir deux types d'auteurs :
 
 Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 
+### Système de permissions
+
+Le forum utilise un **système de permissions granulaire** avec plusieurs niveaux :
+
+#### 25 Permissions système
+Permissions CRUD pour sections, subsections, topics, posts et categories :
+- `section.*` : view, create, edit, delete, move, lock, unlock, pin
+- `topic.*` : view, create, edit, delete, move, lock, unlock, pin
+- `post.*` : view, create, edit, delete, move
+- `category.*` : view, create, edit, delete
+
+#### 4 Rôles avec permissions distinctes
+1. **ADMIN** : Toutes les permissions sans restriction
+2. **MODERATOR** : Gestion complète du forum (modération, déplacement, verrouillage)
+3. **GAME_MASTER** : Gestion sections de jeu RP, modération topics RP
+4. **PLAYER** : Permissions dynamiques basées sur le statut du personnage
+
+#### Permissions dynamiques PLAYER (7 statuts)
+Le système détecte automatiquement le statut du personnage :
+- **Chef de clan (faction)** : Peut créer/gérer sections privées de clan, 20 topics/jour, 100 posts/jour
+- **Chef de clan (neutre)** : Idem, mais pour clans neutres
+- **Membre de clan (faction)** : Accès sections clan + faction, 10 topics/jour, 75 posts/jour
+- **Membre de clan (neutre)** : Accès sections clan neutre, 10 topics/jour, 75 posts/jour
+- **Faction sans clan** : Accès sections faction uniquement, 7 topics/jour, 50 posts/jour
+- **Sans faction ni clan** : Sections publiques uniquement, 3 topics/jour, 20 posts/jour
+- **Pas de personnage vivant** : Lecture seule, pas d'accès catégorie RP
+
+#### Restrictions d'accès par faction/clan
+Les sections peuvent être restreintes :
+- **`is_public = 0`** : Section privée
+- **`faction_id`** : Réservée aux membres de la faction
+- **`clan_id`** : Réservée aux membres du clan
+
+Exemple : "La Caste des Symbiotes" est accessible uniquement aux membres de ce clan mutant.
+
+#### Permissions spéciales chefs de clan
+Dans les sections de leur clan, les chefs peuvent :
+- Créer/éditer/supprimer des sous-sections
+- Verrouiller/déverrouiller sections et topics
+- Épingler sections et topics
+
+#### Vérification CGU obligatoire
+**Tous les utilisateurs non-ADMIN** doivent accepter les CGU avant de :
+- Créer, éditer, supprimer, déplacer du contenu
+- Verrouiller/déverrouiller ou épingler du contenu
+- ✅ La consultation reste autorisée sans acceptation
+
 ### Sécurité et validations
 
 **Confirmations obligatoires** :
@@ -614,6 +695,8 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 - Blocage de suppression si section contient du contenu
 - Blocage des réponses sur topics verrouillés
 - Validation des données (champs requis, longueurs max)
+- Système de permissions vérifié à chaque requête
+- Vérification d'acceptation des CGU avant toute action
 
 **Interface utilisateur** :
 - Messages d'erreur clairs et contextuels
@@ -629,7 +712,8 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
   - **TermsAcceptanceBox** : Boîte avec checkbox pour valider
   - **TermsGuard** : HOC pour protéger les routes nécessitant acceptation
   - **TermsModal** : Modal d'affichage des CGU complètes
-- Les sections peuvent exiger l'acceptation (`requires_terms`)
+- Vérification backend : Tous les utilisateurs non-ADMIN sont en lecture seule sans acceptation
+- Impact : Blocage de toutes actions de création/modification/suppression sur le forum
 
 ### Composants UI forum
 - **Breadcrumb** : Fil d'Ariane avec séparateurs "/"
@@ -652,10 +736,13 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 
 ### Backend
 ```bash
-npm start         # Démarrer en production
-npm run dev       # Démarrer en développement (nodemon)
-npm run seed      # Réinitialiser et remplir la BDD (production - données minimales)
-npm run seed:dev  # Réinitialiser et remplir la BDD (dev - avec données forum de test)
+npm start                      # Démarrer en production
+npm run dev                    # Démarrer en développement (nodemon)
+npm run seed                   # Réinitialiser et remplir la BDD (factions, clans, forum)
+npm run permissions:admin      # Configurer les permissions ADMIN
+npm run permissions:moderator  # Configurer les permissions MODERATOR
+npm run permissions:gamemaster # Configurer les permissions GAME_MASTER
+npm run permissions:player     # Configurer les permissions PLAYER
 ```
 
 ### Frontend

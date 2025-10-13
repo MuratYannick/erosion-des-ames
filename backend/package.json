@@ -8,7 +8,10 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node utils/seed.js",
-    "seed:dev": "node utils/seedDev.js"
+    "seed:dev": "node utils/seedDev.js",
+    "permissions:moderator": "node utils/setupModeratorPermissions.js",
+    "permissions:gamemaster": "node utils/setupGameMasterPermissions.js",
+    "permissions:player": "node utils/setupPlayerPermissions.js"
   },
   "keywords": [
     "api",

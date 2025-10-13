@@ -13,6 +13,10 @@ import Category from "./forum/Category.js";
 import Section from "./forum/Section.js";
 import Topic from "./forum/Topic.js";
 import Post from "./forum/Post.js";
+import Permission from "./forum/Permission.js";
+import RolePermission from "./forum/RolePermission.js";
+import SectionPermission from "./forum/SectionPermission.js";
+import TopicPermission from "./forum/TopicPermission.js";
 
 // ═══════════════════════════════════════════════════════════
 // RELATIONS ENTRE LES MODÈLES
@@ -154,11 +158,105 @@ Post.belongsTo(Character, {
   as: "authorCharacter",
 });
 
+// ──────────────────────────────────────────────────────────
+// RELATIONS PERMISSIONS
+// ──────────────────────────────────────────────────────────
+
+// Permission ↔ RolePermission (1:N)
+Permission.hasMany(RolePermission, {
+  foreignKey: "permission_id",
+  as: "rolePermissions",
+  onDelete: "CASCADE",
+});
+RolePermission.belongsTo(Permission, {
+  foreignKey: "permission_id",
+  as: "permission",
+});
+
+// Section ↔ SectionPermission (1:N)
+Section.hasMany(SectionPermission, {
+  foreignKey: "section_id",
+  as: "sectionPermissions",
+  onDelete: "CASCADE",
+});
+SectionPermission.belongsTo(Section, {
+  foreignKey: "section_id",
+  as: "section",
+});
+
+// Permission ↔ SectionPermission (1:N)
+Permission.hasMany(SectionPermission, {
+  foreignKey: "permission_id",
+  as: "sectionPermissions",
+  onDelete: "CASCADE",
+});
+SectionPermission.belongsTo(Permission, {
+  foreignKey: "permission_id",
+  as: "permission",
+});
+
+// User ↔ SectionPermission (1:N)
+User.hasMany(SectionPermission, {
+  foreignKey: "user_id",
+  as: "sectionPermissions",
+  onDelete: "CASCADE",
+});
+SectionPermission.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user",
+});
+
+// Topic ↔ TopicPermission (1:N)
+Topic.hasMany(TopicPermission, {
+  foreignKey: "topic_id",
+  as: "topicPermissions",
+  onDelete: "CASCADE",
+});
+TopicPermission.belongsTo(Topic, {
+  foreignKey: "topic_id",
+  as: "topic",
+});
+
+// Permission ↔ TopicPermission (1:N)
+Permission.hasMany(TopicPermission, {
+  foreignKey: "permission_id",
+  as: "topicPermissions",
+  onDelete: "CASCADE",
+});
+TopicPermission.belongsTo(Permission, {
+  foreignKey: "permission_id",
+  as: "permission",
+});
+
+// User ↔ TopicPermission (1:N)
+User.hasMany(TopicPermission, {
+  foreignKey: "user_id",
+  as: "topicPermissions",
+  onDelete: "CASCADE",
+});
+TopicPermission.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user",
+});
+
 // ═══════════════════════════════════════════════════════════
 // EXPORT DES MODÈLES
 // ═══════════════════════════════════════════════════════════
 
-export { User, Faction, Character, Clan, Category, Section, Topic, Post };
+export {
+  User,
+  Faction,
+  Character,
+  Clan,
+  Category,
+  Section,
+  Topic,
+  Post,
+  Permission,
+  RolePermission,
+  SectionPermission,
+  TopicPermission,
+};
 
 export default {
   User,
@@ -169,4 +267,8 @@ export default {
   Section,
   Topic,
   Post,
+  Permission,
+  RolePermission,
+  SectionPermission,
+  TopicPermission,
 };

@@ -50,6 +50,29 @@ const Section = sequelize.define(
       },
       onDelete: "CASCADE",
     },
+    clan_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "clans",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+    },
+    faction_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "factions",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+    },
+    is_public: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 1,
+    },
   },
   {
     tableName: "sections",

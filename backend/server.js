@@ -11,6 +11,7 @@ import clanRoutes from "./routes/clanRoutes.js";
 import characterRoutes from "./routes/characterRoutes.js";
 import portalRoutes from "./routes/portalRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
+import permissionRoutes from "./routes/permissionRoutes.js";
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -60,6 +61,7 @@ app.use("/api/clans", clanRoutes);
 app.use("/api/characters", characterRoutes);
 app.use("/api/portal", portalRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/api/permissions", permissionRoutes);
 
 // Gestion des erreurs 404
 app.use((req, res) => {

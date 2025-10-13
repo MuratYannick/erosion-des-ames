@@ -1,5 +1,14 @@
 import sequelize from "../config/database.js";
-import { Faction, Clan, Category, Section, Topic, Post } from "../models/index.js";
+import {
+  Faction,
+  Clan,
+  Category,
+  Section,
+  Topic,
+  Post,
+  Permission,
+  RolePermission,
+} from "../models/index.js";
 
 // Import des données de seed modulaires
 import { factionsData } from "./seedData/factions.js";
@@ -130,6 +139,9 @@ async function seedDatabase() {
         is_active: s.is_active,
         category_id: forumRP.id,
         parent_section_id: sectionHistoiresFactions.id,
+        clan_id: s.clan_id,
+        faction_id: s.faction_id,
+        is_public: s.is_public,
       })),
       { ignoreDuplicates: true }
     );
@@ -141,16 +153,37 @@ async function seedDatabase() {
       where: { slug: "eclaireurs-aube-nouvelle" },
     });
 
+    // Récupérer les clans pour les sous-sections privées
+    const allClans = await Clan.findAll();
+
     const createdSubsectionsEclaireurs = await Section.bulkCreate(
-      subsectionsEclaireurs.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionEclaireurs.id,
-      })),
+      subsectionsEclaireurs.map((s) => {
+        let sectionData = {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionEclaireurs.id,
+          is_public: s.is_public,
+        };
+
+        // Si c'est une section de faction
+        if (s.factionName) {
+          sectionData.faction_id = factionEclaireurs.id;
+          sectionData.clan_id = null;
+        }
+
+        // Si c'est une section de clan
+        if (s.clanName) {
+          const clan = allClans.find(c => c.name === s.clanName);
+          sectionData.clan_id = clan ? clan.id : null;
+          sectionData.faction_id = null;
+        }
+
+        return sectionData;
+      }),
       { ignoreDuplicates: true }
     );
     console.log(`✅ ${createdSubsectionsEclaireurs.length} sous-sections pour Les Éclaireurs créées\n`);
@@ -162,15 +195,33 @@ async function seedDatabase() {
     });
 
     const createdSubsectionsVeilleurs = await Section.bulkCreate(
-      subsectionsVeilleurs.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionVeilleurs.id,
-      })),
+      subsectionsVeilleurs.map((s) => {
+        let sectionData = {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionVeilleurs.id,
+          is_public: s.is_public,
+        };
+
+        // Si c'est une section de faction
+        if (s.factionName) {
+          sectionData.faction_id = factionVeilleurs.id;
+          sectionData.clan_id = null;
+        }
+
+        // Si c'est une section de clan
+        if (s.clanName) {
+          const clan = allClans.find(c => c.name === s.clanName);
+          sectionData.clan_id = clan ? clan.id : null;
+          sectionData.faction_id = null;
+        }
+
+        return sectionData;
+      }),
       { ignoreDuplicates: true }
     );
     console.log(`✅ ${createdSubsectionsVeilleurs.length} sous-sections pour Les Veilleurs créées\n`);
@@ -182,15 +233,29 @@ async function seedDatabase() {
     });
 
     const createdSubsectionsClansNeutres = await Section.bulkCreate(
-      subsectionsClansNeutres.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionClansNeutres.id,
-      })),
+      subsectionsClansNeutres.map((s) => {
+        let sectionData = {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionClansNeutres.id,
+          is_public: s.is_public,
+          faction_id: null,
+        };
+
+        // Si c'est une section de clan
+        if (s.clanName) {
+          const clan = allClans.find(c => c.name === s.clanName);
+          sectionData.clan_id = clan ? clan.id : null;
+        } else {
+          sectionData.clan_id = null;
+        }
+
+        return sectionData;
+      }),
       { ignoreDuplicates: true }
     );
     console.log(`✅ ${createdSubsectionsClansNeutres.length} sous-sections pour Histoires des clans neutres créées\n`);
@@ -210,6 +275,9 @@ async function seedDatabase() {
         is_active: s.is_active,
         category_id: forumHRP.id,
         parent_section_id: sectionAutourDuJeu.id,
+        clan_id: s.clan_id,
+        faction_id: s.faction_id,
+        is_public: s.is_public,
       })),
       { ignoreDuplicates: true }
     );
@@ -238,6 +306,224 @@ async function seedDatabase() {
       });
     }
     console.log(`✅ ${topicsAndPosts.length} topics et posts créés\n`);
+
+    // ============================
+    // PERMISSIONS
+    // ============================
+
+    console.log("📊 Création des permissions...");
+
+    // Définir toutes les permissions du système
+    const permissionsData = [
+      // SECTION permissions
+      {
+        name: "section.view",
+        resource_type: "SECTION",
+        action: "VIEW",
+        description: "Voir une section",
+        is_system: true,
+      },
+      {
+        name: "section.create",
+        resource_type: "SECTION",
+        action: "CREATE",
+        description: "Créer une section ou sous-section",
+        is_system: true,
+      },
+      {
+        name: "section.edit",
+        resource_type: "SECTION",
+        action: "EDIT",
+        description: "Éditer une section",
+        is_system: true,
+      },
+      {
+        name: "section.delete",
+        resource_type: "SECTION",
+        action: "DELETE",
+        description: "Supprimer une section",
+        is_system: true,
+      },
+      {
+        name: "section.lock",
+        resource_type: "SECTION",
+        action: "LOCK",
+        description: "Verrouiller une section",
+        is_system: true,
+      },
+      {
+        name: "section.unlock",
+        resource_type: "SECTION",
+        action: "UNLOCK",
+        description: "Déverrouiller une section",
+        is_system: true,
+      },
+      {
+        name: "section.move",
+        resource_type: "SECTION",
+        action: "MOVE",
+        description: "Déplacer une section",
+        is_system: true,
+      },
+      {
+        name: "section.pin",
+        resource_type: "SECTION",
+        action: "PIN",
+        description: "Épingler une section",
+        is_system: true,
+      },
+
+      // TOPIC permissions
+      {
+        name: "topic.view",
+        resource_type: "TOPIC",
+        action: "VIEW",
+        description: "Voir un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.create",
+        resource_type: "TOPIC",
+        action: "CREATE",
+        description: "Créer un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.edit",
+        resource_type: "TOPIC",
+        action: "EDIT",
+        description: "Éditer un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.delete",
+        resource_type: "TOPIC",
+        action: "DELETE",
+        description: "Supprimer un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.lock",
+        resource_type: "TOPIC",
+        action: "LOCK",
+        description: "Verrouiller un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.unlock",
+        resource_type: "TOPIC",
+        action: "UNLOCK",
+        description: "Déverrouiller un topic",
+        is_system: true,
+      },
+      {
+        name: "topic.move",
+        resource_type: "TOPIC",
+        action: "MOVE",
+        description: "Déplacer un topic vers une autre section",
+        is_system: true,
+      },
+      {
+        name: "topic.pin",
+        resource_type: "TOPIC",
+        action: "PIN",
+        description: "Épingler un topic",
+        is_system: true,
+      },
+
+      // POST permissions
+      {
+        name: "post.view",
+        resource_type: "POST",
+        action: "VIEW",
+        description: "Voir un post",
+        is_system: true,
+      },
+      {
+        name: "post.create",
+        resource_type: "POST",
+        action: "CREATE",
+        description: "Créer un post",
+        is_system: true,
+      },
+      {
+        name: "post.edit",
+        resource_type: "POST",
+        action: "EDIT",
+        description: "Éditer un post",
+        is_system: true,
+      },
+      {
+        name: "post.delete",
+        resource_type: "POST",
+        action: "DELETE",
+        description: "Supprimer un post",
+        is_system: true,
+      },
+      {
+        name: "post.move",
+        resource_type: "POST",
+        action: "MOVE",
+        description: "Déplacer un post vers un autre topic",
+        is_system: true,
+      },
+
+      // CATEGORY permissions
+      {
+        name: "category.view",
+        resource_type: "CATEGORY",
+        action: "VIEW",
+        description: "Voir une catégorie",
+        is_system: true,
+      },
+      {
+        name: "category.create",
+        resource_type: "CATEGORY",
+        action: "CREATE",
+        description: "Créer une catégorie",
+        is_system: true,
+      },
+      {
+        name: "category.edit",
+        resource_type: "CATEGORY",
+        action: "EDIT",
+        description: "Éditer une catégorie",
+        is_system: true,
+      },
+      {
+        name: "category.delete",
+        resource_type: "CATEGORY",
+        action: "DELETE",
+        description: "Supprimer une catégorie",
+        is_system: true,
+      },
+    ];
+
+    const permissions = await Permission.bulkCreate(permissionsData, {
+      ignoreDuplicates: true,
+    });
+    console.log(`✅ ${permissions.length} permissions créées\n`);
+
+    // ============================
+    // PERMISSIONS POUR LE RÔLE ADMIN
+    // ============================
+
+    console.log("📊 Attribution de toutes les permissions au rôle ADMIN...");
+
+    // Récupérer toutes les permissions créées
+    const allPermissions = await Permission.findAll();
+
+    // Créer les relations RolePermission pour ADMIN
+    const adminRolePermissions = allPermissions.map((permission) => ({
+      role: "ADMIN",
+      permission_id: permission.id,
+      granted: true,
+    }));
+
+    await RolePermission.bulkCreate(adminRolePermissions, {
+      ignoreDuplicates: true,
+    });
+    console.log(`✅ ${adminRolePermissions.length} permissions attribuées au rôle ADMIN\n`);
 
     console.log("🎉 Seeding terminé avec succès !\n");
 
