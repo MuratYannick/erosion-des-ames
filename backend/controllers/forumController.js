@@ -584,6 +584,121 @@ export const createPost = async (req, res) => {
   }
 };
 
+// Mettre à jour un post
+export const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = req.user.id;
+
+    // Validation
+    if (!content || content.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Le contenu du message est requis",
+      });
+    }
+
+    // Récupérer le post
+    const post = await Post.findByPk(id);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post non trouvé",
+      });
+    }
+
+    // Vérifier que l'utilisateur est l'auteur du post
+    if (post.author_user_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Vous n'êtes pas autorisé à modifier ce post",
+      });
+    }
+
+    // Mettre à jour le post
+    await post.update({
+      content: content.trim(),
+      is_edited: true,
+    });
+
+    res.json({
+      success: true,
+      message: "Post mis à jour avec succès",
+      data: post,
+    });
+  } catch (error) {
+    console.error("Erreur updatePost:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la mise à jour du post",
+      error: error.message,
+    });
+  }
+};
+
+// Supprimer un post
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Récupérer le post
+    const post = await Post.findByPk(id, {
+      include: [
+        {
+          model: Topic,
+          as: "topic",
+        },
+      ],
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post non trouvé",
+      });
+    }
+
+    // Vérifier que l'utilisateur est l'auteur du post
+    if (post.author_user_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Vous n'êtes pas autorisé à supprimer ce post",
+      });
+    }
+
+    // Récupérer tous les posts du topic pour vérifier si c'est le premier
+    const allPosts = await Post.findAll({
+      where: { topic_id: post.topic_id, is_active: true },
+      order: [["created_at", "ASC"]],
+    });
+
+    // Empêcher la suppression du premier post
+    if (allPosts.length > 0 && allPosts[0].id === post.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Le premier post d'un topic ne peut pas être supprimé. Supprimez le topic entier.",
+      });
+    }
+
+    // Supprimer le post (soft delete via is_active)
+    await post.update({ is_active: false });
+
+    res.json({
+      success: true,
+      message: "Post supprimé avec succès",
+    });
+  } catch (error) {
+    console.error("Erreur deletePost:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la suppression du post",
+      error: error.message,
+    });
+  }
+};
+
 // Créer un nouveau topic
 export const createTopic = async (req, res) => {
   try {

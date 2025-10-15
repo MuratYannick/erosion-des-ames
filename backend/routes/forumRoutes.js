@@ -12,6 +12,8 @@ import {
   updateTopic,
   deleteTopic,
   createPost,
+  updatePost,
+  deletePost,
   moveSection,
   moveTopic,
 } from "../controllers/forumController.js";
@@ -110,6 +112,22 @@ router.post(
   protect,
   requirePermission("post.create", { topicIdParam: "topic_id" }),
   createPost
+);
+
+// Modifier un post
+router.put(
+  "/posts/:id",
+  protect,
+  requirePermission("post.edit", { postIdParam: "id" }),
+  updatePost
+);
+
+// Supprimer un post
+router.delete(
+  "/posts/:id",
+  protect,
+  requirePermission("post.delete", { postIdParam: "id" }),
+  deletePost
 );
 
 export default router;

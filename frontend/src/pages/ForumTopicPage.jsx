@@ -7,6 +7,7 @@ import Modal from "../components/ui/Modal";
 import EditTopicForm from "../components/forum/EditTopicForm";
 import CreatePostForm from "../components/forum/CreatePostForm";
 import MoveTopicForm from "../components/forum/MoveTopicForm";
+import EditPostForm from "../components/forum/EditPostForm";
 
 function ForumTopicPage() {
   const styles = ForumBody.styles;
@@ -18,6 +19,8 @@ function ForumTopicPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isEditPostModalOpen, setIsEditPostModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -68,6 +71,22 @@ function ForumTopicPage() {
     fetchTopic();
   }, [id]);
 
+  // Fonction pour recharger le topic sans reload complet de la page
+  const refreshTopic = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/forum/topics/${id}`
+      );
+      const result = await response.json();
+
+      if (response.ok) {
+        setTopic(result.data);
+      }
+    } catch (err) {
+      console.error("Erreur lors du rechargement du topic:", err);
+    }
+  };
+
   const handleTopicUpdated = (updatedTopic) => {
     // Si updatedTopic est null, c'est une suppression
     if (!updatedTopic) {
@@ -85,8 +104,8 @@ function ForumTopicPage() {
     // Sinon, c'est une mise à jour
     setIsEditModalOpen(false);
 
-    // Recharger le topic pour avoir les données à jour
-    window.location.reload();
+    // Recharger le topic sans reload complet
+    refreshTopic();
   };
 
   const handlePostCreated = (newPost) => {
@@ -94,7 +113,7 @@ function ForumTopicPage() {
     setIsReplyModalOpen(false);
 
     // Recharger le topic pour afficher la nouvelle réponse
-    window.location.reload();
+    refreshTopic();
   };
 
   const handleTopicMoved = (movedTopic) => {
@@ -102,7 +121,50 @@ function ForumTopicPage() {
     setIsMoveModalOpen(false);
 
     // Recharger le topic pour voir les nouvelles données
-    window.location.reload();
+    refreshTopic();
+  };
+
+  const handleEditPost = (post) => {
+    setSelectedPost(post);
+    setIsEditPostModalOpen(true);
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    setIsEditPostModalOpen(false);
+    setSelectedPost(null);
+
+    // Recharger le topic pour afficher le post mis à jour
+    refreshTopic();
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce post ?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:3000/api/forum/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Recharger le topic
+        refreshTopic();
+      } else {
+        const result = await response.json();
+        alert(result.message || "Erreur lors de la suppression du post");
+      }
+    } catch (err) {
+      console.error("Erreur lors de la suppression du post:", err);
+      alert("Erreur lors de la suppression du post");
+    }
   };
 
   // Vérifier si l'utilisateur est l'auteur du topic
@@ -223,6 +285,30 @@ function ForumTopicPage() {
                             <span className="ml-2 text-ochre-400">(Premier post)</span>
                           )}
                         </p>
+                        {/* Boutons d'édition/suppression pour l'auteur */}
+                        {isAuthenticated && currentUserId === post.author_user_id && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditPost(post)}
+                              className="px-3 py-1 bg-city-800 text-city-300 rounded text-sm font-texte-corps hover:bg-city-700 transition-colors flex items-center gap-1 border border-city-600"
+                              title="Éditer ce post"
+                            >
+                              <span>✏️</span>
+                              <span>Éditer</span>
+                            </button>
+                            {/* Ne pas permettre la suppression du premier post */}
+                            {index !== 0 && (
+                              <button
+                                onClick={() => handleDeletePost(post.id)}
+                                className="px-3 py-1 bg-blood-900 text-blood-300 rounded text-sm font-texte-corps hover:bg-blood-800 transition-colors flex items-center gap-1 border border-blood-700"
+                                title="Supprimer ce post"
+                              >
+                                <span>🗑️</span>
+                                <span>Supprimer</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div
                         className={`${styles.text} prose prose-invert max-w-none whitespace-pre-wrap`}
@@ -310,6 +396,27 @@ function ForumTopicPage() {
             topic={topic}
             onSuccess={handleTopicMoved}
             onCancel={() => setIsMoveModalOpen(false)}
+          />
+        )}
+      </Modal>
+
+      {/* Modal d'édition de post */}
+      <Modal
+        isOpen={isEditPostModalOpen}
+        onClose={() => {
+          setIsEditPostModalOpen(false);
+          setSelectedPost(null);
+        }}
+        title="Éditer le message"
+      >
+        {selectedPost && (
+          <EditPostForm
+            post={selectedPost}
+            onSuccess={handlePostUpdated}
+            onCancel={() => {
+              setIsEditPostModalOpen(false);
+              setSelectedPost(null);
+            }}
           />
         )}
       </Modal>

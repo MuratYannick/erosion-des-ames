@@ -27,6 +27,22 @@ function ForumSectionPage() {
     setIsAuthenticated(!!token);
   }, []);
 
+  // Fonction pour recharger la section sans reload complet
+  const refreshSection = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/forum/sections/${slug}`
+      );
+      const result = await response.json();
+
+      if (response.ok) {
+        setSection(result.data);
+      }
+    } catch (err) {
+      console.error("Erreur lors du rechargement de la section:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchSection = async () => {
       try {
@@ -55,23 +71,19 @@ function ForumSectionPage() {
   }, [slug]);
 
   const handleSubsectionCreated = (newSubsection) => {
-    // Ajouter la nouvelle sous-section à la liste
-    setSection((prev) => ({
-      ...prev,
-      subsections: [...(prev.subsections || []), newSubsection],
-    }));
+    // Fermer le modal
     setIsSectionModalOpen(false);
 
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section sans reload complet
+    refreshSection();
   };
 
   const handleTopicCreated = (newTopic) => {
     // Fermer le modal
     setIsTopicModalOpen(false);
 
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section sans reload complet
+    refreshSection();
   };
 
   const handleSectionUpdated = (updatedSection) => {
@@ -93,22 +105,16 @@ function ForumSectionPage() {
     // Sinon, c'est une mise à jour
     setIsEditModalOpen(false);
 
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section sans reload complet
+    refreshSection();
   };
 
   const handleSectionMoved = (movedSection) => {
     // Fermer le modal
     setIsMoveModalOpen(false);
 
-    // Rediriger vers la nouvelle destination
-    if (movedSection.category_id) {
-      // Déplacée vers une catégorie, recharger pour voir la section dans la nouvelle catégorie
-      window.location.reload();
-    } else if (movedSection.parent_section_id) {
-      // Déplacée comme sous-section, recharger
-      window.location.reload();
-    }
+    // Recharger la section sans reload complet
+    refreshSection();
   };
 
   // Construire le fil d'Ariane en remontant la hiérarchie

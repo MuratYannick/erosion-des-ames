@@ -17,7 +17,8 @@
       "Bash(node:*)",
       "Bash(npm run permissions:moderator:*)",
       "Bash(npm run permissions:gamemaster:*)",
-      "Bash(npm run permissions:player:*)"
+      "Bash(npm run permissions:player:*)",
+      "Bash(npm run seed:dev:*)"
     ],
     "deny": [],
     "ask": []

@@ -25,6 +25,22 @@ function ForumCategoryPage() {
     setIsAuthenticated(!!token);
   }, []);
 
+  // Fonction pour recharger la catégorie sans reload complet
+  const refreshCategory = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/forum/categories/${categorySlug}`
+      );
+      const result = await response.json();
+
+      if (response.ok) {
+        setCategory(result.data);
+      }
+    } catch (err) {
+      console.error("Erreur lors du rechargement de la catégorie:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -53,15 +69,11 @@ function ForumCategoryPage() {
   }, [categorySlug]);
 
   const handleSectionCreated = (newSection) => {
-    // Ajouter la nouvelle section à la liste
-    setCategory((prev) => ({
-      ...prev,
-      sections: [...(prev.sections || []), newSection],
-    }));
+    // Fermer le modal
     setIsModalOpen(false);
 
-    // Recharger la catégorie pour avoir les données à jour
-    window.location.reload();
+    // Recharger la catégorie sans reload complet
+    refreshCategory();
   };
 
   const breadcrumbItems = category
