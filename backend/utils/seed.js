@@ -24,21 +24,32 @@ async function seedDatabase() {
   try {
     console.log("🚀 Script de seed lancé...\n");
 
-    // 1. Synchronisation de la base de données (supprime et recrée les tables)
-    console.log("🔄 Synchronisation de la base de données...");
-    await sequelize.sync({ force: true });
-    console.log("✅ Base de données synchronisée\n");
+    // 1. Test de connexion à la base de données
+    console.log("🔌 Test de connexion à la base de données...");
+    await sequelize.authenticate();
+    console.log("✅ Connexion établie\n");
+
+    // 2. Désactiver les contraintes de clés étrangères
+    console.log("🔓 Désactivation des contraintes de clés étrangères...");
+    await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+    console.log("✅ Contraintes désactivées\n");
+
+    try {
+      // 3. Suppression et recréation de TOUTES les tables
+      console.log("⚠️  SUPPRESSION ET RECRÉATION DE TOUTES LES TABLES...");
+      await sequelize.sync({ force: true });
+      console.log("✅ Toutes les tables ont été supprimées et recréées\n");
 
     // ============================
     // FACTIONS ET CLANS
     // ============================
 
-    // 2. Créer les factions
+    // 3. Créer les factions
     console.log("📊 Création des factions...");
-    const factions = await Faction.bulkCreate(factionsData, { ignoreDuplicates: true });
+    const factions = await Faction.bulkCreate(factionsData);
     console.log(`✅ ${factions.length} factions créées\n`);
 
-    // 3. Récupérer les factions pour les relations
+    // 4. Récupérer les factions pour les relations
     const factionEclaireurs = await Faction.findOne({
       where: { name: "Les Éclaireurs de l'Aube Nouvelle" },
     });
@@ -46,68 +57,63 @@ async function seedDatabase() {
       where: { name: "Les Veilleurs de l'Ancien Monde" },
     });
 
-    // 4. Créer les clans mutants
+    // 5. Créer les clans mutants
     console.log("📊 Création des clans mutants...");
     const mutantClans = await Clan.bulkCreate(
       mutantClansData.map((clan) => ({
         ...clan,
         faction_id: factionEclaireurs.id,
-      })),
-      { ignoreDuplicates: true }
+      }))
     );
     console.log(`✅ ${mutantClans.length} clans mutants créés\n`);
 
-    // 5. Créer les clans non-mutants
+    // 6. Créer les clans non-mutants
     console.log("📊 Création des clans non-mutants...");
     const nonMutantClans = await Clan.bulkCreate(
       nonMutantClansData.map((clan) => ({
         ...clan,
         faction_id: factionVeilleurs.id,
-      })),
-      { ignoreDuplicates: true }
+      }))
     );
     console.log(`✅ ${nonMutantClans.length} clans non-mutants créés\n`);
 
-    // 6. Créer les clans neutres
+    // 7. Créer les clans neutres
     console.log("📊 Création des clans neutres...");
-    const neutralClans = await Clan.bulkCreate(neutralClansData, { ignoreDuplicates: true });
+    const neutralClans = await Clan.bulkCreate(neutralClansData);
     console.log(`✅ ${neutralClans.length} clans neutres créés\n`);
 
     // ============================
     // STRUCTURE DU FORUM
     // ============================
 
-    // 7. Créer les catégories
+    // 8. Créer les catégories
     console.log("📊 Création des catégories...");
-    const categories = await Category.bulkCreate(categoriesData, { ignoreDuplicates: true });
+    const categories = await Category.bulkCreate(categoriesData);
     console.log(`✅ ${categories.length} catégories créées\n`);
 
-    // 8. Récupérer les catégories
+    // 9. Récupérer les catégories
     const forumGeneral = await Category.findOne({ where: { slug: "general" } });
     const forumHRP = await Category.findOne({ where: { slug: "hrp" } });
     const forumRP = await Category.findOne({ where: { slug: "rp" } });
 
-    // 9. Créer les sections du Forum Général
+    // 10. Créer les sections du Forum Général
     console.log("📊 Création des sections du Forum Général...");
     const sectionsGeneral = await Section.bulkCreate(
-      sectionsGeneralData.map((s) => ({ ...s, category_id: forumGeneral.id })),
-      { ignoreDuplicates: true }
+      sectionsGeneralData.map((s) => ({ ...s, category_id: forumGeneral.id }))
     );
     console.log(`✅ ${sectionsGeneral.length} sections du Forum Général créées\n`);
 
-    // 10. Créer les sections du Forum HRP
+    // 11. Créer les sections du Forum HRP
     console.log("📊 Création des sections HRP...");
     const sectionsHRP = await Section.bulkCreate(
-      sectionsHRPData.map((s) => ({ ...s, category_id: forumHRP.id })),
-      { ignoreDuplicates: true }
+      sectionsHRPData.map((s) => ({ ...s, category_id: forumHRP.id }))
     );
     console.log(`✅ ${sectionsHRP.length} sections HRP créées\n`);
 
-    // 11. Créer les sections RP
+    // 12. Créer les sections RP
     console.log("📊 Création des sections RP...");
     const sectionsRP = await Section.bulkCreate(
-      sectionsRPData.map((s) => ({ ...s, category_id: forumRP.id })),
-      { ignoreDuplicates: true }
+      sectionsRPData.map((s) => ({ ...s, category_id: forumRP.id }))
     );
     console.log(`✅ ${sectionsRP.length} sections RP créées\n`);
 
@@ -115,7 +121,7 @@ async function seedDatabase() {
     // SOUS-SECTIONS DU FORUM
     // ============================
 
-    // 12. Créer les sous-sections pour "Histoires des factions"
+    // 13. Créer les sous-sections pour "Histoires des factions"
     console.log("📊 Création des sous-sections des factions...");
     const sectionHistoiresFactions = await Section.findOne({
       where: { slug: "histoires-factions" },
@@ -130,72 +136,138 @@ async function seedDatabase() {
         is_active: s.is_active,
         category_id: forumRP.id,
         parent_section_id: sectionHistoiresFactions.id,
-      })),
-      { ignoreDuplicates: true }
+      }))
     );
     console.log(`✅ ${createdSubsectionsFactions.length} sous-sections des factions créées\n`);
 
-    // 13. Créer les sous-sections pour "Les Éclaireurs de l'Aube Nouvelle"
-    console.log("📊 Création des sous-sections pour Les Éclaireurs de l'Aube Nouvelle...");
+    // 14. Assigner la faction aux Éclaireurs et créer leurs sous-sections
+    console.log("📊 Assignation de la faction aux Éclaireurs...");
     const sectionEclaireurs = await Section.findOne({
       where: { slug: "eclaireurs-aube-nouvelle" },
     });
 
+    // Assigner la faction_id aux Éclaireurs
+    await sectionEclaireurs.update({
+      faction_id: factionEclaireurs.id,
+      is_public: true,
+    });
+
+    // Récupérer les clans des Éclaireurs pour les sections privées
+    const clanSymbiotes = await Clan.findOne({
+      where: { name: "La Caste des Symbiotes" },
+    });
+
+    console.log("📊 Création des sous-sections pour Les Éclaireurs de l'Aube Nouvelle...");
     const createdSubsectionsEclaireurs = await Section.bulkCreate(
-      subsectionsEclaireurs.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionEclaireurs.id,
-      })),
-      { ignoreDuplicates: true }
+      subsectionsEclaireurs.map((s) => {
+        const isPrivate = s.slug.includes('privees');
+        const isClanSection = s.slug.includes('caste-symbiotes');
+
+        return {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionEclaireurs.id,
+          faction_id: factionEclaireurs.id,
+          clan_id: isClanSection ? clanSymbiotes.id : null,
+          is_public: !isPrivate && !isClanSection,
+        };
+      })
     );
     console.log(`✅ ${createdSubsectionsEclaireurs.length} sous-sections pour Les Éclaireurs créées\n`);
 
-    // 14. Créer les sous-sections pour "Les Veilleurs de l'Ancien Monde"
-    console.log("📊 Création des sous-sections pour Les Veilleurs de l'Ancien Monde...");
+    // 15. Assigner la faction aux Veilleurs et créer leurs sous-sections
+    console.log("📊 Assignation de la faction aux Veilleurs...");
     const sectionVeilleurs = await Section.findOne({
       where: { slug: "veilleurs-ancien-monde" },
     });
 
+    // Assigner la faction_id aux Veilleurs
+    await sectionVeilleurs.update({
+      faction_id: factionVeilleurs.id,
+      is_public: true,
+    });
+
+    // Récupérer les clans des Veilleurs pour les sections privées
+    const clanSentinelles = await Clan.findOne({
+      where: { name: "Le Clan des Sentinelles" },
+    });
+
+    console.log("📊 Création des sous-sections pour Les Veilleurs de l'Ancien Monde...");
     const createdSubsectionsVeilleurs = await Section.bulkCreate(
-      subsectionsVeilleurs.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionVeilleurs.id,
-      })),
-      { ignoreDuplicates: true }
+      subsectionsVeilleurs.map((s) => {
+        const isPrivate = s.slug.includes('privees');
+        const isClanSection = s.slug.includes('clan-sentinelles');
+
+        return {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionVeilleurs.id,
+          faction_id: factionVeilleurs.id,
+          clan_id: isClanSection ? clanSentinelles.id : null,
+          is_public: !isPrivate && !isClanSection,
+        };
+      })
     );
     console.log(`✅ ${createdSubsectionsVeilleurs.length} sous-sections pour Les Veilleurs créées\n`);
 
-    // 15. Créer les sous-sections pour "Histoires des clans neutres"
+    // 16. Créer les sous-sections pour "Histoires des clans neutres"
     console.log("📊 Création des sous-sections pour Histoires des clans neutres...");
     const sectionClansNeutres = await Section.findOne({
       where: { slug: "histoires-clans-neutres" },
     });
 
+    // Récupérer les clans neutres pour les sections privées
+    const clanPeupleOmbres = await Clan.findOne({
+      where: { name: "Le Peuple des Ombres" },
+    });
+    const clanFreresTerre = await Clan.findOne({
+      where: { name: "Les Frères de la Terre Brûlée" },
+    });
+    const clanVagabonds = await Clan.findOne({
+      where: { name: "Les Vagabonds du Vent" },
+    });
+
     const createdSubsectionsClansNeutres = await Section.bulkCreate(
-      subsectionsClansNeutres.map((s) => ({
-        name: s.name,
-        slug: s.slug,
-        description: s.description,
-        order: s.order,
-        is_active: s.is_active,
-        category_id: forumRP.id,
-        parent_section_id: sectionClansNeutres.id,
-      })),
-      { ignoreDuplicates: true }
+      subsectionsClansNeutres.map((s) => {
+        let clanId = null;
+        let isPublic = true;
+
+        if (s.slug.includes('peuple-ombres')) {
+          clanId = clanPeupleOmbres.id;
+          isPublic = false;
+        } else if (s.slug.includes('freres-terre-brulee')) {
+          clanId = clanFreresTerre.id;
+          isPublic = false;
+        } else if (s.slug.includes('vagabonds-vent')) {
+          clanId = clanVagabonds.id;
+          isPublic = false;
+        }
+
+        return {
+          name: s.name,
+          slug: s.slug,
+          description: s.description,
+          order: s.order,
+          is_active: s.is_active,
+          category_id: forumRP.id,
+          parent_section_id: sectionClansNeutres.id,
+          faction_id: null,
+          clan_id: clanId,
+          is_public: isPublic,
+        };
+      })
     );
     console.log(`✅ ${createdSubsectionsClansNeutres.length} sous-sections pour Histoires des clans neutres créées\n`);
 
-    // 16. Créer les sous-sections de "Autour du Jeu"
+    // 17. Créer les sous-sections de "Autour du Jeu"
     console.log("📊 Création des sous-sections de 'Autour du Jeu'...");
     const sectionAutourDuJeu = await Section.findOne({
       where: { slug: "autour-du-jeu" },
@@ -210,8 +282,7 @@ async function seedDatabase() {
         is_active: s.is_active,
         category_id: forumHRP.id,
         parent_section_id: sectionAutourDuJeu.id,
-      })),
-      { ignoreDuplicates: true }
+      }))
     );
     console.log(`✅ ${createdSubsectionsAutourDuJeu.length} sous-sections de 'Autour du Jeu' créées\n`);
 
@@ -239,9 +310,15 @@ async function seedDatabase() {
     }
     console.log(`✅ ${topicsAndPosts.length} topics et posts créés\n`);
 
-    console.log("🎉 Seeding terminé avec succès !\n");
+      console.log("🎉 Seeding terminé avec succès !\n");
 
-    return true;
+      return true;
+    } finally {
+      // 4. Réactiver les contraintes de clés étrangères (même en cas d'erreur)
+      console.log("🔒 Réactivation des contraintes de clés étrangères...");
+      await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+      console.log("✅ Contraintes réactivées\n");
+    }
   } catch (error) {
     console.error("❌ Erreur lors du seeding :", error);
     throw error;

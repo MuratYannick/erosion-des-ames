@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
 import Modal from "../components/ui/Modal";
@@ -12,6 +13,7 @@ function ForumSectionPage() {
   const styles = ForumBody.styles;
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [section, setSection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,59 +21,45 @@ function ForumSectionPage() {
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Vérifier l'authentification
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []);
+  // Fonction pour recharger la section
+  const fetchSection = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/forum/sections/${slug}`
+      );
+      const result = await response.json();
 
-  useEffect(() => {
-    const fetchSection = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/api/forum/sections/${slug}`
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Erreur lors du chargement de la section"
         );
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result.message || "Erreur lors du chargement de la section"
-          );
-        }
-
-        setSection(result.data);
-      } catch (err) {
-        console.error("Erreur lors de la récupération de la section:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
       }
-    };
 
+      setSection(result.data);
+    } catch (err) {
+      console.error("Erreur lors de la récupération de la section:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchSection();
   }, [slug]);
 
   const handleSubsectionCreated = (newSubsection) => {
-    // Ajouter la nouvelle sous-section à la liste
-    setSection((prev) => ({
-      ...prev,
-      subsections: [...(prev.subsections || []), newSubsection],
-    }));
     setIsSectionModalOpen(false);
-
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section pour voir la nouvelle sous-section
+    fetchSection();
   };
 
   const handleTopicCreated = (newTopic) => {
-    // Fermer le modal
     setIsTopicModalOpen(false);
-
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section pour voir le nouveau topic
+    fetchSection();
   };
 
   const handleSectionUpdated = (updatedSection) => {
@@ -92,23 +80,14 @@ function ForumSectionPage() {
 
     // Sinon, c'est une mise à jour
     setIsEditModalOpen(false);
-
-    // Recharger la section pour avoir les données à jour
-    window.location.reload();
+    // Recharger la section pour voir les modifications
+    fetchSection();
   };
 
   const handleSectionMoved = (movedSection) => {
-    // Fermer le modal
     setIsMoveModalOpen(false);
-
-    // Rediriger vers la nouvelle destination
-    if (movedSection.category_id) {
-      // Déplacée vers une catégorie, recharger pour voir la section dans la nouvelle catégorie
-      window.location.reload();
-    } else if (movedSection.parent_section_id) {
-      // Déplacée comme sous-section, recharger
-      window.location.reload();
-    }
+    // Recharger la section pour voir les changements
+    fetchSection();
   };
 
   // Construire le fil d'Ariane en remontant la hiérarchie

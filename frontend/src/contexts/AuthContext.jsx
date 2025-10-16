@@ -29,13 +29,17 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         const result = await response.json();
         setUser(result.data);
-      } else {
-        // Token invalide, le supprimer
+      } else if (response.status === 401) {
+        // Token invalide ou expiré, le supprimer uniquement si erreur 401
+        console.log("Token invalide ou expiré, déconnexion");
         localStorage.removeItem("token");
+      } else {
+        // Autre erreur (500, 503, etc.) - ne pas déconnecter
+        console.error("Erreur serveur lors de la récupération du profil:", response.status);
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération du profil:", error);
-      localStorage.removeItem("token");
+      // Erreur réseau - ne pas déconnecter l'utilisateur
+      console.error("Erreur réseau lors de la récupération du profil:", error);
     } finally {
       setLoading(false);
     }
@@ -98,6 +102,33 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Fonction utilitaire pour faire des requêtes authentifiées
+  // qui gère automatiquement la déconnexion en cas d'erreur 401
+  const authenticatedFetch = async (url, options = {}) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Non authentifié");
+    }
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Si erreur 401, déconnecter l'utilisateur
+    if (response.status === 401) {
+      console.log("Token invalide ou expiré (401), déconnexion automatique");
+      localStorage.removeItem("token");
+      setUser(null);
+    }
+
+    return response;
+  };
+
   const acceptTerms = async () => {
     const token = localStorage.getItem("token");
     const response = await fetch("http://localhost:3000/api/auth/accept-terms", {
@@ -130,6 +161,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     acceptTerms,
+    authenticatedFetch,
     isAuthenticated: !!user,
   };
 

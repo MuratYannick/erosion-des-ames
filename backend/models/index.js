@@ -88,6 +88,28 @@ Section.belongsTo(Section, {
   as: "parentSection",
 });
 
+// Faction ↔ Section (1:N) - Sections réservées à une faction
+Faction.hasMany(Section, {
+  foreignKey: "faction_id",
+  as: "sections",
+  onDelete: "SET NULL",
+});
+Section.belongsTo(Faction, {
+  foreignKey: "faction_id",
+  as: "faction",
+});
+
+// Clan ↔ Section (1:N) - Sections réservées à un clan
+Clan.hasMany(Section, {
+  foreignKey: "clan_id",
+  as: "sections",
+  onDelete: "SET NULL",
+});
+Section.belongsTo(Clan, {
+  foreignKey: "clan_id",
+  as: "clan",
+});
+
 // Section ↔ Topic (1:N)
 Section.hasMany(Topic, {
   foreignKey: "section_id",

@@ -1,17 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "../../contexts/AuthContext";
 
 function CreateSectionForm({ categoryId, parentSectionId, onSuccess, onCancel }) {
+  const { authenticatedFetch } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     order: 0,
+    faction_id: "",
+    clan_id: "",
+    is_public: true,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [factions, setFactions] = useState([]);
+  const [clans, setClans] = useState([]);
+  const [allClans, setAllClans] = useState([]);
+
+  // Fetch factions and clans on component mount
+  useEffect(() => {
+    const fetchFactionsAndClans = async () => {
+      try {
+        const [factionsRes, clansRes] = await Promise.all([
+          fetch("http://localhost:3000/api/factions"),
+          fetch("http://localhost:3000/api/clans"),
+        ]);
+
+        if (factionsRes.ok) {
+          const factionsData = await factionsRes.json();
+          setFactions(factionsData.data || []);
+        }
+
+        if (clansRes.ok) {
+          const clansData = await clansRes.json();
+          setAllClans(clansData.data || []);
+          setClans(clansData.data || []);
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement des factions/clans:", err);
+      }
+    };
+
+    fetchFactionsAndClans();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+
+    // Handle checkbox
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+      return;
+    }
+
+    // Handle faction change - filter clans
+    if (name === "faction_id") {
+      const factionId = value ? parseInt(value, 10) : null;
+      if (factionId) {
+        const filteredClans = allClans.filter(
+          (clan) => clan.faction_id === factionId
+        );
+        setClans(filteredClans);
+      } else {
+        setClans(allClans);
+      }
+      // Reset clan_id when faction changes
+      setFormData((prev) => ({
+        ...prev,
+        faction_id: value,
+        clan_id: "",
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -24,15 +89,11 @@ function CreateSectionForm({ categoryId, parentSectionId, onSuccess, onCancel })
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Vous devez être connecté pour créer une section");
-      }
-
       const requestBody = {
         name: formData.name,
         description: formData.description,
         order: parseInt(formData.order, 10) || 0,
+        is_public: formData.is_public,
       };
 
       // Ajouter soit category_id soit parent_section_id
@@ -43,11 +104,18 @@ function CreateSectionForm({ categoryId, parentSectionId, onSuccess, onCancel })
         requestBody.parent_section_id = parentSectionId;
       }
 
-      const response = await fetch("http://localhost:3000/api/forum/sections", {
+      // Ajouter faction_id et clan_id si spécifiés
+      if (formData.faction_id) {
+        requestBody.faction_id = parseInt(formData.faction_id, 10);
+      }
+      if (formData.clan_id) {
+        requestBody.clan_id = parseInt(formData.clan_id, 10);
+      }
+
+      const response = await authenticatedFetch("http://localhost:3000/api/forum/sections", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
@@ -137,6 +205,93 @@ function CreateSectionForm({ categoryId, parentSectionId, onSuccess, onCancel })
         />
         <p className="text-xs text-city-500 mt-1 font-texte-corps">
           Plus le nombre est petit, plus la section apparaît en haut
+        </p>
+      </div>
+
+      {/* Contrôle d'accès */}
+      <div className="border-t border-ochre-800 pt-4 space-y-4">
+        <h3 className="text-ochre-400 font-texte-corps text-lg">
+          Contrôle d&apos;accès
+        </h3>
+
+        {/* Faction */}
+        <div>
+          <label
+            htmlFor="faction_id"
+            className="block text-ochre-500 font-texte-corps mb-2"
+          >
+            Faction propriétaire (optionnel)
+          </label>
+          <select
+            id="faction_id"
+            name="faction_id"
+            value={formData.faction_id}
+            onChange={handleChange}
+            className="w-full px-4 py-2 bg-city-900 border border-ochre-700 rounded text-city-200 font-texte-corps focus:outline-none focus:border-ochre-500 transition-colors"
+          >
+            <option value="">-- Aucune faction --</option>
+            {factions.map((faction) => (
+              <option key={faction.id} value={faction.id}>
+                {faction.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-city-500 mt-1 font-texte-corps">
+            Hérité de la section parent si non spécifié
+          </p>
+        </div>
+
+        {/* Clan */}
+        <div>
+          <label
+            htmlFor="clan_id"
+            className="block text-ochre-500 font-texte-corps mb-2"
+          >
+            Clan propriétaire (optionnel)
+          </label>
+          <select
+            id="clan_id"
+            name="clan_id"
+            value={formData.clan_id}
+            onChange={handleChange}
+            disabled={!formData.faction_id && clans.length === 0}
+            className="w-full px-4 py-2 bg-city-900 border border-ochre-700 rounded text-city-200 font-texte-corps focus:outline-none focus:border-ochre-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">-- Aucun clan --</option>
+            {clans.map((clan) => (
+              <option key={clan.id} value={clan.id}>
+                {clan.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-city-500 mt-1 font-texte-corps">
+            {formData.faction_id && clans.length === 0
+              ? "Aucun clan pour cette faction"
+              : "Hérité de la section parent si non spécifié"}
+          </p>
+        </div>
+
+        {/* Public/Privé */}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="is_public"
+            name="is_public"
+            checked={formData.is_public}
+            onChange={handleChange}
+            className="w-4 h-4 text-ochre-600 bg-city-900 border-ochre-700 rounded focus:ring-ochre-500 focus:ring-2"
+          />
+          <label
+            htmlFor="is_public"
+            className="ml-2 text-ochre-500 font-texte-corps"
+          >
+            Section publique
+          </label>
+        </div>
+        <p className="text-xs text-city-500 font-texte-corps">
+          {formData.is_public
+            ? "La section est visible par tous les utilisateurs"
+            : "La section est réservée aux membres de la faction/clan"}
         </p>
       </div>
 

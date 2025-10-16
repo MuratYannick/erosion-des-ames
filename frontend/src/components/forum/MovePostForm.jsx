@@ -4,15 +4,15 @@ import ConfirmDialog from "../ui/ConfirmDialog";
 import ForumTreeNavigator from "./ForumTreeNavigator";
 import { useAuth } from "../../contexts/AuthContext";
 
-function MoveTopicForm({ topic, onSuccess, onCancel }) {
+function MovePostForm({ post, currentTopicId, onSuccess, onCancel }) {
   const { authenticatedFetch } = useAuth();
-  const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleSectionSelect = (section) => {
-    setSelectedSection(section);
+  const handleTopicSelect = (topic) => {
+    setSelectedTopic(topic);
   };
 
   const handleMove = async () => {
@@ -20,19 +20,19 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
     setError(null);
 
     try {
-      if (!selectedSection) {
-        throw new Error("Veuillez sélectionner une section");
+      if (!selectedTopic) {
+        throw new Error("Veuillez sélectionner un topic");
       }
 
       const response = await authenticatedFetch(
-        `http://localhost:3000/api/forum/topics/${topic.id}/move`,
+        `http://localhost:3000/api/forum/posts/${post.id}/move`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            new_section_id: selectedSection.id,
+            new_topic_id: selectedTopic.id,
           }),
         }
       );
@@ -41,16 +41,16 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
 
       if (!response.ok) {
         throw new Error(
-          result.message || "Erreur lors du déplacement du topic"
+          result.message || "Erreur lors du déplacement du message"
         );
       }
 
-      // Succès - appeler le callback
+      // Succès - appeler le callback avec toutes les infos (y compris oldTopicDeleted)
       if (onSuccess) {
-        onSuccess(result.data);
+        onSuccess(result);
       }
     } catch (err) {
-      console.error("Erreur lors du déplacement du topic:", err);
+      console.error("Erreur lors du déplacement du message:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -69,26 +69,22 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
 
         <div className="bg-city-900 border border-ochre-700 rounded p-4">
           <p className="text-ochre-500 font-texte-corps mb-2">
-            Topic à déplacer :
+            Message à déplacer :
           </p>
-          <p className="text-city-200 font-texte-corps font-bold">
-            {topic.title}
+          <p className="text-city-200 font-texte-corps text-sm">
+            {post.content.substring(0, 100)}
+            {post.content.length > 100 ? "..." : ""}
           </p>
-          {topic.section && (
-            <p className="text-city-500 font-texte-corps text-sm mt-1">
-              Section actuelle : {topic.section.name}
-            </p>
-          )}
         </div>
 
-        {/* Section sélectionnée */}
-        {selectedSection && (
+        {/* Topic sélectionné */}
+        {selectedTopic && (
           <div className="bg-ochre-900 border border-ochre-600 rounded p-4">
             <p className="text-ochre-400 font-texte-corps text-sm mb-1">
-              Section de destination :
+              Topic de destination :
             </p>
             <p className="text-city-100 font-texte-corps font-bold">
-              {selectedSection.name}
+              {selectedTopic.title}
             </p>
           </div>
         )}
@@ -96,15 +92,15 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
         {/* Navigation arborescente */}
         <div>
           <label className="block text-ochre-500 font-texte-corps mb-2">
-            Sélectionner la section de destination *
+            Sélectionner le topic de destination *
           </label>
           <ForumTreeNavigator
-            mode="section"
-            currentItemId={topic.section_id}
-            onSelect={handleSectionSelect}
+            mode="topic"
+            currentItemId={currentTopicId}
+            onSelect={handleTopicSelect}
           />
           <p className="text-xs text-city-500 mt-2 font-texte-corps">
-            Naviguez dans l'arborescence pour sélectionner une section. La section actuelle et les sections verrouillées sont désactivées.
+            Naviguez dans l'arborescence pour sélectionner un topic. Le topic actuel et les topics verrouillés sont désactivés.
           </p>
         </div>
 
@@ -121,7 +117,7 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
           <button
             type="button"
             onClick={() => setShowConfirm(true)}
-            disabled={loading || !selectedSection}
+            disabled={loading || !selectedTopic}
             className="px-6 py-2 bg-ochre-600 text-city-950 rounded font-texte-corps hover:bg-ochre-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Déplacement..." : "Déplacer"}
@@ -135,7 +131,7 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
         onClose={() => setShowConfirm(false)}
         onConfirm={handleMove}
         title="Confirmer le déplacement"
-        message={`Êtes-vous sûr de vouloir déplacer "${topic.title}" vers "${selectedSection?.name || "cette section"}" ?`}
+        message={`Êtes-vous sûr de vouloir déplacer ce message vers le topic "${selectedTopic?.title || "ce topic"}" ?`}
         confirmText="Déplacer"
         type="warning"
       />
@@ -143,17 +139,14 @@ function MoveTopicForm({ topic, onSuccess, onCancel }) {
   );
 }
 
-MoveTopicForm.propTypes = {
-  topic: PropTypes.shape({
+MovePostForm.propTypes = {
+  post: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    section_id: PropTypes.number,
-    section: PropTypes.shape({
-      name: PropTypes.string,
-    }),
+    content: PropTypes.string.isRequired,
   }).isRequired,
+  currentTopicId: PropTypes.number.isRequired,
   onSuccess: PropTypes.func,
   onCancel: PropTypes.func.isRequired,
 };
 
-export default MoveTopicForm;
+export default MovePostForm;
