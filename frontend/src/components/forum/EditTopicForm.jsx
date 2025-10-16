@@ -1,8 +1,10 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import ConfirmDialog from "../ui/ConfirmDialog";
+import { useAuth } from "../../contexts/AuthContext";
 
 function EditTopicForm({ topic, onSuccess, onCancel }) {
+  const { authenticatedFetch } = useAuth();
   const [formData, setFormData] = useState({
     title: topic.title || "",
     is_locked: topic.is_locked || false,
@@ -25,18 +27,12 @@ function EditTopicForm({ topic, onSuccess, onCancel }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Vous devez être connecté pour modifier un topic");
-      }
-
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `http://localhost:3000/api/forum/topics/${topic.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             title: formData.title,
@@ -70,18 +66,10 @@ function EditTopicForm({ topic, onSuccess, onCancel }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Vous devez être connecté pour supprimer un topic");
-      }
-
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `http://localhost:3000/api/forum/topics/${topic.id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
 

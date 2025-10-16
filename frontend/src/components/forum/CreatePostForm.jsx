@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "../../contexts/AuthContext";
 
 function CreatePostForm({ topicId, onSuccess, onCancel }) {
+  const { authenticatedFetch } = useAuth();
   const [formData, setFormData] = useState({
     content: "",
     author_character_id: "",
@@ -14,14 +16,7 @@ function CreatePostForm({ topicId, onSuccess, onCancel }) {
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const response = await fetch("http://localhost:3000/api/characters", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await authenticatedFetch("http://localhost:3000/api/characters");
 
         if (response.ok) {
           const result = await response.json();
@@ -33,7 +28,7 @@ function CreatePostForm({ topicId, onSuccess, onCancel }) {
     };
 
     fetchCharacters();
-  }, []);
+  }, [authenticatedFetch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,11 +44,6 @@ function CreatePostForm({ topicId, onSuccess, onCancel }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Vous devez être connecté pour répondre");
-      }
-
       const requestBody = {
         content: formData.content,
         topic_id: topicId,
@@ -67,11 +57,10 @@ function CreatePostForm({ topicId, onSuccess, onCancel }) {
         );
       }
 
-      const response = await fetch("http://localhost:3000/api/forum/posts", {
+      const response = await authenticatedFetch("http://localhost:3000/api/forum/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });

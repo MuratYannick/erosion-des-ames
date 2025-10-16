@@ -2,7 +2,17 @@
 
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
-> **🆕 Dernières mises à jour** : Système de forum **complet et interactif** avec CRUD total (Create, Read, Update, Delete, Move) pour sections, topics et posts. Gestion complète : création de sections/sous-sections, création de topics avec premier post, réponses aux topics, édition/suppression avec confirmations, verrouillage de topics, déplacement de sections et topics dans l'architecture du forum. Interface utilisateur avec modals, formulaires, dialogues de confirmation et protections contre les boucles infinies.
+> **🆕 Dernières mises à jour** :
+> - **🔐 Correction authentification forum** : Refactorisation complète de la gestion des tokens JWT
+>   - Nouvelle fonction `authenticatedFetch` dans `AuthContext` pour centraliser toutes les requêtes authentifiées
+>   - Déconnexion automatique en cas de token invalide/expiré (erreur 401)
+>   - Mise à jour de tous les formulaires forum (7 composants) pour utiliser `authenticatedFetch`
+>   - Mise à jour des pages forum (ForumTopicPage, ForumSectionPage, ForumCategoryPage)
+>   - **Fix critique** : L'utilisateur n'est plus déconnecté lors des opérations CRUD sur le forum
+> - **Système de contrôle d'accès aux sections** : Ajout de `faction_id`, `clan_id` et `is_public` pour gérer la visibilité des sections (héritage automatique depuis sections parentes)
+> - **Refactoring des contrôleurs forum** : Séparation de `forumController.js` (1286 lignes) en 4 contrôleurs modulaires (category, section, topic, post)
+> - **Fonction movePost** : Déplacement de posts entre topics avec validation de verrouillage
+> - **Boutons d'édition complets** : Boutons éditer/déplacer pour topics et posts visibles pour tous utilisateurs authentifiés
 
 ## 📖 Description
 
@@ -92,7 +102,8 @@ erosion-des-ames/
 │   │   │   │   ├── CreateTopicForm.jsx     # Formulaire création topic
 │   │   │   │   ├── EditTopicForm.jsx       # Formulaire édition topic
 │   │   │   │   ├── MoveTopicForm.jsx       # Formulaire déplacement topic
-│   │   │   │   └── CreatePostForm.jsx      # Formulaire réponse (post)
+│   │   │   │   ├── CreatePostForm.jsx      # Formulaire réponse (post)
+│   │   │   │   └── MovePostForm.jsx        # Formulaire déplacement post
 │   │   │   └── ui/               # Composants UI réutilisables
 │   │   │       ├── BurgerButton.jsx        # Menu hamburger
 │   │   │       ├── BurgerPanel.jsx         # Panneau mobile
@@ -143,7 +154,12 @@ erosion-des-ames/
 │   │   ├── characterController.js # Gestion des personnages
 │   │   ├── clanController.js     # Gestion des clans
 │   │   ├── factionController.js  # Gestion des factions
-│   │   └── forumController.js    # Gestion forum (CRUD categories/sections/topics/posts)
+│   │   ├── forumController.js    # Ancien contrôleur monolithique (deprecated)
+│   │   └── forum/                # Contrôleurs forum modulaires
+│   │       ├── categoryController.js  # Gestion des catégories
+│   │       ├── sectionController.js   # Gestion des sections
+│   │       ├── topicController.js     # Gestion des topics
+│   │       └── postController.js      # Gestion des posts
 │   ├── middleware/
 │   │   └── authMiddleware.js     # Protection des routes (JWT)
 │   ├── models/
@@ -638,15 +654,19 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 
 ## 🔒 Sécurité
 
-- Mots de passe hashés avec bcryptjs (10 rounds)
-- Authentification par JWT (expire après 7 jours)
-- Routes API protégées par middleware authMiddleware
-- Validation des données côté serveur et client
-- CORS configuré pour localhost:5173 et 5174
-- Variables sensibles dans `.env` (non commité)
-- Token stocké dans localStorage
-- Vérification automatique du profil au chargement de l'app
-- Système d'acceptation obligatoire des CGU avant participation forum
+- **Mots de passe** : Hashés avec bcryptjs (10 rounds)
+- **Authentification JWT** :
+  - Token expire après 7 jours
+  - Fonction centralisée `authenticatedFetch` dans AuthContext
+  - Déconnexion automatique en cas de token invalide/expiré (401)
+  - Token stocké dans localStorage
+- **Protection des routes** :
+  - Middleware authMiddleware pour les routes API protégées
+  - Vérification automatique du profil au chargement de l'app
+- **Validation des données** : Côté serveur et client
+- **CORS** : Configuré pour localhost:5173 et 5174
+- **Variables sensibles** : Fichier `.env` (non commité)
+- **CGU** : Système d'acceptation obligatoire des CGU avant participation forum
 
 ## 📝 Scripts disponibles
 

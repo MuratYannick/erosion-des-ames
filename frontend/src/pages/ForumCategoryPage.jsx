@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
 import TermsAcceptance from "../components/ui/TermsAcceptance";
@@ -10,20 +11,14 @@ function ForumCategoryPage() {
   const styles = ForumBody.styles;
   const { slug } = useParams();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Déterminer le slug de la catégorie depuis l'URL
   const categorySlug = slug || location.pathname.split('/').pop() || 'general';
-
-  // Vérifier l'authentification
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -59,9 +54,6 @@ function ForumCategoryPage() {
       sections: [...(prev.sections || []), newSection],
     }));
     setIsModalOpen(false);
-
-    // Recharger la catégorie pour avoir les données à jour
-    window.location.reload();
   };
 
   const breadcrumbItems = category

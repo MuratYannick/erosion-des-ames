@@ -50,6 +50,38 @@ const Section = sequelize.define(
       },
       onDelete: "CASCADE",
     },
+    faction_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "factions",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+      comment: "Faction propriétaire de la section (hérité de la section parent si non spécifié)",
+    },
+    clan_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "clans",
+        key: "id",
+      },
+      onDelete: "SET NULL",
+      comment: "Clan propriétaire de la section (hérité de la section parent si non spécifié)",
+    },
+    is_public: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "Section publique ou privée (hérité de la section parent si non spécifié)",
+    },
+    is_locked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      comment: "Section verrouillée - empêche la création de topics et sous-sections",
+    },
   },
   {
     tableName: "sections",

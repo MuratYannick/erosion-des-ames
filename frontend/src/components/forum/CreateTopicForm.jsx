@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "../../contexts/AuthContext";
 
 function CreateTopicForm({ sectionId, onSuccess, onCancel }) {
+  const { authenticatedFetch } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -15,14 +17,7 @@ function CreateTopicForm({ sectionId, onSuccess, onCancel }) {
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const response = await fetch("http://localhost:3000/api/characters", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await authenticatedFetch("http://localhost:3000/api/characters");
 
         if (response.ok) {
           const result = await response.json();
@@ -34,7 +29,7 @@ function CreateTopicForm({ sectionId, onSuccess, onCancel }) {
     };
 
     fetchCharacters();
-  }, []);
+  }, [authenticatedFetch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,11 +45,6 @@ function CreateTopicForm({ sectionId, onSuccess, onCancel }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Vous devez être connecté pour créer un topic");
-      }
-
       const requestBody = {
         title: formData.title,
         content: formData.content,
@@ -69,11 +59,10 @@ function CreateTopicForm({ sectionId, onSuccess, onCancel }) {
         );
       }
 
-      const response = await fetch("http://localhost:3000/api/forum/topics", {
+      const response = await authenticatedFetch("http://localhost:3000/api/forum/topics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
