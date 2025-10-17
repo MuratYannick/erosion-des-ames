@@ -3,6 +3,15 @@
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
 > **🆕 Dernières mises à jour** :
+> - **📜 Système d'acceptation du règlement du forum** : Implémentation complète en parallèle des CGU
+>   - Ajout de `forum_rules_accepted` et `forum_rules_accepted_at` dans le modèle User
+>   - Nouvelle route `POST /api/auth/accept-forum-rules` pour accepter le règlement
+>   - Fonction `acceptForumRules()` dans AuthContext avec mise à jour du state utilisateur
+>   - 4 nouveaux composants UI : ForumRulesAcceptance, ForumRulesAcceptanceBox, ForumRulesGuard, ForumRulesModal
+>   - Règlement complet en 7 sections : respect, contenu, organisation, roleplay, modération, signalement, modifications
+>   - Bandeau d'alerte sur toutes les pages forum (ForumGeneralPage, ForumCategoryPage, ForumTopicPage)
+>   - Boîte d'acceptation dédiée sur le topic du règlement (slug: "reglement")
+>   - Mise à jour du seedDev avec données de test (player_neutral n'a pas accepté le règlement)
 > - **🔐 Correction authentification forum** : Refactorisation complète de la gestion des tokens JWT
 >   - Nouvelle fonction `authenticatedFetch` dans `AuthContext` pour centraliser toutes les requêtes authentifiées
 >   - Déconnexion automatique en cas de token invalide/expiré (erreur 401)
@@ -122,7 +131,11 @@ erosion-des-ames/
 │   │   │       ├── TermsAcceptance.jsx     # Alerte CGU (wrapper)
 │   │   │       ├── TermsAcceptanceBox.jsx  # Boîte d'acceptation CGU
 │   │   │       ├── TermsGuard.jsx          # Protection routes par CGU
-│   │   │       └── TermsModal.jsx          # Modal CGU
+│   │   │       ├── TermsModal.jsx          # Modal CGU
+│   │   │       ├── ForumRulesAcceptance.jsx     # Alerte règlement forum
+│   │   │       ├── ForumRulesAcceptanceBox.jsx  # Boîte d'acceptation règlement
+│   │   │       ├── ForumRulesGuard.jsx          # Protection routes par règlement
+│   │   │       └── ForumRulesModal.jsx          # Modal règlement forum
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx              # Page d'accueil
 │   │   │   ├── IntroPage.jsx             # Page d'introduction
@@ -150,7 +163,7 @@ erosion-des-ames/
 │   ├── config/
 │   │   └── database.js           # Configuration Sequelize/MySQL
 │   ├── controllers/
-│   │   ├── authController.js     # Authentification & profil utilisateur
+│   │   ├── authController.js     # Authentification & profil (+ acceptTerms, acceptForumRules)
 │   │   ├── characterController.js # Gestion des personnages
 │   │   ├── clanController.js     # Gestion des clans
 │   │   ├── factionController.js  # Gestion des factions
@@ -164,7 +177,7 @@ erosion-des-ames/
 │   │   └── authMiddleware.js     # Protection des routes (JWT)
 │   ├── models/
 │   │   ├── game/                 # Modèles du jeu
-│   │   │   ├── User.js           # Utilisateur (+ terms_accepted)
+│   │   │   ├── User.js           # Utilisateur (+ terms_accepted + forum_rules_accepted)
 │   │   │   ├── Character.js      # Personnage
 │   │   │   ├── Faction.js        # Faction
 │   │   │   └── Clan.js           # Clan/Caste
@@ -211,6 +224,8 @@ erosion-des-ames/
 - `is_active`
 - `terms_accepted` (boolean, défaut: false)
 - `terms_accepted_at` (datetime)
+- `forum_rules_accepted` (boolean, défaut: false)
+- `forum_rules_accepted_at` (datetime)
 - `last_login`
 
 **Factions**
@@ -370,7 +385,8 @@ Le frontend démarre sur **http://localhost:5173**
 - `POST /api/auth/register` - Inscription
 - `POST /api/auth/login` - Connexion
 - `GET /api/auth/profile` - Profil utilisateur (protégé)
-- `PUT /api/auth/accept-terms` - Accepter les CGU (protégé)
+- `POST /api/auth/accept-terms` - Accepter les CGU (protégé)
+- `POST /api/auth/accept-forum-rules` - Accepter le règlement du forum (protégé)
 
 ### Factions
 - `GET /api/factions` - Toutes les factions (avec clans)
@@ -494,6 +510,7 @@ Authorization: Bearer <votre_token_jwt>
 - [x] Script de seeding production (`seed.js`)
 - [x] Script de seeding développement (`seedDev.js` avec forum)
 - [x] Système d'acceptation des CGU (champ `terms_accepted`)
+- [x] Système d'acceptation du règlement du forum (champ `forum_rules_accepted`)
 - [ ] Modèles de contenu pour rules, wiki
 - [ ] Système de rôles/permissions (admin, modérateur)
 
@@ -519,6 +536,11 @@ Authorization: Bearer <votre_token_jwt>
   - [x] TermsAcceptanceBox (boîte de validation)
   - [x] TermsGuard (protection de routes)
   - [x] TermsModal (modal CGU)
+- [x] Système d'acceptation du règlement du forum
+  - [x] ForumRulesAcceptance (alerte sur forum)
+  - [x] ForumRulesAcceptanceBox (boîte de validation)
+  - [x] ForumRulesGuard (protection de routes)
+  - [x] ForumRulesModal (modal règlement en 7 sections)
 - [x] Pages forum complètes
   - [x] ForumGeneralPage (liste des sections)
   - [x] ForumCategoryPage (sections par catégorie)
@@ -637,15 +659,28 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 - Affichage hiérarchique des destinations (catégories > sections > sous-sections)
 - Icônes distinctives (✏️ Éditer, 📦 Déplacer, 🔒 Verrouillé)
 
-### Système de CGU (Conditions Générales d'Utilisation)
-- Champ `terms_accepted` + `terms_accepted_at` dans le modèle User
-- Route `PUT /api/auth/accept-terms` pour l'acceptation
+### Système de CGU et Règlement du Forum
+
+#### CGU (Conditions Générales d'Utilisation)
+- Champs `terms_accepted` + `terms_accepted_at` dans le modèle User
+- Route `POST /api/auth/accept-terms` pour l'acceptation
 - Composants frontend :
   - **TermsAcceptance** : Alerte rouge affichée sur le forum si non accepté
-  - **TermsAcceptanceBox** : Boîte avec checkbox pour valider
+  - **TermsAcceptanceBox** : Boîte avec checkbox pour valider sur topic CGU (slug: "cgu")
   - **TermsGuard** : HOC pour protéger les routes nécessitant acceptation
   - **TermsModal** : Modal d'affichage des CGU complètes
 - Les sections peuvent exiger l'acceptation (`requires_terms`)
+
+#### Règlement du Forum
+- Champs `forum_rules_accepted` + `forum_rules_accepted_at` dans le modèle User
+- Route `POST /api/auth/accept-forum-rules` pour l'acceptation
+- Composants frontend :
+  - **ForumRulesAcceptance** : Alerte rouge affichée sur le forum si non accepté
+  - **ForumRulesAcceptanceBox** : Boîte avec checkbox pour valider sur topic règlement (slug: "reglement")
+  - **ForumRulesGuard** : HOC pour protéger les routes nécessitant acceptation
+  - **ForumRulesModal** : Modal d'affichage du règlement complet en 7 sections
+- Règlement en 7 sections : respect, contenu approprié, organisation, roleplay, modération, signalement, modifications
+- Systèmes indépendants : un utilisateur peut accepter l'un sans l'autre
 
 ### Composants UI forum
 - **Breadcrumb** : Fil d'Ariane avec séparateurs "/"

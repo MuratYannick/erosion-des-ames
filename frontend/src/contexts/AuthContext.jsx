@@ -67,6 +67,8 @@ export function AuthProvider({ children }) {
       email: result.data.email,
       terms_accepted: result.data.terms_accepted,
       terms_accepted_at: result.data.terms_accepted_at,
+      forum_rules_accepted: result.data.forum_rules_accepted,
+      forum_rules_accepted_at: result.data.forum_rules_accepted_at,
     });
     return result;
   };
@@ -93,6 +95,8 @@ export function AuthProvider({ children }) {
       email: result.data.email,
       terms_accepted: result.data.terms_accepted,
       terms_accepted_at: result.data.terms_accepted_at,
+      forum_rules_accepted: result.data.forum_rules_accepted,
+      forum_rules_accepted_at: result.data.forum_rules_accepted_at,
     });
     return result;
   };
@@ -154,6 +158,31 @@ export function AuthProvider({ children }) {
     return result;
   };
 
+  const acceptForumRules = async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/auth/accept-forum-rules", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Erreur lors de l'acceptation du règlement du forum");
+    }
+
+    // Mettre à jour l'utilisateur avec forum_rules_accepted = true
+    setUser((prev) => ({
+      ...prev,
+      forum_rules_accepted: true,
+      forum_rules_accepted_at: result.data.forum_rules_accepted_at,
+    }));
+
+    return result;
+  };
+
   const value = {
     user,
     loading,
@@ -161,6 +190,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     acceptTerms,
+    acceptForumRules,
     authenticatedFetch,
     isAuthenticated: !!user,
   };

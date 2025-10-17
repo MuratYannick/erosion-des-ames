@@ -76,6 +76,8 @@ export const register = async (req, res) => {
         email: user.email,
         terms_accepted: user.terms_accepted,
         terms_accepted_at: user.terms_accepted_at,
+        forum_rules_accepted: user.forum_rules_accepted,
+        forum_rules_accepted_at: user.forum_rules_accepted_at,
         token,
       },
     });
@@ -149,6 +151,8 @@ export const login = async (req, res) => {
         email: user.email,
         terms_accepted: user.terms_accepted,
         terms_accepted_at: user.terms_accepted_at,
+        forum_rules_accepted: user.forum_rules_accepted,
+        forum_rules_accepted_at: user.forum_rules_accepted_at,
         token,
       },
     });
@@ -220,6 +224,48 @@ export const acceptTerms = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erreur lors de l'acceptation des conditions",
+      error: error.message,
+    });
+  }
+};
+
+// Accepter le règlement du forum
+export const acceptForumRules = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Utilisateur non trouvé",
+      });
+    }
+
+    if (user.forum_rules_accepted) {
+      return res.status(400).json({
+        success: false,
+        message: "Le règlement du forum a déjà été accepté",
+      });
+    }
+
+    await user.update({
+      forum_rules_accepted: true,
+      forum_rules_accepted_at: new Date(),
+    });
+
+    res.json({
+      success: true,
+      message: "Règlement du forum accepté",
+      data: {
+        forum_rules_accepted: true,
+        forum_rules_accepted_at: user.forum_rules_accepted_at,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur acceptForumRules:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'acceptation du règlement du forum",
       error: error.message,
     });
   }

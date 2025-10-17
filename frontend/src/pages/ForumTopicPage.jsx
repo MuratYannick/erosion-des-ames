@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
 import TermsAcceptanceBox from "../components/ui/TermsAcceptanceBox";
+import ForumRulesAcceptanceBox from "../components/ui/ForumRulesAcceptanceBox";
 import Modal from "../components/ui/Modal";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import EditTopicForm from "../components/forum/EditTopicForm";
@@ -498,6 +499,9 @@ function ForumTopicPage() {
 
           {/* Zone d'acceptation des CGU (uniquement pour le topic CGU) */}
           {topic.slug === "cgu" && <TermsAcceptanceBox />}
+
+          {/* Zone d'acceptation du règlement du forum (uniquement pour le topic du règlement) */}
+          {topic.slug === "reglement" && <ForumRulesAcceptanceBox />}
 
           {/* Zone de réponse */}
           <div className="mt-8">
