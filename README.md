@@ -3,6 +3,19 @@
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
 > **🆕 Dernières mises à jour** :
+> - **🔧 Amélioration gestion des sections et topics** : Validation avancée des noms et slugs
+>   - **Sections** :
+>     - Empêche la création de sections avec le même nom au même niveau (même parent direct ou catégorie)
+>     - Validation lors de la création, édition et déplacement de sections
+>     - Génération automatique de slugs uniques avec suffixe incrémental (`section-1`, `section-2`, etc.)
+>     - Soft-delete avec vidage du slug pour permettre la réutilisation après suppression
+>   - **Topics** :
+>     - Empêche la création de topics avec le même titre dans la même section
+>     - Validation lors de la création, édition et déplacement de topics
+>     - Génération automatique de slugs uniques avec suffixe incrémental (`topic-1`, `topic-2`, etc.)
+>     - Soft-delete avec vidage du slug pour permettre la réutilisation après suppression
+>     - Empêche le déplacement d'un topic vers une section contenant déjà un topic avec le même titre
+>   - Messages d'erreur explicites : "Une section avec ce nom existe déjà au même niveau" / "Un topic avec ce titre existe déjà dans cette section"
 > - **📜 Système d'acceptation du règlement du forum** : Implémentation complète en parallèle des CGU
 >   - Ajout de `forum_rules_accepted` et `forum_rules_accepted_at` dans le modèle User
 >   - Nouvelle route `POST /api/auth/accept-forum-rules` pour accepter le règlement
@@ -18,10 +31,6 @@ Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent
 >   - Mise à jour de tous les formulaires forum (7 composants) pour utiliser `authenticatedFetch`
 >   - Mise à jour des pages forum (ForumTopicPage, ForumSectionPage, ForumCategoryPage)
 >   - **Fix critique** : L'utilisateur n'est plus déconnecté lors des opérations CRUD sur le forum
-> - **Système de contrôle d'accès aux sections** : Ajout de `faction_id`, `clan_id` et `is_public` pour gérer la visibilité des sections (héritage automatique depuis sections parentes)
-> - **Refactoring des contrôleurs forum** : Séparation de `forumController.js` (1286 lignes) en 4 contrôleurs modulaires (category, section, topic, post)
-> - **Fonction movePost** : Déplacement de posts entre topics avec validation de verrouillage
-> - **Boutons d'édition complets** : Boutons éditer/déplacer pour topics et posts visibles pour tous utilisateurs authentifiés
 
 ## 📖 Description
 
@@ -651,6 +660,15 @@ Cela permet une séparation claire entre contenu roleplay et hors-roleplay.
 - Protection contre les boucles infinies (déplacement de sections)
 - Blocage de suppression si section contient du contenu
 - Blocage des réponses sur topics verrouillés
+- **Validation des doublons** :
+  - Empêche deux sections actives avec le même nom au même niveau (même parent/catégorie)
+  - Empêche deux topics actifs avec le même titre dans la même section
+  - Validation lors de la création, édition et déplacement
+  - Messages d'erreur explicites pour guider l'utilisateur
+- **Gestion des slugs** :
+  - Génération automatique avec suffixe incrémental pour garantir l'unicité
+  - Vidage du slug lors du soft-delete pour permettre la réutilisation
+  - URLs propres et prévisibles
 - Validation des données (champs requis, longueurs max)
 
 **Interface utilisateur** :

@@ -125,6 +125,22 @@ export const createTopic = async (req, res) => {
       });
     }
 
+    // Vérifier qu'aucun topic actif avec le même titre n'existe déjà dans cette section
+    const existingTopicWithSameTitle = await Topic.findOne({
+      where: {
+        title: title.trim(),
+        section_id,
+        is_active: true
+      }
+    });
+
+    if (existingTopicWithSameTitle) {
+      return res.status(400).json({
+        success: false,
+        message: "Un topic avec ce titre existe déjà dans cette section",
+      });
+    }
+
     // Récupérer l'utilisateur
     const user = await User.findByPk(userId);
     if (!user) {
@@ -233,6 +249,25 @@ export const updateTopic = async (req, res) => {
       });
     }
 
+    // Si le titre change, vérifier qu'aucun topic actif avec ce titre n'existe dans la même section
+    if (title && title.trim() !== topic.title) {
+      const existingTopicWithSameTitle = await Topic.findOne({
+        where: {
+          title: title.trim(),
+          section_id: topic.section_id,
+          is_active: true,
+          id: { [sequelize.Sequelize.Op.ne]: id }
+        }
+      });
+
+      if (existingTopicWithSameTitle) {
+        return res.status(400).json({
+          success: false,
+          message: "Un topic avec ce titre existe déjà dans cette section",
+        });
+      }
+    }
+
     // Si le titre change, générer un nouveau slug
     let slug = topic.slug;
     if (title && title.trim() !== topic.title) {
@@ -317,8 +352,8 @@ export const deleteTopic = async (req, res) => {
         );
       }
 
-      // Désactiver le topic
-      await topic.update({ is_active: false }, { transaction: t });
+      // Désactiver le topic et vider le slug
+      await topic.update({ is_active: false, slug: "" }, { transaction: t });
     });
 
     res.json({
@@ -371,6 +406,23 @@ export const moveTopic = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: "La section de destination est verrouillée",
+      });
+    }
+
+    // Vérifier qu'aucun topic actif avec le même titre n'existe dans la section de destination
+    const existingTopicWithSameTitle = await Topic.findOne({
+      where: {
+        title: topic.title,
+        section_id: new_section_id,
+        is_active: true,
+        id: { [sequelize.Sequelize.Op.ne]: id }
+      }
+    });
+
+    if (existingTopicWithSameTitle) {
+      return res.status(400).json({
+        success: false,
+        message: "Un topic avec ce titre existe déjà dans la section de destination",
       });
     }
 

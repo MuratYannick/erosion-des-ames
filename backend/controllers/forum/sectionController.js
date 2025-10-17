@@ -154,6 +154,30 @@ export const createSection = async (req, res) => {
       });
     }
 
+    // Vérifier qu'aucune section active avec le même nom n'existe déjà pour le même parent
+    const whereCondition = {
+      name: name.trim(),
+      is_active: true,
+    };
+
+    // Si la section a un parent direct (section)
+    if (parent_section_id) {
+      whereCondition.parent_section_id = parent_section_id;
+    }
+    // Si la section est directement sous une catégorie (pas de parent section)
+    else if (category_id) {
+      whereCondition.category_id = category_id;
+      whereCondition.parent_section_id = null;
+    }
+
+    const existingSectionWithSameName = await Section.findOne({ where: whereCondition });
+    if (existingSectionWithSameName) {
+      return res.status(400).json({
+        success: false,
+        message: "Une section avec ce nom existe déjà au même niveau",
+      });
+    }
+
     // Générer le slug à partir du nom
     const slug = name
       .toLowerCase()
@@ -162,13 +186,12 @@ export const createSection = async (req, res) => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    // Vérifier que le slug est unique
-    const existingSection = await Section.findOne({ where: { slug } });
-    if (existingSection) {
-      return res.status(400).json({
-        success: false,
-        message: "Une section avec ce nom existe déjà",
-      });
+    // Vérifier que le slug est unique (ajouter un suffixe si nécessaire)
+    let uniqueSlug = slug;
+    let counter = 1;
+    while (await Section.findOne({ where: { slug: uniqueSlug } })) {
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
     }
 
     // Si category_id est fourni, vérifier qu'elle existe
@@ -241,7 +264,7 @@ export const createSection = async (req, res) => {
     // Créer la section
     const section = await Section.create({
       name: name.trim(),
-      slug,
+      slug: uniqueSlug,
       description: description ? description.trim() : null,
       category_id: category_id || null,
       parent_section_id: parent_section_id || null,
@@ -282,6 +305,33 @@ export const updateSection = async (req, res) => {
       });
     }
 
+    // Si le nom change, vérifier qu'aucune section active avec ce nom n'existe au même niveau
+    if (name && name.trim() !== section.name) {
+      const whereCondition = {
+        name: name.trim(),
+        is_active: true,
+        id: { [sequelize.Sequelize.Op.ne]: id }
+      };
+
+      // Si la section a un parent direct (section)
+      if (section.parent_section_id) {
+        whereCondition.parent_section_id = section.parent_section_id;
+      }
+      // Si la section est directement sous une catégorie (pas de parent section)
+      else if (section.category_id) {
+        whereCondition.category_id = section.category_id;
+        whereCondition.parent_section_id = null;
+      }
+
+      const existingSectionWithSameName = await Section.findOne({ where: whereCondition });
+      if (existingSectionWithSameName) {
+        return res.status(400).json({
+          success: false,
+          message: "Une section avec ce nom existe déjà au même niveau",
+        });
+      }
+    }
+
     // Si le nom change, générer un nouveau slug
     let slug = section.slug;
     if (name && name.trim() !== section.name) {
@@ -292,16 +342,19 @@ export const updateSection = async (req, res) => {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
 
-      // Vérifier que le nouveau slug est unique
-      const existingSection = await Section.findOne({
-        where: { slug, id: { [sequelize.Sequelize.Op.ne]: id } }
-      });
-      if (existingSection) {
-        return res.status(400).json({
-          success: false,
-          message: "Une section avec ce nom existe déjà",
-        });
+      // Vérifier que le nouveau slug est unique (ajouter un suffixe si nécessaire)
+      let uniqueSlug = slug;
+      let counter = 1;
+      while (await Section.findOne({
+        where: {
+          slug: uniqueSlug,
+          id: { [sequelize.Sequelize.Op.ne]: id }
+        }
+      })) {
+        uniqueSlug = `${slug}-${counter}`;
+        counter++;
       }
+      slug = uniqueSlug;
     }
 
     // Vérifier que la faction existe si spécifiée
@@ -401,8 +454,8 @@ export const deleteSection = async (req, res) => {
       });
     }
 
-    // Supprimer la section (soft delete via is_active)
-    await section.update({ is_active: false });
+    // Supprimer la section (soft delete via is_active et vider le slug)
+    await section.update({ is_active: false, slug: "" });
 
     res.json({
       success: true,
@@ -482,6 +535,31 @@ export const moveSection = async (req, res) => {
         checkParent = await Section.findByPk(checkParent.parent_section_id);
         if (!checkParent) break;
       }
+    }
+
+    // Vérifier qu'aucune section active avec le même nom n'existe déjà dans la destination
+    const whereCondition = {
+      name: section.name,
+      is_active: true,
+      id: { [sequelize.Sequelize.Op.ne]: id }
+    };
+
+    // Si on déplace vers une section parente
+    if (new_parent_section_id) {
+      whereCondition.parent_section_id = new_parent_section_id;
+    }
+    // Si on déplace directement sous une catégorie
+    else if (new_category_id) {
+      whereCondition.category_id = new_category_id;
+      whereCondition.parent_section_id = null;
+    }
+
+    const existingSectionWithSameName = await Section.findOne({ where: whereCondition });
+    if (existingSectionWithSameName) {
+      return res.status(400).json({
+        success: false,
+        message: "Une section avec ce nom existe déjà dans la destination",
+      });
     }
 
     // Déplacer la section
