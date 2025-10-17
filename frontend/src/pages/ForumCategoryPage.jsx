@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
 import TermsAcceptance from "../components/ui/TermsAcceptance";
+import ForumRulesAcceptance from "../components/ui/ForumRulesAcceptance";
 import Modal from "../components/ui/Modal";
 import CreateSectionForm from "../components/forum/CreateSectionForm";
 
@@ -97,6 +98,9 @@ function ForumCategoryPage() {
 
           {/* Composant d'acceptation des CGU pour les utilisateurs connectés non validés */}
           <TermsAcceptance />
+
+          {/* Composant d'acceptation du règlement du forum pour les utilisateurs connectés non validés */}
+          <ForumRulesAcceptance />
 
           {/* Sections */}
           {category.sections && category.sections.length > 0 ? (

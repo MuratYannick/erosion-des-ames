@@ -74,6 +74,15 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    forum_rules_accepted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+    forum_rules_accepted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     last_login: {
       type: DataTypes.DATE,
       allowNull: true,

@@ -11,6 +11,7 @@ const testUsersData = [
     role: "ADMIN",
     email_verified: true,
     terms_accepted: true,
+    forum_rules_accepted: true,
   },
   {
     username: "moderator_test",
@@ -19,6 +20,7 @@ const testUsersData = [
     role: "MODERATOR",
     email_verified: true,
     terms_accepted: true,
+    forum_rules_accepted: true,
   },
   {
     username: "gm_test",
@@ -27,6 +29,7 @@ const testUsersData = [
     role: "GAME_MASTER",
     email_verified: true,
     terms_accepted: true,
+    forum_rules_accepted: true,
   },
   {
     username: "player_mutant",
@@ -35,6 +38,7 @@ const testUsersData = [
     role: "PLAYER",
     email_verified: true,
     terms_accepted: true,
+    forum_rules_accepted: true,
   },
   {
     username: "player_pure",
@@ -43,6 +47,7 @@ const testUsersData = [
     role: "PLAYER",
     email_verified: true,
     terms_accepted: false, // Utilisateur qui n'a pas encore accepté les CGU
+    forum_rules_accepted: false,
   },
   {
     username: "player_neutral",
@@ -51,6 +56,7 @@ const testUsersData = [
     role: "PLAYER",
     email_verified: true,
     terms_accepted: true,
+    forum_rules_accepted: false, // Utilisateur qui n'a pas encore accepté le règlement du forum
   },
 ];
 
@@ -302,10 +308,16 @@ export const seedDevelopment = async () => {
         email_verified: userData.email_verified,
         terms_accepted: userData.terms_accepted,
         terms_accepted_at: userData.terms_accepted ? new Date() : null,
+        forum_rules_accepted: userData.forum_rules_accepted,
+        forum_rules_accepted_at: userData.forum_rules_accepted ? new Date() : null,
       });
       users.push(user);
+      const warnings = [];
+      if (!userData.terms_accepted) warnings.push("CGU non acceptées");
+      if (!userData.forum_rules_accepted) warnings.push("Règlement forum non accepté");
+      const warningText = warnings.length > 0 ? ` [${warnings.join(", ")}]` : "";
       console.log(
-        `  ✅ ${userData.username} (${userData.role}) - ${userData.email} / ${userData.password}${userData.terms_accepted ? "" : " [CGU non acceptées]"}`
+        `  ✅ ${userData.username} (${userData.role}) - ${userData.email} / ${userData.password}${warningText}`
       );
     }
     console.log(`✅ ${users.length} utilisateurs créés\n`);

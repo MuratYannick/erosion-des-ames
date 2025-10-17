@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ForumBody from "../components/layouts/ForumBody";
 import Breadcrumb from "../components/ui/Breadcrumb";
 import TermsAcceptance from "../components/ui/TermsAcceptance";
+import ForumRulesAcceptance from "../components/ui/ForumRulesAcceptance";
 
 function ForumGeneralPage() {
   const styles = ForumBody.styles;
@@ -45,6 +46,9 @@ function ForumGeneralPage() {
 
       {/* Composant d'acceptation des CGU pour les utilisateurs connectés non validés */}
       <TermsAcceptance />
+
+      {/* Composant d'acceptation du règlement du forum pour les utilisateurs connectés non validés */}
+      <ForumRulesAcceptance />
 
       {loading && (
         <p className={styles.text}>Chargement des sections...</p>
