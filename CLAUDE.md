@@ -14,7 +14,8 @@ cd backend
 npm install                    # Install dependencies
 npm run dev                    # Start development server with nodemon (http://localhost:3000)
 npm start                      # Start production server
-npm run seed                   # Reset database and seed with initial factions/clans data
+npm run seed                   # Reset database and seed with initial factions/clans/forum data (production)
+npm run seed:dev               # Reset database with complete test data (development)
 ```
 
 ### Frontend (React/Vite/TailwindCSS)
@@ -136,6 +137,31 @@ Understanding the game world helps with feature development:
 - Hostile mutated fauna/flora
 - Radioactive zones and unstable ruins
 - Post-apocalyptic wasteland aesthetic
+
+## Documentation Structure
+
+The project uses a modular documentation system:
+
+- **README.md** - Main overview, installation, visual theme, scripts (user-facing)
+- **PROGRESS.md** - Development progress, completed features, roadmap
+- **ARCHITECTURE.md** - Project structure, MVC patterns, component organization
+- **DATABASE.md** - Database models, relations, seeding process
+- **TECHNICAL.md** - API routes, authentication, permissions system
+- **CLAUDE.md** - This file (AI assistant guidance)
+
+### Documentation Update Guidelines
+
+When updating documentation:
+
+1. **Simple update** (`mise à jour` or `mise à jour simple`):
+   - Update only README.md
+   - Use for: new features added to "Dernières mises à jour", minor corrections
+
+2. **Complete update** (`mise à jour complète`):
+   - Update all relevant files (README.md, PROGRESS.md, ARCHITECTURE.md, DATABASE.md, TECHNICAL.md)
+   - Use for: major features, architectural changes, new models/routes
+
+Always update CLAUDE.md when development workflows or conventions change.
 
 ## Important Conventions
 

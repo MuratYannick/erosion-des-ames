@@ -1,5 +1,6 @@
 import { User } from "../models/index.js";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth.js";
+import { checkAndUpdateAcceptances } from "../utils/acceptanceChecker.js";
 import { Op } from "sequelize";
 
 // Inscription d'un nouvel utilisateur
@@ -136,6 +137,12 @@ export const login = async (req, res) => {
       });
     }
 
+    // Vérifier et mettre à jour les acceptations CGU et règlement du forum
+    await checkAndUpdateAcceptances(user);
+
+    // Recharger l'utilisateur pour obtenir les données mises à jour
+    await user.reload();
+
     // Mettre à jour la dernière connexion
     await user.update({ last_login: new Date() });
 
@@ -199,12 +206,8 @@ export const acceptTerms = async (req, res) => {
       });
     }
 
-    if (user.terms_accepted) {
-      return res.status(400).json({
-        success: false,
-        message: "Les conditions ont déjà été acceptées",
-      });
-    }
+    // Permettre la ré-acceptation si les CGU ont été mises à jour
+    // (la vérification est faite à la connexion et peut remettre terms_accepted à false)
 
     await user.update({
       terms_accepted: true,
@@ -241,12 +244,8 @@ export const acceptForumRules = async (req, res) => {
       });
     }
 
-    if (user.forum_rules_accepted) {
-      return res.status(400).json({
-        success: false,
-        message: "Le règlement du forum a déjà été accepté",
-      });
-    }
+    // Permettre la ré-acceptation si le règlement a été mis à jour
+    // (la vérification est faite à la connexion et peut remettre forum_rules_accepted à false)
 
     await user.update({
       forum_rules_accepted: true,

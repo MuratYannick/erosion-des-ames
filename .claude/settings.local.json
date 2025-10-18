@@ -1,32 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(test:*)",
-      "Bash(cat:*)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/models/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/pages/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/components/ui/**)",
-      "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(curl:*)",
-      "Bash(node server.js)",
-      "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(npm run seed:*)",
-      "Bash(node:*)",
-      "Bash(npm start)",
-      "Bash(npm:*)",
-      "Bash(npx eslint:*)",
-      "Bash(taskkill:*)",
-      "Bash(git remote add:*)",
-      "Bash(git fetch:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(timeout /t 5)",
-      "Bash(del:*)",
-      "Bash(killall node:*)",
-      "Bash(pkill:*)"
+      "Bash(copy README.md README.md.old)"
     ],
     "deny": [],
     "ask": []
