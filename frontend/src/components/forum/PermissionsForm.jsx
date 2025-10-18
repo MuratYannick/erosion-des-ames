@@ -140,8 +140,29 @@ function PermissionsForm({ entityType, entityId, entityName, onSuccess, onCancel
   function OperationPermissionForm({ operation }) {
     const perm = permissions[operation];
 
+    // Afficher un badge si la permission est héritée
+    const InheritedBadge = () => {
+      if (!perm?.inherited) return null;
+
+      const inheritedFromText = {
+        category: "de la catégorie parent",
+        parent_section: "de la section parent",
+        section: "de la section parent",
+      }[perm.inherited_from] || "du parent";
+
+      return (
+        <div className="bg-ochre-900 border border-ochre-700 rounded p-3 mb-4">
+          <div className="flex items-center gap-2 text-ochre-400 font-texte-corps text-sm">
+            <span>ℹ️</span>
+            <span>Ces permissions sont héritées {inheritedFromText}. Modifiez-les pour définir des permissions spécifiques à cet élément.</span>
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className="space-y-6">
+        <InheritedBadge />
         {/* 1. RÔLES (Switch) */}
         <div className="border border-ochre-800 rounded p-4">
           <h5 className="text-ochre-400 font-texte-corps text-sm font-bold mb-3">
@@ -369,24 +390,92 @@ function PermissionsForm({ entityType, entityId, entityName, onSuccess, onCancel
 
       {/* Onglets pour chaque opération */}
       <div className="border-b border-city-700">
-        <div className="flex gap-2">
-          {["view", "create", "update", "delete"].map((op) => (
+        <div className="flex gap-2 flex-wrap">
+          {/* VOIR - Disponible pour tous les types */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("view")}
+            className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
+              activeTab === "view"
+                ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
+                : "bg-city-800 text-city-400 hover:bg-city-700"
+            }`}
+          >
+            👁️ VOIR
+          </button>
+
+          {/* CRÉER SECTION - Uniquement pour category et section */}
+          {(entityType === "category" || entityType === "section") && (
             <button
-              key={op}
               type="button"
-              onClick={() => setActiveTab(op)}
+              onClick={() => setActiveTab("create_section")}
               className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
-                activeTab === op
+                activeTab === "create_section"
                   ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
                   : "bg-city-800 text-city-400 hover:bg-city-700"
               }`}
             >
-              {op === "view" && "👁️ VOIR"}
-              {op === "create" && "➕ CRÉER"}
-              {op === "update" && "✏️ MODIFIER"}
-              {op === "delete" && "🗑️ SUPPRIMER"}
+              📁 CRÉER SECTION
             </button>
-          ))}
+          )}
+
+          {/* CRÉER TOPIC - Uniquement pour section */}
+          {entityType === "section" && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("create_topic")}
+              className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
+                activeTab === "create_topic"
+                  ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
+                  : "bg-city-800 text-city-400 hover:bg-city-700"
+              }`}
+            >
+              💬 CRÉER TOPIC
+            </button>
+          )}
+
+          {/* ÉPINGLER/VERROUILLER - Uniquement pour section et topic */}
+          {(entityType === "section" || entityType === "topic") && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("pin_lock")}
+              className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
+                activeTab === "pin_lock"
+                  ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
+                  : "bg-city-800 text-city-400 hover:bg-city-700"
+              }`}
+            >
+              📌 ÉPINGLER/VERROUILLER
+            </button>
+          )}
+
+          {/* MODIFIER/SUPPRIMER - Uniquement pour section et topic */}
+          {(entityType === "section" || entityType === "topic") && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("edit_delete")}
+              className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
+                activeTab === "edit_delete"
+                  ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
+                  : "bg-city-800 text-city-400 hover:bg-city-700"
+              }`}
+            >
+              ✏️ MODIFIER/SUPPRIMER
+            </button>
+          )}
+
+          {/* DÉPLACER - Disponible pour tous les types */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("move_children")}
+            className={`px-4 py-2 font-texte-corps text-sm transition-colors ${
+              activeTab === "move_children"
+                ? "bg-ochre-600 text-city-950 border-b-2 border-ochre-400"
+                : "bg-city-800 text-city-400 hover:bg-city-700"
+            }`}
+          >
+            🔀 DÉPLACER ENFANTS
+          </button>
         </div>
       </div>
 

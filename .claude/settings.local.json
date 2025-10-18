@@ -1,8 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run dev:*)",
-      "Bash(copy README.md README.md.old)"
+      "Bash(node -e \"\nimport sequelize from ''./config/database.js'';\nimport { Category, ForumPermission } from ''./models/index.js'';\n\nasync function checkAllPermissions() {\n  try {\n    const categories = await Category.findAll({ order: [[''order'', ''ASC'']] });\n    \n    for (const category of categories) {\n      console.log(''\\n═══════════════════════════════════════════════════════════════════════'');\n      console.log(''📊 CATÉGORIE:'', category.name, ''(ID:'', category.id, '')'');\n      console.log(''═══════════════════════════════════════════════════════════════════════'');\n      \n      const permissions = await ForumPermission.findAll({\n        where: {\n          entity_type: ''category'',\n          entity_id: category.id\n        },\n        order: [[''operation_type'', ''ASC'']]\n      });\n      \n      permissions.forEach(p => {\n        console.log(''\\n  📌'', p.operation_type.toUpperCase());\n        console.log(''     Rôle:'', p.role_level);\n        console.log(''     Exigence personnage:'', p.character_requirement);\n        console.log(''     Auteur autorisé:'', p.allow_author);\n        console.log(''     CGU/Règlement requis:'', p.require_terms_accepted);\n      });\n      console.log();\n    }\n    \n    await sequelize.close();\n  } catch (error) {\n    console.error(''❌ Erreur:'', error.message);\n    process.exit(1);\n  }\n}\n\ncheckAllPermissions();\n\")"
     ],
     "deny": [],
     "ask": []

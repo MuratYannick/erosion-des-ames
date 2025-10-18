@@ -2,15 +2,23 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Metal+Mania&family=Permanent+Marker&display=swap" rel="stylesheet">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>L'&Eacute;rosion des &Acirc;mes</title>
+    <!-- Préconnexion à Google Fonts pour accélérer le chargement -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    
+    <!-- Chargement optimisé des Google Fonts avec display=swap pour éviter le FOIT (Flash of Invisible Text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Metal+Mania&family=Permanent+Marker&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- Fallback pour les navigateurs sans JavaScript -->
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Metal+Mania&family=Permanent+Marker&display=swap" rel="stylesheet">
+    </noscript>
+
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <title>L'Érosion des Âmes</title>
   </head>
   <body>
     <div id="root"></div>

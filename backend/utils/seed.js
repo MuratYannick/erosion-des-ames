@@ -1,5 +1,5 @@
 import sequelize from "../config/database.js";
-import { Faction, Clan, Category, Section, Topic, Post } from "../models/index.js";
+import { Faction, Clan, Category, Section, Topic, Post, ForumPermission } from "../models/index.js";
 
 // Import des données de seed modulaires
 import { factionsData } from "./seedData/factions.js";
@@ -16,6 +16,7 @@ import {
   subsectionsAutourDuJeu,
   topicsAndPosts,
 } from "./seedData/forum.js";
+import { forumGeneralPermissions, forumHRPPermissions, forumRPPermissions } from "./seedData/forumPermissions.js";
 
 /**
  * Script de seed pour initialiser la base de données avec des données de test
@@ -309,6 +310,40 @@ async function seedDatabase() {
       });
     }
     console.log(`✅ ${topicsAndPosts.length} topics et posts créés\n`);
+
+    // ============================
+    // PERMISSIONS DU FORUM
+    // ============================
+
+    // 18. Créer les permissions pour la catégorie "Forum Général"
+    console.log("📊 Création des permissions pour la catégorie 'Forum Général'...");
+    const createdForumGeneralPermissions = await ForumPermission.bulkCreate(
+      forumGeneralPermissions.map((p) => ({
+        ...p,
+        entity_id: forumGeneral.id,
+      }))
+    );
+    console.log(`✅ ${createdForumGeneralPermissions.length} permissions pour 'Forum Général' créées\n`);
+
+    // 19. Créer les permissions pour la catégorie "Forum HRP"
+    console.log("📊 Création des permissions pour la catégorie 'Forum HRP'...");
+    const createdForumHRPPermissions = await ForumPermission.bulkCreate(
+      forumHRPPermissions.map((p) => ({
+        ...p,
+        entity_id: forumHRP.id,
+      }))
+    );
+    console.log(`✅ ${createdForumHRPPermissions.length} permissions pour 'Forum HRP' créées\n`);
+
+    // 20. Créer les permissions pour la catégorie "Forum RP"
+    console.log("📊 Création des permissions pour la catégorie 'Forum RP'...");
+    const createdForumRPPermissions = await ForumPermission.bulkCreate(
+      forumRPPermissions.map((p) => ({
+        ...p,
+        entity_id: forumRP.id,
+      }))
+    );
+    console.log(`✅ ${createdForumRPPermissions.length} permissions pour 'Forum RP' créées\n`);
 
       console.log("🎉 Seeding terminé avec succès !\n");
 

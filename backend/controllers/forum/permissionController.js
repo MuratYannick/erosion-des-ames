@@ -19,7 +19,7 @@ const DEFAULT_PERMISSIONS = {
     author_character_mode: "inclusive",
     require_terms_accepted: false,
   },
-  create: {
+  create_section: {
     role_level: "admin_moderator_gm_player",
     allow_author: false,
     character_requirement: "none",
@@ -29,7 +29,27 @@ const DEFAULT_PERMISSIONS = {
     author_character_mode: "inclusive",
     require_terms_accepted: true,
   },
-  update: {
+  create_topic: {
+    role_level: "admin_moderator_gm_player",
+    allow_author: false,
+    character_requirement: "none",
+    required_faction_id: null,
+    required_clan_id: null,
+    enable_author_character_rule: false,
+    author_character_mode: "inclusive",
+    require_terms_accepted: true,
+  },
+  pin_lock: {
+    role_level: "admin_moderator_gm_player",
+    allow_author: false,
+    character_requirement: "none",
+    required_faction_id: null,
+    required_clan_id: null,
+    enable_author_character_rule: false,
+    author_character_mode: "inclusive",
+    require_terms_accepted: true,
+  },
+  edit_delete: {
     role_level: "admin_moderator_gm_player",
     allow_author: true,
     character_requirement: "none",
@@ -39,9 +59,9 @@ const DEFAULT_PERMISSIONS = {
     author_character_mode: "inclusive",
     require_terms_accepted: true,
   },
-  delete: {
-    role_level: "admin_moderator_gm_player",
-    allow_author: true,
+  move_children: {
+    role_level: "admin_moderator",
+    allow_author: false,
     character_requirement: "none",
     required_faction_id: null,
     required_clan_id: null,
@@ -49,6 +69,13 @@ const DEFAULT_PERMISSIONS = {
     author_character_mode: "inclusive",
     require_terms_accepted: true,
   },
+};
+
+// Opérations valides par type d'entité
+const VALID_OPERATIONS_BY_ENTITY = {
+  category: ["view", "create_section", "move_children"],
+  section: ["view", "create_section", "create_topic", "pin_lock", "edit_delete", "move_children"],
+  topic: ["view", "pin_lock", "edit_delete", "move_children"],
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -93,7 +120,10 @@ export const getPermissions = async (req, res, next) => {
       });
     }
 
-    // Récupérer les permissions pour les 4 opérations
+    // Récupérer les opérations valides pour ce type d'entité
+    const validOperations = VALID_OPERATIONS_BY_ENTITY[entityType];
+
+    // Récupérer les permissions existantes
     const permissions = await ForumPermission.findAll({
       where: {
         entity_type: entityType,
@@ -114,23 +144,98 @@ export const getPermissions = async (req, res, next) => {
     });
 
     // Organiser les permissions par operation_type
-    const result = {
-      view: null,
-      create: null,
-      update: null,
-      delete: null,
-    };
+    const result = {};
 
     permissions.forEach((perm) => {
-      result[perm.operation_type] = perm;
+      // Seulement inclure les opérations valides pour ce type d'entité
+      if (validOperations.includes(perm.operation_type)) {
+        result[perm.operation_type] = perm;
+      }
     });
 
-    // Ajouter les valeurs par défaut pour les opérations manquantes
-    ["view", "create", "update", "delete"].forEach((op) => {
+    // Pour les opérations manquantes, essayer de récupérer depuis le parent
+    let parentPermissions = null;
+    if (entityType === "section") {
+      const section = await Section.findByPk(entityId);
+      if (section) {
+        if (section.parent_section_id) {
+          // Récupérer depuis la section parent
+          parentPermissions = await ForumPermission.findAll({
+            where: {
+              entity_type: "section",
+              entity_id: section.parent_section_id,
+            },
+            include: [
+              { model: Faction, as: "requiredFaction", attributes: ["id", "name"] },
+              { model: Clan, as: "requiredClan", attributes: ["id", "name"] },
+            ],
+          });
+        } else if (section.category_id) {
+          // Récupérer depuis la catégorie
+          parentPermissions = await ForumPermission.findAll({
+            where: {
+              entity_type: "category",
+              entity_id: section.category_id,
+            },
+            include: [
+              { model: Faction, as: "requiredFaction", attributes: ["id", "name"] },
+              { model: Clan, as: "requiredClan", attributes: ["id", "name"] },
+            ],
+          });
+        }
+      }
+    } else if (entityType === "topic") {
+      const topic = await Topic.findByPk(entityId);
+      if (topic && topic.section_id) {
+        // Récupérer depuis la section
+        parentPermissions = await ForumPermission.findAll({
+          where: {
+            entity_type: "section",
+            entity_id: topic.section_id,
+          },
+          include: [
+            { model: Faction, as: "requiredFaction", attributes: ["id", "name"] },
+            { model: Clan, as: "requiredClan", attributes: ["id", "name"] },
+          ],
+        });
+      }
+    }
+
+    // Convertir parentPermissions en map pour faciliter l'accès
+    const parentPermissionsMap = {};
+    if (parentPermissions) {
+      parentPermissions.forEach((perm) => {
+        if (validOperations.includes(perm.operation_type)) {
+          parentPermissionsMap[perm.operation_type] = perm;
+        }
+      });
+    }
+
+    // Ajouter les permissions manquantes (depuis parent ou par défaut)
+    validOperations.forEach((op) => {
       if (!result[op]) {
+        if (parentPermissionsMap[op]) {
+          // Utiliser les permissions du parent (marquer comme héritées)
+          result[op] = {
+            ...parentPermissionsMap[op].toJSON(),
+            inherited: true,
+            inherited_from: entityType === "section"
+              ? (entity.parent_section_id ? "parent_section" : "category")
+              : "section",
+          };
+        } else {
+          // Utiliser les valeurs par défaut
+          result[op] = {
+            operation_type: op,
+            ...DEFAULT_PERMISSIONS[op],
+            inherited: false,
+          };
+        }
+      } else {
+        // Marquer comme non hérité
         result[op] = {
-          operation_type: op,
-          ...DEFAULT_PERMISSIONS[op],
+          ...result[op].toJSON(),
+          inherited: false,
         };
       }
     });
@@ -188,10 +293,13 @@ export const updatePermissions = async (req, res, next) => {
       });
     }
 
+    // Récupérer les opérations valides pour ce type d'entité
+    const validOperations = VALID_OPERATIONS_BY_ENTITY[entityType];
+
     // Mettre à jour les permissions pour chaque opération
     const updatedPermissions = {};
 
-    for (const operationType of ["view", "create", "update", "delete"]) {
+    for (const operationType of validOperations) {
       if (!permissionsData[operationType]) continue;
 
       const data = permissionsData[operationType];

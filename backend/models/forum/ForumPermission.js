@@ -25,9 +25,16 @@ const ForumPermission = sequelize.define(
     // TYPE D'OPÉRATION
     // ═══════════════════════════════════════════════════════════
     operation_type: {
-      type: DataTypes.ENUM("view", "create", "update", "delete"),
+      type: DataTypes.ENUM(
+        "view",                    // Voir l'élément
+        "create_section",          // Créer une section enfant (category, section)
+        "create_topic",            // Créer un topic enfant (section uniquement)
+        "pin_lock",                // Verrouiller ou épingler (section, topic)
+        "edit_delete",             // Modifier ou supprimer (section, topic)
+        "move_children"            // Déplacer un enfant depuis/vers l'élément (category, section, topic)
+      ),
       allowNull: false,
-      comment: "Type d'opération (view, create, update, delete)",
+      comment: "Type d'opération (view / create_section / create_topic / pin_lock / edit_delete / move_children)",
     },
 
     // ═══════════════════════════════════════════════════════════

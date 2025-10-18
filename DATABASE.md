@@ -329,9 +329,9 @@ Messages/réponses dans les topics.
 
 ---
 
-### ForumPermission (Permissions)
+### ForumPermission (Permissions) - Refonte v2
 
-Système de permissions granulaire pour catégories, sections et topics.
+Système de permissions granulaire à 6 opérations pour catégories, sections et topics.
 
 **Table** : `forum_permissions`
 
@@ -340,7 +340,7 @@ Système de permissions granulaire pour catégories, sections et topics.
 | `id` | INTEGER | PK, AUTO_INCREMENT | ID unique |
 | `entity_type` | ENUM | NOT NULL | Type ('category', 'section', 'topic') |
 | `entity_id` | INTEGER | NOT NULL | ID de l'entité |
-| `operation` | ENUM | NOT NULL | Opération ('view', 'create', 'update', 'delete') |
+| `operation_type` | ENUM | NOT NULL | Type d'opération (6 types granulaires) |
 | **Niveau 1 : Rôle** |
 | `role_level` | ENUM | DEFAULT 'everyone' | Niveau de rôle requis |
 | **Niveau 2 : Auteur** |
@@ -350,11 +350,10 @@ Système de permissions granulaire pour catégories, sections et topics.
 | `required_faction_id` | INTEGER | FK `factions.id`, NULL | Faction requise |
 | `required_clan_id` | INTEGER | FK `clans.id`, NULL | Clan requis |
 | **Niveau 4 : Auteur RP** |
-| `character_author_rule_enabled` | BOOLEAN | DEFAULT false | Activer règle auteur RP |
-| `character_author_exclusive` | BOOLEAN | DEFAULT false | Mode exclusif |
+| `enable_author_character_rule` | BOOLEAN | DEFAULT false | Activer règle auteur RP |
+| `author_character_mode` | ENUM | DEFAULT 'inclusive' | Mode ('exclusive', 'inclusive') |
 | **Niveau 5 : Acceptations** |
-| `requires_terms` | BOOLEAN | DEFAULT false | Nécessite CGU acceptées |
-| `requires_forum_rules` | BOOLEAN | DEFAULT false | Nécessite règlement accepté |
+| `require_terms_accepted` | BOOLEAN | DEFAULT false | Nécessite CGU + règlement acceptés |
 
 **Valeurs ENUM** :
 
@@ -363,11 +362,13 @@ Système de permissions granulaire pour catégories, sections et topics.
 - `'section'` - Section
 - `'topic'` - Topic
 
-`operation` :
-- `'view'` - Lecture
-- `'create'` - Création
-- `'update'` - Modification
-- `'delete'` - Suppression
+`operation_type` (opérations granulaires par type d'entité) :
+- `'view'` - Voir l'élément (tous types)
+- `'create_section'` - Créer section enfant (category, section)
+- `'create_topic'` - Créer topic enfant (section uniquement)
+- `'pin_lock'` - Épingler/verrouiller (section, topic)
+- `'edit_delete'` - Modifier/supprimer (section, topic)
+- `'move_children'` - Déplacer enfants (tous types)
 
 `role_level` :
 - `'admin'` - Admin uniquement
