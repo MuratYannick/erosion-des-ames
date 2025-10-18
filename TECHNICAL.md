@@ -309,36 +309,63 @@ curl -X POST http://localhost:3000/api/forum/topics \
 
 | Méthode | Route | Protection | Description | Body |
 |---------|-------|-----------|-------------|------|
-| GET | `/:entityType/:entityId` | - | Permissions d'une entité | - |
-| PUT | `/:entityType/:entityId` | JWT (admin) | Mettre à jour permissions | `{ permissions: [...] }` |
+| GET | `/:entityType/:entityId` | - | Permissions d'une entité (avec héritage) | - |
+| PUT | `/:entityType/:entityId` | JWT (admin) | Mettre à jour permissions | `{ view: {...}, create_section: {...}, ... }` |
 | POST | `/:entityType/:entityId/inherit` | JWT (admin) | Hériter permissions parentes | - |
 
 **Types d'entités** : `category`, `section`, `topic`
 
-**Opérations** : `view`, `create`, `update`, `delete`
+**Opérations granulaires** (spécifiques par type d'entité) :
+- `view` - Voir l'élément (tous types)
+- `create_section` - Créer section enfant (category, section)
+- `create_topic` - Créer topic enfant (section uniquement)
+- `pin_lock` - Épingler/verrouiller (section, topic)
+- `edit_delete` - Modifier/supprimer (section, topic)
+- `move_children` - Déplacer enfants (tous types)
 
 **Exemple de body PUT** :
 ```json
 {
-  "permissions": [
-    {
-      "operation": "view",
-      "role_level": "everyone",
-      "allow_author": false,
-      "character_requirement": "none",
-      "requires_terms": true,
-      "requires_forum_rules": true
-    },
-    {
-      "operation": "create",
+  "view": {
+    "role_level": "everyone",
+    "allow_author": false,
+    "character_requirement": "none",
+    "require_terms_accepted": false
+  },
+  "create_section": {
+    "role_level": "admin",
+    "allow_author": false,
+    "character_requirement": "none",
+    "require_terms_accepted": true
+  },
+  "move_children": {
+    "role_level": "admin_moderator",
+    "allow_author": false,
+    "character_requirement": "none",
+    "require_terms_accepted": true
+  }
+}
+```
+
+**Réponse GET avec héritage** :
+```json
+{
+  "success": true,
+  "data": {
+    "view": {
+      "operation_type": "view",
       "role_level": "admin_moderator_gm_player",
-      "allow_author": false,
       "character_requirement": "alive",
-      "character_author_rule_enabled": false,
-      "requires_terms": true,
-      "requires_forum_rules": true
+      "inherited": true,
+      "inherited_from": "category"
+    },
+    "create_topic": {
+      "operation_type": "create_topic",
+      "role_level": "admin_moderator_gm_player",
+      "character_requirement": "none",
+      "inherited": false
     }
-  ]
+  }
 }
 ```
 

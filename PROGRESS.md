@@ -102,18 +102,28 @@ Ce document trace l'évolution du développement du projet.
 - [x] Protection contre boucles infinies (déplacement sections)
 - [x] Système de permissions à 5 couches (voir détails ci-dessous)
 
-#### Système de Permissions Avancé
-- [x] Modèle ForumPermission avec 4 types d'opérations (view, create, update, delete)
-- [x] 5 niveaux de permissions par opération :
+#### Système de Permissions Avancé (Refonte v2)
+- [x] Modèle ForumPermission avec 6 types d'opérations granulaires :
+  - `view` : Voir l'élément (tous types d'entités)
+  - `create_section` : Créer section enfant (category, section)
+  - `create_topic` : Créer topic enfant (section uniquement)
+  - `pin_lock` : Épingler/verrouiller (section, topic)
+  - `edit_delete` : Modifier/supprimer (section, topic)
+  - `move_children` : Déplacer enfants (tous types)
+- [x] Opérations spécifiques par type d'entité (category/section/topic)
+- [x] 5 niveaux de contrôle par opération :
   1. [x] Permissions par rôle (6 niveaux : admin → tous)
   2. [x] Exception auteur (autorisation spéciale)
   3. [x] Exigences de personnage (vivant, membre clan/faction, leader)
   4. [x] Règles personnage auteur (exclusif/inclusif)
   5. [x] Exigences d'acceptation (CGU + règlement forum)
-- [x] Application aux catégories, sections et topics
-- [x] Héritage de permissions depuis entités parentes
+- [x] Héritage intelligent avec indication visuelle :
+  - Sections → catégorie ou section parent
+  - Topics → section parent
+  - Badge informatif dans le formulaire
+- [x] Permissions pré-configurées pour les 3 catégories de base
 - [x] API complète (GET/PUT permissions, POST inherit)
-- [x] Permissions par défaut pour entités sans règles
+- [x] Valeurs par défaut pour entités sans règles
 
 #### Scripts et Utilitaires
 - [x] Script de seeding production (`npm run seed`)
@@ -137,6 +147,14 @@ Ce document trace l'évolution du développement du projet.
 - [x] React Router 7.9.3 pour la navigation
 - [x] Proxy API vers backend (port 3000)
 - [x] Configuration ESLint
+
+#### Optimisations de Performance
+- [x] Google Fonts optimisées :
+  - Préconnexion DNS (`preconnect`) aux serveurs Google Fonts
+  - Chargement asynchrone non-bloquant (`media="print" onload="this.media='all'"`)
+  - Élimination du FOIT (Flash of Invisible Text) avec `display=swap`
+  - Fallback pour navigateurs sans JavaScript
+- [x] Amélioration du temps de chargement initial (~500-1000ms)
 
 #### Contextes et État Global
 - [x] AuthContext complet avec :

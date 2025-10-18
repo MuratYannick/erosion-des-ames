@@ -3,19 +3,36 @@
 Jeu de rôle post-apocalyptique en ligne où mutants et non-mutants s'affrontent dans un monde dévasté par le cataclysme.
 
 > **🆕 Dernières mises à jour** :
-> - **🔐 Système de gestion des permissions avancé** : Implémentation d'un système de permissions granulaire à 5 couches
->   - **Modèle ForumPermission** : Base de données avec support de permissions par opération (view, create, update, delete)
->   - **5 niveaux de permissions** :
+> - **⚡ Optimisation des performances** : Amélioration significative du temps de chargement initial
+>   - **Google Fonts optimisées** : Préconnexion DNS et chargement asynchrone des polices
+>   - **Réduction du temps de chargement** : ~500-1000ms d'amélioration
+>   - **Élimination du FOIT** : Texte toujours visible avec polices de secours
+>   - **Chargement non-bloquant** : Les fonts se chargent en arrière-plan sans bloquer le rendu
+> - **🔐 Refonte complète du système de permissions** : Nouvelle architecture granulaire avec 6 types d'opérations
+>   - **Nouveaux types d'opérations** :
+>     - `view` : Voir l'élément (tous types)
+>     - `create_section` : Créer une section enfant (category, section)
+>     - `create_topic` : Créer un topic enfant (section uniquement)
+>     - `pin_lock` : Épingler/verrouiller (section, topic)
+>     - `edit_delete` : Modifier/supprimer (section, topic)
+>     - `move_children` : Déplacer enfants (tous types)
+>   - **Permissions par entité** : Opérations spécifiques selon le type (category/section/topic)
+>   - **Héritage intelligent** : Récupération automatique des permissions du parent
+>     - Sections → permissions de la catégorie ou section parent
+>     - Topics → permissions de la section parent
+>     - Badge visuel indiquant l'héritage dans le formulaire
+>   - **5 niveaux de contrôle** :
 >     1. Permissions par rôle (admin seul → tous les utilisateurs)
->     2. Exception auteur (autorisation spéciale pour l'auteur d'origine)
->     3. Exigences de personnage (personnage vivant, membre de clan/faction, leader de clan)
+>     2. Exception auteur (autorisation spéciale pour l'auteur)
+>     3. Exigences de personnage (vivant, membre de clan/faction, leader)
 >     4. Règles pour personnage auteur (mode exclusif ou inclusif)
 >     5. Exigences d'acceptation (CGU et règlement du forum)
->   - **Permissions par entité** : Application aux catégories, sections et topics
->   - **Héritage de permissions** : Possibilité d'hériter des permissions parentes
->   - **Interface de gestion** : Composant PermissionsForm avec onglets par opération
->   - **API complète** : Routes GET/PUT pour gérer et hériter les permissions
->   - **Intégration UI** : Boutons de gestion ajoutés sur ForumCategoryPage, ForumSectionPage, ForumTopicPage
+>   - **Permissions pré-configurées** : 3 catégories avec permissions de base
+>     - Forum Général : accès public, création admin uniquement
+>     - Forum HRP : accès players+, personnage optionnel, CGU requis pour création
+>     - Forum RP : accès players+, personnage vivant requis, CGU requis pour création
+>   - **Interface adaptative** : Formulaire avec onglets conditionnels selon le type d'entité
+>   - **API complète** : GET/PUT/POST pour gérer, mettre à jour et hériter les permissions
 > - **🔧 Amélioration gestion des sections et topics** : Validation avancée des noms et slugs
 >   - **Sections** :
 >     - Empêche la création de sections avec le même nom au même niveau (même parent direct ou catégorie)
