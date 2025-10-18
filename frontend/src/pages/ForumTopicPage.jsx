@@ -11,6 +11,7 @@ import EditTopicForm from "../components/forum/EditTopicForm";
 import CreatePostForm from "../components/forum/CreatePostForm";
 import MoveTopicForm from "../components/forum/MoveTopicForm";
 import MovePostForm from "../components/forum/MovePostForm";
+import PermissionsForm from "../components/forum/PermissionsForm";
 
 function ForumTopicPage() {
   const styles = ForumBody.styles;
@@ -30,6 +31,7 @@ function ForumTopicPage() {
   const [showDeleteTopicConfirm, setShowDeleteTopicConfirm] = useState(false);
   const [showDeletePostConfirm, setShowDeletePostConfirm] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Utiliser l'authentification du contexte
   const isAuthenticated = authIsAuthenticated;
@@ -383,6 +385,13 @@ function ForumTopicPage() {
                   <span>🗑️</span>
                   <span>Supprimer</span>
                 </button>
+                <button
+                  onClick={() => setIsPermissionsModalOpen(true)}
+                  className="px-3 py-2 bg-city-700 text-ochre-500 rounded font-texte-corps hover:bg-city-600 transition-colors flex items-center gap-2 border border-ochre-700 text-sm"
+                >
+                  <span>🔒</span>
+                  <span>Permissions</span>
+                </button>
               </div>
             )}
           </div>
@@ -617,6 +626,26 @@ function ForumTopicPage() {
         confirmText="Supprimer"
         type="danger"
       />
+
+      {/* Modal de gestion des permissions */}
+      <Modal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+        title="Gérer les permissions"
+      >
+        {topic && (
+          <PermissionsForm
+            entityType="topic"
+            entityId={topic.id}
+            entityName={topic.title}
+            onSuccess={() => {
+              setIsPermissionsModalOpen(false);
+              alert("Permissions mises à jour avec succès !");
+            }}
+            onCancel={() => setIsPermissionsModalOpen(false)}
+          />
+        )}
+      </Modal>
     </div>
   );
 }

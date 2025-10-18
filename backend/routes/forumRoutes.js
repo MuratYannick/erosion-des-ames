@@ -32,6 +32,12 @@ import {
   movePost,
 } from "../controllers/forum/postController.js";
 
+import {
+  getPermissions,
+  updatePermissions,
+  inheritPermissionsFromParent,
+} from "../controllers/forum/permissionController.js";
+
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -80,5 +86,17 @@ router.post("/posts", protect, createPost);
 router.put("/posts/:id", protect, updatePost);
 router.put("/posts/:id/move", protect, movePost);
 router.delete("/posts/:id", protect, deletePost);
+
+// ──────────────────────────────────────────────────────────
+// PERMISSIONS - Gestion des permissions du forum
+// ──────────────────────────────────────────────────────────
+// Récupérer les permissions d'une entité (public pour voir les restrictions)
+router.get("/permissions/:entityType/:entityId", getPermissions);
+
+// Mettre à jour les permissions (protégé)
+router.put("/permissions/:entityType/:entityId", protect, updatePermissions);
+
+// Hériter des permissions du parent (protégé)
+router.post("/permissions/:entityType/:entityId/inherit", protect, inheritPermissionsFromParent);
 
 export default router;

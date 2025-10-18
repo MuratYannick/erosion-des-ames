@@ -8,6 +8,7 @@ import CreateSectionForm from "../components/forum/CreateSectionForm";
 import CreateTopicForm from "../components/forum/CreateTopicForm";
 import EditSectionForm from "../components/forum/EditSectionForm";
 import MoveSectionForm from "../components/forum/MoveSectionForm";
+import PermissionsForm from "../components/forum/PermissionsForm";
 
 function ForumSectionPage() {
   const styles = ForumBody.styles;
@@ -21,6 +22,7 @@ function ForumSectionPage() {
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Fonction pour recharger la section
   const fetchSection = async () => {
@@ -180,6 +182,13 @@ function ForumSectionPage() {
                   <span>📦</span>
                   <span>Déplacer</span>
                 </button>
+                <button
+                  onClick={() => setIsPermissionsModalOpen(true)}
+                  className="px-4 py-2 bg-city-700 text-ochre-500 rounded font-texte-corps hover:bg-city-600 transition-colors flex items-center gap-2 border border-ochre-700"
+                >
+                  <span>🔒</span>
+                  <span>Permissions</span>
+                </button>
               </div>
             )}
           </div>
@@ -302,6 +311,26 @@ function ForumSectionPage() {
             section={section}
             onSuccess={handleSectionMoved}
             onCancel={() => setIsMoveModalOpen(false)}
+          />
+        )}
+      </Modal>
+
+      {/* Modal de gestion des permissions */}
+      <Modal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+        title="Gérer les permissions"
+      >
+        {section && (
+          <PermissionsForm
+            entityType="section"
+            entityId={section.id}
+            entityName={section.name}
+            onSuccess={() => {
+              setIsPermissionsModalOpen(false);
+              alert("Permissions mises à jour avec succès !");
+            }}
+            onCancel={() => setIsPermissionsModalOpen(false)}
           />
         )}
       </Modal>

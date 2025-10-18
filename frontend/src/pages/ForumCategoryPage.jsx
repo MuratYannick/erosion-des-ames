@@ -7,6 +7,7 @@ import TermsAcceptance from "../components/ui/TermsAcceptance";
 import ForumRulesAcceptance from "../components/ui/ForumRulesAcceptance";
 import Modal from "../components/ui/Modal";
 import CreateSectionForm from "../components/forum/CreateSectionForm";
+import PermissionsForm from "../components/forum/PermissionsForm";
 
 function ForumCategoryPage() {
   const styles = ForumBody.styles;
@@ -17,6 +18,7 @@ function ForumCategoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Déterminer le slug de la catégorie depuis l'URL
   const categorySlug = slug || location.pathname.split('/').pop() || 'general';
@@ -86,13 +88,22 @@ function ForumCategoryPage() {
               )}
             </div>
             {isAuthenticated && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="ml-4 px-4 py-2 bg-ochre-600 text-city-950 rounded font-texte-corps hover:bg-ochre-500 transition-colors flex items-center gap-2"
-              >
-                <span className="text-xl">+</span>
-                <span>Créer une section</span>
-              </button>
+              <div className="ml-4 flex gap-3">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-4 py-2 bg-ochre-600 text-city-950 rounded font-texte-corps hover:bg-ochre-500 transition-colors flex items-center gap-2"
+                >
+                  <span className="text-xl">+</span>
+                  <span>Créer une section</span>
+                </button>
+                <button
+                  onClick={() => setIsPermissionsModalOpen(true)}
+                  className="px-4 py-2 bg-city-700 text-ochre-500 rounded font-texte-corps hover:bg-city-600 transition-colors flex items-center gap-2 border border-ochre-700"
+                >
+                  <span>🔒</span>
+                  <span>Permissions</span>
+                </button>
+              </div>
             )}
           </div>
 
@@ -159,6 +170,26 @@ function ForumCategoryPage() {
           onSuccess={handleSectionCreated}
           onCancel={() => setIsModalOpen(false)}
         />
+      </Modal>
+
+      {/* Modal de gestion des permissions */}
+      <Modal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+        title="Gérer les permissions"
+      >
+        {category && (
+          <PermissionsForm
+            entityType="category"
+            entityId={category.id}
+            entityName={category.name}
+            onSuccess={() => {
+              setIsPermissionsModalOpen(false);
+              alert("Permissions mises à jour avec succès !");
+            }}
+            onCancel={() => setIsPermissionsModalOpen(false)}
+          />
+        )}
       </Modal>
     </div>
   );

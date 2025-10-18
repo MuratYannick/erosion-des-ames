@@ -1,35 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(test:*)",
-      "Bash(cat:*)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/models/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-backend/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/pages/**)",
-      "Read(//c/developpement/WEB/ErosionDesAmesOLD/EDA-frontend/src/components/ui/**)",
-      "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(curl:*)",
-      "Bash(node server.js)",
-      "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(npm run seed:*)",
-      "Bash(node:*)",
-      "Bash(npm start)",
-      "Bash(npm:*)",
-      "Bash(npx eslint:*)",
-      "Bash(taskkill:*)",
-      "Bash(git remote add:*)",
-      "Bash(git fetch:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(timeout /t 5)",
-      "Bash(del:*)",
-      "Bash(killall node:*)",
-      "Bash(pkill:*)",
-      "Bash(timeout 10 node:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nAjout système de vérification automatique des acceptations CGU et règlement du forum\n\nCe commit implémente un système qui vérifie automatiquement à chaque connexion\nsi les CGU ou le règlement du forum ont été mis à jour depuis la dernière acceptation\nde l''utilisateur. Si c''est le cas, les acceptations correspondantes sont invalidées.\n\nFonctionnalités ajoutées:\n- Fonction checkAndUpdateAcceptances() qui compare les dates d''acceptation \n  avec les dates de mise à jour des posts\n- Intégration dans le processus de connexion (authController.login)\n- Permet la ré-acceptation des CGU et règlement après invalidation\n- Utilise les colonnes terms_accepted_at et forum_rules_accepted_at de la table users\n- Compare avec le champ updated_at du post le plus récent des topics ''cgu'' et ''reglement''\n\nFichiers modifiés:\n- backend/controllers/authController.js : Intègre la vérification lors de la connexion\n  et supprime les vérifications bloquant la ré-acceptation\n- backend/utils/acceptanceChecker.js : Nouvelle fonction utilitaire pour la vérification\n- backend/utils/README-acceptance-checker.md : Documentation complète du système\n- backend/test-acceptance.js : Script de test complet avec 3 scénarios\n\nTests inclus:\n✅ Test 1: Les acceptations restent valides sans mise à jour\n✅ Test 2: L''acceptation CGU est invalidée après mise à jour du post CGU\n✅ Test 3: L''acceptation règlement est invalidée après mise à jour du post règlement\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(copy README.md README.md.old)"
     ],
     "deny": [],
     "ask": []

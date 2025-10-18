@@ -13,6 +13,7 @@ import Category from "./forum/Category.js";
 import Section from "./forum/Section.js";
 import Topic from "./forum/Topic.js";
 import Post from "./forum/Post.js";
+import ForumPermission from "./forum/ForumPermission.js";
 
 // ═══════════════════════════════════════════════════════════
 // RELATIONS ENTRE LES MODÈLES
@@ -176,11 +177,47 @@ Post.belongsTo(Character, {
   as: "authorCharacter",
 });
 
+// ──────────────────────────────────────────────────────────
+// RELATIONS PERMISSIONS
+// ──────────────────────────────────────────────────────────
+
+// Faction ↔ ForumPermission - Pour les permissions nécessitant une faction
+Faction.hasMany(ForumPermission, {
+  foreignKey: "required_faction_id",
+  as: "requiredForPermissions",
+  onDelete: "SET NULL",
+});
+
+// Clan ↔ ForumPermission - Pour les permissions nécessitant un clan
+Clan.hasMany(ForumPermission, {
+  foreignKey: "required_clan_id",
+  as: "requiredForPermissions",
+  onDelete: "SET NULL",
+});
+
+// Appeler les associations définies dans ForumPermission
+if (ForumPermission.associate) {
+  ForumPermission.associate({
+    Faction,
+    Clan,
+  });
+}
+
 // ═══════════════════════════════════════════════════════════
 // EXPORT DES MODÈLES
 // ═══════════════════════════════════════════════════════════
 
-export { User, Faction, Character, Clan, Category, Section, Topic, Post };
+export {
+  User,
+  Faction,
+  Character,
+  Clan,
+  Category,
+  Section,
+  Topic,
+  Post,
+  ForumPermission,
+};
 
 export default {
   User,
@@ -191,4 +228,5 @@ export default {
   Section,
   Topic,
   Post,
+  ForumPermission,
 };
