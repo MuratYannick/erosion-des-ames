@@ -1,0 +1,12 @@
+/* ===========================================
+   Home Page - Erosion des Ames
+   =========================================== */
+
+.home-page {
+  /* Les sections s'empilent verticalement */
+}
+
+/* Spacing entre sections */
+.home-page > section:not(:first-child) {
+  margin-top: 0;
+}

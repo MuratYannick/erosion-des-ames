@@ -13,34 +13,7 @@ import {
   Avatar,
   Badge,
 } from '@/components'
-
-// Demo Home Page
-function HomePage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="font-display text-5xl text-primary-800 mb-6">
-          Bienvenue sur Erosion des Ames
-        </h1>
-        <p className="font-body text-xl text-skin-secondary mb-8 leading-relaxed">
-          Un jeu de role textuel dans un univers post-apocalyptique tribal.
-          La ou les ames s'erodent, les legendes naissent.
-        </p>
-        <div className="bg-surface-elevated rounded-lg p-8 shadow-md border border-neutral-200">
-          <h2 className="font-heading text-2xl text-primary-700 mb-4">
-            Phase 1.3 - Layouts Complete
-          </h2>
-          <ul className="font-body text-skin-secondary space-y-2">
-            <li>Header avec navigation tribale</li>
-            <li>Footer avec liens et icones sociales</li>
-            <li>MainLayout responsive</li>
-            <li>Menu mobile slide-in</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { Home } from '@/pages'
 
 // Placeholder pages
 function AvantProposPage() {
@@ -246,7 +219,7 @@ function App() {
               />
             }
           >
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<Home />} />
             <Route path="/avant-propos" element={<AvantProposPage />} />
             <Route path="/univers" element={<UniversLayout />}>
               <Route index element={<UniversPage />} />

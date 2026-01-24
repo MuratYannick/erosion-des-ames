@@ -1,0 +1,350 @@
+/* ===========================================
+   Hero Section - Erosion des Ames
+   "L'Éveil du Rituel"
+   =========================================== */
+
+/* -------------------------------------------
+   Background & Layers
+   ------------------------------------------- */
+.hero-bg {
+  filter: sepia(0.15) brightness(0.6) contrast(1.1);
+  will-change: transform;
+}
+
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(230, 115, 21, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* Pattern tribal */
+.hero-pattern {
+  opacity: 0.05;
+  animation: pattern-fade-in 2s ease-out;
+}
+
+@keyframes pattern-fade-in {
+  from { opacity: 0; }
+  to { opacity: 0.05; }
+}
+
+/* -------------------------------------------
+   Titre avec effet glow pulsant
+   ------------------------------------------- */
+.hero-title {
+  text-shadow:
+    0 0 20px rgba(230, 115, 21, 0.4),
+    0 0 40px rgba(230, 115, 21, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  animation:
+    title-glow-pulse 3s ease-in-out infinite,
+    title-emerge 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  letter-spacing: 0.05em;
+}
+
+@keyframes title-glow-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 20px rgba(230, 115, 21, 0.3),
+      0 0 40px rgba(230, 115, 21, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 30px rgba(230, 115, 21, 0.5),
+      0 0 60px rgba(230, 115, 21, 0.25),
+      0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+@keyframes title-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------
+   Sous-titre
+   ------------------------------------------- */
+.hero-subtitle {
+  animation: subtitle-emerge 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both;
+  line-height: 1.6;
+}
+
+@keyframes subtitle-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------
+   Coins tribaux animés
+   ------------------------------------------- */
+.hero-corner {
+  animation: corner-fade-in 0.6s ease-out both;
+}
+
+.hero-corner-delay-1 { animation-delay: 0.1s; }
+.hero-corner-delay-2 { animation-delay: 0.2s; }
+.hero-corner-delay-3 { animation-delay: 0.3s; }
+
+@keyframes corner-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* -------------------------------------------
+   Séparateur tribal animé
+   ------------------------------------------- */
+.hero-divider {
+  position: relative;
+  height: 2px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+.hero-divider::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(230, 115, 21, 0.6) 30%,
+    rgba(230, 115, 21, 0.8) 50%,
+    rgba(230, 115, 21, 0.6) 70%,
+    transparent 100%
+  );
+  animation: divider-grow 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.5s both;
+}
+
+.hero-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(230, 115, 21, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(230, 115, 21, 0.6);
+  animation: dot-emerge 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s both;
+}
+
+@keyframes divider-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes dot-emerge {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------
+   Call-to-action buttons
+   ------------------------------------------- */
+.hero-cta {
+  animation: cta-emerge 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.4s both;
+}
+
+@keyframes cta-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------
+   Badge avec pulse glow
+   ------------------------------------------- */
+.hero-badge {
+  animation: badge-fade-in 0.6s ease-out 0.6s both;
+}
+
+@keyframes badge-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hero-badge-dot {
+  animation: badge-pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(230, 115, 21, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(230, 115, 21, 0.7);
+  }
+}
+
+/* -------------------------------------------
+   Particules Ember flottantes
+   ------------------------------------------- */
+.ember-particle {
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 200, 100, 1) 0%,
+    rgba(230, 115, 21, 0.8) 50%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  animation: float-ember 10s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(230, 115, 21, 0.8);
+}
+
+@keyframes float-ember {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-70vh) translateX(30px) scale(0.8);
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(-20px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* -------------------------------------------
+   Indicateur de scroll
+   ------------------------------------------- */
+.hero-scroll-indicator {
+  animation: scroll-indicator-fade 0.6s ease-out 1s both;
+}
+
+@keyframes scroll-indicator-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.scroll-arrow {
+  width: 24px;
+  height: 24px;
+  border-right: 2px solid rgba(230, 115, 21, 0.6);
+  border-bottom: 2px solid rgba(230, 115, 21, 0.6);
+  transform: rotate(45deg);
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+@keyframes scroll-bounce {
+  0%, 100% {
+    transform: rotate(45deg) translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: rotate(45deg) translateY(8px);
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------
+   Responsive adjustments
+   ------------------------------------------- */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+    letter-spacing: 0.02em;
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .ember-particle {
+    width: 3px;
+    height: 3px;
+  }
+
+  /* Réduire le nombre de particules sur mobile */
+  .ember-particle:nth-child(n+4) {
+    display: none;
+  }
+
+  .hero-divider {
+    max-width: 200px;
+  }
+
+  .hero-scroll-indicator {
+    display: none;
+  }
+}
+
+/* -------------------------------------------
+   Optimisations performance
+   ------------------------------------------- */
+.hero-bg,
+.ember-particle,
+.hero-title {
+  will-change: transform;
+}
+
+/* Réduire les animations si préférence utilisateur */
+@media (prefers-reduced-motion: reduce) {
+  .hero-title,
+  .hero-subtitle,
+  .ember-particle,
+  .hero-cta,
+  .hero-badge,
+  .hero-corner,
+  .hero-divider::before,
+  .hero-divider::after,
+  .scroll-arrow,
+  .hero-pattern {
+    animation: none !important;
+  }
+
+  .hero-bg {
+    transform: none !important;
+  }
+
+  .hero-title {
+    text-shadow: 0 0 20px rgba(230, 115, 21, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .hero-pattern {
+    opacity: 0.05;
+  }
+}

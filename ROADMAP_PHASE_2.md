@@ -36,13 +36,13 @@ frontend/src/
 ```
 
 ### Section Hero
-- [ ] Créer le composant HeroSection
-- [ ] Bannière pleine largeur avec image d'accroche
-- [ ] Titre principal avec typographie Metal Mania
-- [ ] Sous-titre/accroche immersive
-- [ ] Call-to-action (bouton inscription / découvrir)
-- [ ] Effet parallax ou animation subtile
-- [ ] **Thématique tribal**: Overlay rituel, bordure gravée, particules ember
+- [x] Créer le composant HeroSection
+- [x] Bannière pleine largeur avec image d'accroche
+- [x] Titre principal avec typographie Metal Mania
+- [x] Sous-titre/accroche immersive
+- [x] Call-to-action (bouton inscription / découvrir)
+- [x] Effet parallax ou animation subtile
+- [x] **Thématique tribal**: Overlay rituel, bordure gravée, particules ember
 
 ### Section Présentation
 - [ ] Créer le composant PresentationSection
