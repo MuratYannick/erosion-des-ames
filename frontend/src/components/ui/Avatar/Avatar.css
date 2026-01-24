@@ -1,0 +1,144 @@
+/* ===========================================
+   Avatar Component - Tribal Portrait Style
+   Erosion des Ames
+   =========================================== */
+
+/* -------------------------------------------
+   BASE STYLES
+   ------------------------------------------- */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Stone-like frame border */
+.avatar-frame {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--color-primary-400);
+}
+
+/* -------------------------------------------
+   IMAGE
+   ------------------------------------------- */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* -------------------------------------------
+   FALLBACK (Initials or Icon)
+   ------------------------------------------- */
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-200) 0%,
+    var(--color-primary-300) 100%
+  );
+  color: var(--color-primary-700);
+}
+
+/* -------------------------------------------
+   STATUS INDICATOR
+   ------------------------------------------- */
+.avatar-status {
+  position: absolute;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+}
+
+.avatar-status-online {
+  background-color: var(--color-success);
+}
+
+.avatar-status-offline {
+  background-color: var(--color-neutral-400);
+}
+
+.avatar-status-busy {
+  background-color: var(--color-error);
+}
+
+.avatar-status-away {
+  background-color: var(--color-warning);
+}
+
+/* Status position based on size */
+.avatar-xs .avatar-status {
+  width: 8px;
+  height: 8px;
+  bottom: -1px;
+  right: -1px;
+}
+
+.avatar-sm .avatar-status {
+  width: 10px;
+  height: 10px;
+  bottom: 0;
+  right: 0;
+}
+
+.avatar-md .avatar-status {
+  width: 12px;
+  height: 12px;
+  bottom: 1px;
+  right: 1px;
+}
+
+.avatar-lg .avatar-status {
+  width: 14px;
+  height: 14px;
+  bottom: 2px;
+  right: 2px;
+}
+
+.avatar-xl .avatar-status {
+  width: 16px;
+  height: 16px;
+  bottom: 3px;
+  right: 3px;
+}
+
+/* -------------------------------------------
+   RITUAL RING (Optional decoration)
+   ------------------------------------------- */
+.avatar-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px dashed var(--color-primary-300);
+  border-radius: inherit;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* -------------------------------------------
+   GROUP STYLES
+   ------------------------------------------- */
+.avatar-group {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.avatar-group > * {
+  margin-left: -0.5rem;
+  border: 2px solid var(--color-surface);
+}
+
+.avatar-group > *:last-child {
+  margin-left: 0;
+}

@@ -1,0 +1,247 @@
+/* ===========================================
+   Loader Components - Ritualistic Theme
+   Erosion des Ames - "Invoking Ancient Powers"
+   =========================================== */
+
+/* -------------------------------------------
+   SPINNER: Soul Vortex
+   ------------------------------------------- */
+@keyframes vortex-outer {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes vortex-middle {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes vortex-inner {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes vortex-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+}
+
+.loader-vortex-outer {
+  animation: vortex-outer 4s linear infinite;
+  transform-origin: center;
+}
+
+.loader-vortex-middle {
+  animation: vortex-middle 3s linear infinite;
+  transform-origin: center;
+}
+
+.loader-vortex-inner {
+  animation: vortex-inner 2s linear infinite;
+  transform-origin: center;
+}
+
+.loader-vortex-pulse {
+  animation: vortex-pulse 1.5s ease-in-out infinite;
+}
+
+/* -------------------------------------------
+   DOTS: Heartbeat of the Wasteland
+   ------------------------------------------- */
+@keyframes ember-pulse {
+  0%, 100% {
+    transform: scale(0.6) translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1) translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.loader-ember {
+  transform-origin: center bottom;
+}
+
+.loader-ember-1 {
+  animation: ember-pulse 1.8s ease-in-out 0s infinite;
+}
+
+.loader-ember-2 {
+  animation: ember-pulse 1.8s ease-in-out 0.2s infinite;
+}
+
+.loader-ember-3 {
+  animation: ember-pulse 1.8s ease-in-out 0.4s infinite;
+}
+
+/* -------------------------------------------
+   BARS: Ritual Chant
+   ------------------------------------------- */
+@keyframes bar-oscillate {
+  0%, 100% {
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.loader-bar {
+  transform-origin: center bottom;
+}
+
+.loader-bar-1 {
+  animation: bar-oscillate 1.2s ease-in-out 0s infinite;
+}
+
+.loader-bar-2 {
+  animation: bar-oscillate 1.2s ease-in-out 0.15s infinite;
+}
+
+.loader-bar-3 {
+  animation: bar-oscillate 1.2s ease-in-out 0.3s infinite;
+}
+
+.loader-bar-4 {
+  animation: bar-oscillate 1.2s ease-in-out 0.45s infinite;
+}
+
+.loader-bar-5 {
+  animation: bar-oscillate 1.2s ease-in-out 0.6s infinite;
+}
+
+/* -------------------------------------------
+   FULLSCREEN OVERLAY: Entering the Veil
+   ------------------------------------------- */
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loader-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loader-overlay {
+  background: radial-gradient(
+    circle at center,
+    rgba(28, 25, 23, 0.85) 0%,
+    rgba(28, 25, 23, 0.95) 70%,
+    rgb(28, 25, 23) 100%
+  );
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px) saturate(0.8);
+  animation: overlay-fade-in 0.4s ease-out forwards;
+}
+
+.loader-overlay-content {
+  animation: loader-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* -------------------------------------------
+   RADIAL PULSE AURA
+   ------------------------------------------- */
+@keyframes radial-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.05;
+  }
+}
+
+.loader-aura {
+  animation: radial-pulse 3s ease-in-out infinite;
+}
+
+/* -------------------------------------------
+   FLOATING ASH PARTICLES
+   ------------------------------------------- */
+@keyframes ash-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.loader-ash {
+  animation: ash-rise 8s linear infinite;
+}
+
+.loader-ash:nth-child(1) { animation-delay: 0s; }
+.loader-ash:nth-child(2) { animation-delay: 1.2s; }
+.loader-ash:nth-child(3) { animation-delay: 2.8s; }
+.loader-ash:nth-child(4) { animation-delay: 4.5s; }
+.loader-ash:nth-child(5) { animation-delay: 6.2s; }
+
+/* -------------------------------------------
+   LOADING TEXT
+   ------------------------------------------- */
+@keyframes text-pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.loader-text {
+  animation: text-pulse 2s ease-in-out infinite;
+  letter-spacing: 0.15em;
+}
+
+/* -------------------------------------------
+   REDUCED MOTION
+   ------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .loader-vortex-outer,
+  .loader-vortex-middle,
+  .loader-vortex-inner,
+  .loader-vortex-pulse,
+  .loader-ember,
+  .loader-bar,
+  .loader-aura,
+  .loader-ash {
+    animation: none !important;
+  }
+
+  .loader-ember {
+    opacity: 0.8;
+    transform: scale(0.9);
+  }
+
+  .loader-bar {
+    opacity: 0.8;
+    transform: scaleY(0.7);
+  }
+}

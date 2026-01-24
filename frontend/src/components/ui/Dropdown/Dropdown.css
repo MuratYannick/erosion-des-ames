@@ -1,0 +1,178 @@
+/* ===========================================
+   Dropdown Component - Tribal Menu Style
+   Erosion des Ames
+   =========================================== */
+
+/* -------------------------------------------
+   CONTAINER
+   ------------------------------------------- */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* -------------------------------------------
+   MENU: Floating Stone Tablet
+   ------------------------------------------- */
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 50;
+  min-width: 180px;
+  padding: 0.5rem 0;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-300);
+  border-radius: var(--radius-stone);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.2),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-menu-enter {
+  animation: dropdown-enter 200ms ease-out;
+}
+
+.dropdown-menu-exit {
+  animation: dropdown-exit 150ms ease-in forwards;
+}
+
+/* Stone texture */
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Position variants */
+.dropdown-menu-bottom {
+  top: 100%;
+  margin-top: 0.5rem;
+}
+
+.dropdown-menu-top {
+  bottom: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.dropdown-menu-left {
+  left: 0;
+}
+
+.dropdown-menu-right {
+  right: 0;
+}
+
+/* -------------------------------------------
+   MENU ITEM
+   ------------------------------------------- */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-primary-700);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  position: relative;
+}
+
+.dropdown-item:hover {
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+}
+
+.dropdown-item:focus {
+  outline: none;
+  background: var(--color-primary-100);
+}
+
+.dropdown-item:active {
+  background: var(--color-primary-200);
+}
+
+.dropdown-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Item icon */
+.dropdown-item-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.dropdown-item:hover .dropdown-item-icon {
+  opacity: 1;
+}
+
+/* -------------------------------------------
+   DIVIDER
+   ------------------------------------------- */
+.dropdown-divider {
+  height: 1px;
+  margin: 0.5rem 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary-200) 20%,
+    var(--color-primary-200) 80%,
+    transparent 100%
+  );
+}
+
+/* -------------------------------------------
+   HEADER (Optional group label)
+   ------------------------------------------- */
+.dropdown-header {
+  padding: 0.5rem 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary-500);
+}
+
+/* -------------------------------------------
+   REDUCED MOTION
+   ------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-menu-enter,
+  .dropdown-menu-exit {
+    animation: none;
+  }
+}

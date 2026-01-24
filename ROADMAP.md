@@ -12,31 +12,31 @@
 ## Phase 1: Fondations UI
 
 ### 1.1 Configuration du système de design
-- [ ] Définir la palette de couleurs dans `tailwind.config.js`
-- [ ] Définir la typographie (fonts, tailles)
-- [ ] Définir les espacements et breakpoints responsive
-- [ ] Créer les variables CSS custom si nécessaire
+- [x] Définir la palette de couleurs dans `tailwind.config.js`
+- [x] Définir la typographie (fonts, tailles)
+- [x] Définir les espacements et breakpoints responsive
+- [x] Créer les variables CSS custom si nécessaire
 
 ### 1.2 Composants principaux réutilisables
-- [ ] **Button** - Variantes: primary, secondary, outline, danger, disabled
-- [ ] **MenuBurgerButton**
-- [ ] **Input** - Text, email, password, textarea avec états (error, success, disabled)
-- [ ] **Card** - Container réutilisable avec variantes
-- [ ] **ImageCard** - container pour image réutilisable avec FX variants
-- [ ] **Modal** - Fenêtre modale avec overlay
-- [ ] **Loader/Spinner** - Indicateur de chargement
-- [ ] **Alert/Toast** - Messages de notification (success, error, warning, info)
-- [ ] **Avatar** - Affichage d'image utilisateur avec fallback
-- [ ] **Badge** - Labels et tags
-- [ ] **Dropdown** - Menu déroulant
-- [ ] **Pagination** - Navigation entre pages
-- [ ] **Tooltip** - Info-bulles
+- [x] **Button** - Variantes: primary, secondary, outline, danger, disabled
+- [x] **MenuBurgerButton**
+- [x] **Input** - Text, email, password, textarea avec états (error, success, disabled)
+- [x] **Card** - Container réutilisable avec variantes
+- [x] **ImageCard** - container pour image réutilisable avec FX variants
+- [x] **Modal** - Fenêtre modale avec overlay
+- [x] **Loader/Spinner** - Indicateur de chargement
+- [x] **Alert/Toast** - Messages de notification (success, error, warning, info)
+- [x] **Avatar** - Affichage d'image utilisateur avec fallback
+- [x] **Badge** - Labels et tags
+- [x] **Dropdown** - Menu déroulant
+- [x] **Pagination** - Navigation entre pages
+- [x] **Tooltip** - Info-bulles
 
 ### 1.3 Layouts - Header et Footer communs
-- [ ] **Header principal** - Logo, navigation, liens connexion/inscription, menu burger, banière (dans `/temp`)
-- [ ] **Footer principal** - Liens utiles, mentions légales, réseaux sociaux
-- [ ] **Layout principal** - Wrapper avec Header + Footer + contenu
-- [ ] **Sidebar** (optionnel) - Navigation latérale si nécessaire
+- [x] **Header principal** - Logo, navigation, liens connexion/inscription, menu burger, banière (dans `/temp`)
+- [x] **Footer principal** - Liens utiles, mentions légales, réseaux sociaux
+- [x] **Layout principal** - Wrapper avec Header + Footer + contenu
+- [x] **Sidebar** (optionnel) - Navigation latérale si nécessaire
 
 ---
 

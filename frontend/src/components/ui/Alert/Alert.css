@@ -1,0 +1,189 @@
+/* ===========================================
+   Alert Component - Carved Stone Warnings
+   Erosion des Ames - Tribal Notification System
+   =========================================== */
+
+/* -------------------------------------------
+   BASE: Stone Tablet Structure
+   ------------------------------------------- */
+.alert {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-stone);
+  border-left-width: 6px;
+  border-left-style: solid;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+  box-shadow:
+    inset 0 2px 4px rgba(28, 23, 20, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+/* Stone texture overlay */
+.alert::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* -------------------------------------------
+   ICON WRAPPER
+   ------------------------------------------- */
+.alert-icon-wrapper {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.125rem;
+}
+
+/* -------------------------------------------
+   CONTENT
+   ------------------------------------------- */
+.alert-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.alert-title {
+  font-family: var(--font-alert);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.01em;
+}
+
+.alert-message {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* -------------------------------------------
+   CLOSE BUTTON
+   ------------------------------------------- */
+.alert-close {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-base);
+  transition: all 0.15s ease;
+  opacity: 0.6;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.alert-close:hover {
+  opacity: 1;
+  background: rgba(28, 23, 20, 0.08);
+}
+
+.alert-close:active {
+  transform: scale(0.95);
+}
+
+/* -------------------------------------------
+   VARIANTS
+   ------------------------------------------- */
+
+/* Success - Moss Growth */
+.alert-success {
+  background-color: rgba(107, 142, 111, 0.1);
+  border-color: var(--color-success);
+  color: #2f4a31;
+}
+
+.alert-success .alert-icon-wrapper {
+  color: var(--color-success);
+}
+
+/* Error - Blood Rust */
+.alert-error {
+  background-color: rgba(201, 89, 81, 0.1);
+  border-color: var(--color-error);
+  border-left-width: 8px;
+  color: #7a2e28;
+}
+
+.alert-error .alert-icon-wrapper {
+  color: var(--color-error);
+}
+
+/* Warning - Earth Warning */
+.alert-warning {
+  background-color: rgba(212, 152, 88, 0.1);
+  border-color: var(--color-warning);
+  color: #8f5928;
+}
+
+.alert-warning .alert-icon-wrapper {
+  color: var(--color-warning);
+}
+
+/* Info - Twilight Message */
+.alert-info {
+  background-color: rgba(109, 143, 163, 0.1);
+  border-color: var(--color-info);
+  color: #354f5e;
+}
+
+.alert-info .alert-icon-wrapper {
+  color: var(--color-info);
+}
+
+/* -------------------------------------------
+   ANIMATIONS
+   ------------------------------------------- */
+@keyframes alert-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alert-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+
+.alert-enter {
+  animation: alert-enter 300ms ease-out;
+}
+
+.alert-exit {
+  animation: alert-exit 200ms ease-in forwards;
+}
