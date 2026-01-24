@@ -1,0 +1,446 @@
+/* ============================================
+   IMAGE CARD - Effets visuels post-apocalyptiques
+   Style BD européenne (Bilal, Jodorowsky, Métal Hurlant)
+   ============================================ */
+
+.image-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.image-card__img {
+  /* Transition de base pour tous les effets */
+  transition: transform var(--transition-normal) var(--ease-tribal),
+              filter var(--transition-slow) var(--ease-organic),
+              opacity var(--transition-normal) var(--ease-organic);
+}
+
+/* ============================================
+   FX 1: HOVER-ZOOM
+   Zoom léger au survol - dynamisme BD
+   ============================================ */
+
+.fx-hover-zoom:hover {
+  transform: scale(1.08);
+  /* Légère amélioration de la netteté pendant le zoom */
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Variante avec rotation subtile pour plus de dynamisme */
+.fx-hover-zoom.fx-twist:hover {
+  transform: scale(1.08) rotate(0.5deg);
+}
+
+/* ============================================
+   FX 2: OVERLAY
+   Géré via props overlayVariant
+   ============================================ */
+
+.image-card__overlay {
+  z-index: 1;
+  transition: opacity var(--transition-normal) var(--ease-organic);
+}
+
+/* Overlay s'intensifie au survol */
+.image-card:hover .image-card__overlay {
+  opacity: 0.85;
+}
+
+/* ============================================
+   FX 3: BLUR
+   Flou léger - souvenirs brumeux
+   ============================================ */
+
+.fx-blur {
+  filter: blur(2px);
+}
+
+/* Se clarifie au survol */
+.fx-blur:hover {
+  filter: blur(0);
+}
+
+/* Variante plus prononcée */
+.fx-blur-heavy {
+  filter: blur(4px);
+}
+
+.fx-blur-heavy:hover {
+  filter: blur(0.5px);
+}
+
+/* ============================================
+   FX 4: GRAYSCALE
+   Désaturation - monde désolé
+   ============================================ */
+
+.fx-grayscale {
+  filter: grayscale(100%);
+}
+
+/* Retour partiel de la couleur au survol (espoir) */
+.fx-grayscale:hover {
+  filter: grayscale(20%);
+}
+
+/* Variante partielle */
+.fx-grayscale-partial {
+  filter: grayscale(60%);
+}
+
+.fx-grayscale-partial:hover {
+  filter: grayscale(10%);
+}
+
+/* ============================================
+   FX 5: SEPIA
+   Effet vieilli/ancien - photographies du passé
+   ============================================ */
+
+.fx-sepia {
+  filter: sepia(65%) brightness(0.95) contrast(1.05);
+}
+
+/* Légère réduction du sepia au survol */
+.fx-sepia:hover {
+  filter: sepia(40%) brightness(1) contrast(1.1);
+}
+
+/* Variante vieillie intense */
+.fx-sepia-aged {
+  filter: sepia(85%) brightness(0.88) contrast(1.1) saturate(0.7);
+}
+
+.fx-sepia-aged:hover {
+  filter: sepia(65%) brightness(0.92) contrast(1.12) saturate(0.85);
+}
+
+/* ============================================
+   FX 6: VIGNETTE
+   Assombrissement des bords - focus central
+   ============================================ */
+
+.fx-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 40%,
+    rgba(28, 23, 20, 0.3) 70%,
+    rgba(28, 23, 20, 0.6) 100%
+  );
+  z-index: 2;
+  transition: opacity var(--transition-normal) var(--ease-organic);
+}
+
+/* Vignette s'atténue au survol */
+.image-card:hover .fx-vignette::after {
+  opacity: 0.6;
+}
+
+/* Variante vignette forte (plus dramatique) */
+.fx-vignette-heavy::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 30%,
+    rgba(28, 23, 20, 0.5) 60%,
+    rgba(28, 23, 20, 0.85) 100%
+  );
+  z-index: 2;
+}
+
+/* ============================================
+   FX 7: TORN-EDGES
+   Bords déchirés/usés - style BD arraché
+   ============================================ */
+
+.fx-torn-edges {
+  /* Clip-path SVG pour effet déchiré organique */
+  clip-path: polygon(
+    0% 2%,
+    3% 0%,
+    8% 1%,
+    12% 0%,
+    18% 2%,
+    24% 0.5%,
+    30% 1%,
+    36% 0%,
+    42% 1.5%,
+    48% 0.5%,
+    54% 1%,
+    60% 0%,
+    66% 2%,
+    72% 0.5%,
+    78% 1%,
+    84% 0%,
+    90% 1.5%,
+    96% 0.5%,
+    100% 1%,
+    100% 98%,
+    98% 100%,
+    94% 99%,
+    88% 100%,
+    82% 98.5%,
+    76% 99.5%,
+    70% 100%,
+    64% 98%,
+    58% 99.5%,
+    52% 100%,
+    46% 99%,
+    40% 100%,
+    34% 98.5%,
+    28% 99%,
+    22% 100%,
+    16% 98%,
+    10% 99.5%,
+    4% 100%,
+    0% 99%
+  );
+  /* Ombre portée irrégulière */
+  filter: drop-shadow(2px 2px 4px rgba(28, 23, 20, 0.3))
+          drop-shadow(-1px 1px 2px rgba(28, 23, 20, 0.2));
+}
+
+/* Variante avec bords plus agressifs */
+.fx-torn-edges-rough {
+  clip-path: polygon(
+    0% 3%,
+    5% 0%,
+    10% 4%,
+    15% 0%,
+    20% 5%,
+    25% 1%,
+    30% 4%,
+    35% 0%,
+    40% 6%,
+    45% 2%,
+    50% 5%,
+    55% 0%,
+    60% 4%,
+    65% 1%,
+    70% 5%,
+    75% 0%,
+    80% 6%,
+    85% 2%,
+    90% 5%,
+    95% 0%,
+    100% 3%,
+    100% 97%,
+    97% 100%,
+    92% 96%,
+    87% 100%,
+    82% 95%,
+    77% 99%,
+    72% 96%,
+    67% 100%,
+    62% 94%,
+    57% 98%,
+    52% 95%,
+    47% 100%,
+    42% 96%,
+    37% 99%,
+    32% 95%,
+    27% 100%,
+    22% 94%,
+    17% 98%,
+    12% 96%,
+    7% 100%,
+    2% 97%,
+    0% 100%
+  );
+  filter: drop-shadow(3px 3px 6px rgba(28, 23, 20, 0.4))
+          drop-shadow(-2px 2px 3px rgba(28, 23, 20, 0.25));
+}
+
+/* ============================================
+   FX 8: DUST (bonus)
+   Texture poussiéreuse - vestiges anciens
+   ============================================ */
+
+.fx-dust {
+  filter: sepia(10%) brightness(0.96) contrast(0.98);
+  position: relative;
+}
+
+.fx-dust::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(122, 100, 84, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 60% 70%, rgba(122, 100, 84, 0.06) 0%, transparent 3%),
+    radial-gradient(circle at 40% 50%, rgba(122, 100, 84, 0.05) 0%, transparent 2%),
+    radial-gradient(circle at 80% 20%, rgba(122, 100, 84, 0.07) 0%, transparent 2.5%),
+    radial-gradient(circle at 10% 80%, rgba(122, 100, 84, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 90% 60%, rgba(122, 100, 84, 0.05) 0%, transparent 3%);
+  background-size: 200% 200%;
+  opacity: 0.4;
+  z-index: 3;
+  mix-blend-mode: multiply;
+}
+
+/* ============================================
+   FX 9: CONTRAST (bonus)
+   Contraste accentué - style BD européenne
+   ============================================ */
+
+.fx-contrast {
+  filter: contrast(1.15) saturate(1.1);
+}
+
+.fx-contrast:hover {
+  filter: contrast(1.25) saturate(1.2) brightness(1.05);
+}
+
+/* Variante high-contrast (noir et blanc accentué) */
+.fx-contrast-high {
+  filter: contrast(1.4) saturate(0.9) brightness(0.95);
+}
+
+/* ============================================
+   COMBINAISONS D'EFFETS PRÉDÉFINIES
+   Combos recommandés pour ambiances spécifiques
+   ============================================ */
+
+/* Combo: Souvenir ancien */
+.fx-combo-memory {
+  filter: sepia(50%) grayscale(30%) brightness(0.92) contrast(1.08);
+}
+
+.fx-combo-memory::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 35%,
+    rgba(28, 23, 20, 0.4) 75%,
+    rgba(28, 23, 20, 0.7) 100%
+  );
+  z-index: 2;
+}
+
+/* Combo: Monde désolé */
+.fx-combo-desolate {
+  filter: grayscale(80%) contrast(1.2) brightness(0.85);
+}
+
+/* Combo: Relique tribale */
+.fx-combo-tribal {
+  filter: sepia(40%) contrast(1.15) saturate(0.8) brightness(0.9);
+}
+
+/* ============================================
+   ANIMATIONS SPÉCIALES
+   Pour interactions avancées
+   ============================================ */
+
+/* Animation: Emergence du passé */
+@keyframes emerge-from-past {
+  0% {
+    filter: blur(8px) grayscale(100%) brightness(0.5);
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  100% {
+    filter: blur(0) grayscale(0%) brightness(1);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.fx-animate-emerge {
+  animation: emerge-from-past 1.2s var(--ease-organic) forwards;
+}
+
+/* Animation: Dissolution (départ) */
+@keyframes dissolve-to-dust {
+  0% {
+    filter: blur(0) grayscale(0%) opacity(1);
+  }
+  100% {
+    filter: blur(12px) grayscale(100%) opacity(0);
+    transform: scale(0.95);
+  }
+}
+
+.fx-animate-dissolve {
+  animation: dissolve-to-dust 0.8s var(--ease-organic) forwards;
+}
+
+/* ============================================
+   RESPONSIVE - Réduction des effets sur mobile
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Réduction du zoom sur mobile pour performance */
+  .fx-hover-zoom:hover,
+  .fx-hover-zoom.fx-twist:hover {
+    transform: scale(1.04);
+  }
+
+  /* Simplification des clip-paths sur mobile */
+  .fx-torn-edges,
+  .fx-torn-edges-rough {
+    clip-path: none;
+    border-radius: var(--radius-md);
+  }
+
+  /* Désactivation de l'effet dust sur petits écrans */
+  .fx-dust::before {
+    display: none;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITÉ
+   ============================================ */
+
+/* Respect de prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .image-card__img,
+  .image-card__overlay,
+  .fx-vignette::after,
+  .fx-vignette-heavy::after {
+    transition: none;
+  }
+
+  .fx-hover-zoom:hover,
+  .fx-hover-zoom.fx-twist:hover {
+    transform: none;
+  }
+
+  .fx-animate-emerge,
+  .fx-animate-dissolve {
+    animation: none;
+  }
+}
+
+/* Contrast élevé: simplification des effets */
+@media (prefers-contrast: more) {
+  .fx-blur,
+  .fx-blur-heavy,
+  .fx-grayscale,
+  .fx-grayscale-partial,
+  .fx-sepia,
+  .fx-sepia-aged {
+    filter: none;
+  }
+
+  .fx-vignette::after,
+  .fx-vignette-heavy::after,
+  .fx-dust::before {
+    opacity: 0.2;
+  }
+}
