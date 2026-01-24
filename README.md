@@ -42,10 +42,36 @@ erosion-des-ames/
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   │   ├── Alert/
+│   │   │   │   ├── Avatar/
+│   │   │   │   ├── Badge/
+│   │   │   │   ├── Button/
+│   │   │   │   ├── Card/
+│   │   │   │   ├── Dropdown/
+│   │   │   │   ├── ImageCard/
+│   │   │   │   ├── Input/
+│   │   │   │   ├── Loader/
+│   │   │   │   ├── MenuBurgerButton/
+│   │   │   │   ├── Modal/
+│   │   │   │   ├── Pagination/
+│   │   │   │   ├── Sidebar/
+│   │   │   │   ├── Textarea/
+│   │   │   │   ├── Toast/
+│   │   │   │   └── Tooltip/
+│   │   │   └── index.js
+│   │   ├── layouts/
+│   │   │   ├── MainLayout/
+│   │   │   └── index.js
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
 │   ├── index.html
+│   ├── eslint.config.js
+│   ├── jsconfig.json
+│   ├── postcss.config.js
 │   ├── tailwind.config.js
 │   ├── vite.config.js
 │   └── package.json
@@ -53,11 +79,13 @@ erosion-des-ames/
 │   ├── config/
 │   │   └── database.js
 │   ├── models/
+│   │   └── index.js
 │   ├── migrations/
 │   ├── seeders/
 │   ├── server.js
 │   └── package.json
 ├── package.json
+├── ROADMAP.md
 ├── .gitignore
 └── README.md
 ```
