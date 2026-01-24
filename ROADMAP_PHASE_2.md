@@ -45,12 +45,12 @@ frontend/src/
 - [x] **Thématique tribal**: Overlay rituel, bordure gravée, particules ember
 
 ### Section Présentation
-- [ ] Créer le composant PresentationSection
-- [ ] Texte d'immersion dans l'univers
-- [ ] Mise en page avec ImageCard pour illustrations
-- [ ] Typography adaptée pour texte long (Patrick Hand)
-- [ ] Animations au scroll (fade-in, slide-in)
-- [ ] **Thématique tribal**: Séparateurs tribaux, coins décorés
+- [x] Créer le composant PresentationSection
+- [x] Texte d'immersion dans l'univers
+- [x] Mise en page avec ImageCard pour illustrations
+- [x] Typography adaptée pour texte long (Patrick Hand)
+- [x] Animations au scroll (fade-in, slide-in)
+- [x] **Thématique tribal**: Séparateurs tribaux, coins décorés
 
 ### Section Actualités/Annonces
 - [ ] Créer le composant NewsSection

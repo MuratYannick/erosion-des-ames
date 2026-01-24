@@ -1,4 +1,4 @@
-import { HeroSection } from './components'
+import { HeroSection, PresentationSection } from './components'
 import './Home.css'
 
 /**
@@ -6,7 +6,7 @@ import './Home.css'
  *
  * Sections:
  * - Hero: Bannière d'accroche immersive
- * - Présentation: Texte d'immersion (à venir)
+ * - Présentation: Texte d'immersion dans l'univers
  * - Actualités: Annonces récentes (à venir)
  * - Liens rapides: Navigation vers sections clés (à venir)
  */
@@ -22,8 +22,16 @@ const Home = () => {
         badgeText="Alpha v0.1 - Premiers pas dans les ruines"
       />
 
+      <PresentationSection
+        title="Un Monde de Cendres et de Murmures"
+        images={{
+          ruins: "/images/presentation-ruins.jpg",
+          ritual: "/images/presentation-ritual.jpg",
+          artifact: "/images/presentation-artifact.jpg"
+        }}
+      />
+
       {/* Placeholder pour les sections suivantes */}
-      {/* <PresentationSection /> */}
       {/* <NewsSection /> */}
       {/* <QuickLinksSection /> */}
     </div>
