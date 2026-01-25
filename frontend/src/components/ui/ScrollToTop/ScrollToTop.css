@@ -1,0 +1,137 @@
+/* ScrollToTop - Tribal-themed scroll button */
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-800));
+  border: 2px solid var(--color-primary-400);
+  border-radius: 0.5rem;
+  color: var(--color-primary-100);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1rem) scale(0.9);
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.3s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.scroll-to-top--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.scroll-to-top:hover {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+  border-color: var(--color-secondary-400);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(var(--color-secondary-500-rgb, 230, 115, 21), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.scroll-to-top:focus {
+  outline: 2px solid var(--color-secondary-400);
+  outline-offset: 2px;
+}
+
+.scroll-to-top:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Icon styling */
+.scroll-to-top__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.scroll-to-top:hover .scroll-to-top__icon {
+  transform: translateY(-2px);
+}
+
+.scroll-to-top__arrow {
+  transition: fill 0.2s ease;
+}
+
+.scroll-to-top:hover .scroll-to-top__arrow {
+  fill: var(--color-secondary-400);
+}
+
+/* Glow effect */
+.scroll-to-top__glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.625rem;
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--color-secondary-500-rgb, 230, 115, 21), 0.4),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.scroll-to-top:hover .scroll-to-top__glow {
+  opacity: 1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-to-top {
+    transition: opacity 0.1s ease, visibility 0.1s ease;
+    transform: none !important;
+  }
+
+  .scroll-to-top--visible {
+    transform: none;
+  }
+
+  .scroll-to-top:hover {
+    transform: none;
+  }
+
+  .scroll-to-top:hover .scroll-to-top__icon {
+    transform: none;
+  }
+}
+
+/* Mobile positioning */
+@media (max-width: 640px) {
+  .scroll-to-top {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .scroll-to-top__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+/* Ensure it stays above other fixed elements */
+@media (max-width: 1024px) {
+  .scroll-to-top {
+    bottom: 5rem; /* Above mobile navigation if present */
+  }
+}

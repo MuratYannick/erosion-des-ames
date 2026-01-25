@@ -125,33 +125,33 @@ frontend/src/
 ### Items de règles (intégrés dans Foreword.jsx)
 - [x] Composant Section avec id pour ancrage
 - [x] Composant Subsection pour sous-sections
-- [ ] Texte de la règle
-- [ ] Notes/précisions en retrait
-- [ ] Mise en évidence des points importants
-- [ ] **Thématique tribal**: Puces tribales, emphase avec glow
+- [x] Texte de la règle
+- [x] Notes/précisions en retrait (ml-4 sur Subsection)
+- [x] Mise en évidence des points importants (font-accent)
+- [x] **Thématique tribal**: Puces tribales (TribalBullet), emphase avec glow
 
-### Contenu des règles (data/rules.js)
-- [ ] Structure de données pour les règles
-- [ ] Sections suggérées:
-  - [ ] Introduction / Bienvenue
-  - [ ] Règles générales de conduite
-  - [ ] Règles du roleplay
-  - [ ] Création de personnage
-  - [ ] Système de jeu (si applicable)
-  - [ ] Modération et sanctions
-  - [ ] Mentions légales
+### Contenu des règles (intégré dans Foreword.jsx)
+- [x] Structure de données pour les règles (sections array)
+- [x] Sections implémentées:
+  - [x] Introduction / Bienvenue
+  - [x] Règles générales de conduite
+  - [x] Règles du roleplay
+  - [x] Création de personnage
+  - [x] Système de jeu
+  - [x] Modération et sanctions
+  - [x] Mentions légales
 
 ### Intégration visuelle
-- [ ] ImageCard pour illustrations thématiques
-- [ ] Séparateurs entre grandes sections
-- [ ] Bouton "Retour en haut"
-- [ ] **Thématique tribal**: Cards `ancient`, effet parchemin
+- [ ] ImageCard pour illustrations thématiques (images à fournir)
+- [x] Séparateurs entre grandes sections (TribalDivider)
+- [x] Bouton "Retour en haut" (ScrollToTop component)
+- [x] **Thématique tribal**: Cards `ancient`, effet parchemin
 
 ### Intégration Page Foreword
-- [ ] Layout avec sidebar (TableOfContents) + contenu principal
-- [ ] Responsive: sidebar collapse sur mobile
-- [ ] Scroll spy pour navigation active
-- [ ] SEO: meta title, description
+- [x] Layout avec sidebar (TableOfContents) + contenu principal
+- [x] Responsive: sidebar collapse sur mobile
+- [x] Scroll spy pour navigation active
+- [ ] SEO: meta title, description (reporté)
 
 ---
 
@@ -374,11 +374,11 @@ frontend/src/
 - [ ] Légendes
 
 ### ScrollToTop
-- [ ] Créer le composant ScrollToTop
-- [ ] Bouton fixe en bas à droite
-- [ ] Apparaît après scroll
-- [ ] Animation smooth au clic
-- [ ] **Thématique tribal**: Icône flèche tribale
+- [x] Créer le composant ScrollToTop
+- [x] Bouton fixe en bas à droite
+- [x] Apparaît après scroll
+- [x] Animation smooth au clic
+- [x] **Thématique tribal**: Icône flèche tribale
 
 ### Breadcrumb
 - [ ] Créer le composant Breadcrumb

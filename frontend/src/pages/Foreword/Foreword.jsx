@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import TableOfContents from '../../components/ui/TableOfContents'
+import { ScrollToTop } from '../../components/ui/ScrollToTop'
 import { TribalDivider } from '../../components/ui/Card/TribalDivider'
 import { TribalCorner } from '../../components/ui/Card/TribalCorner'
 
@@ -208,6 +209,8 @@ const Foreword = () => {
           </main>
         </div>
       </div>
+
+      <ScrollToTop />
     </div>
   )
 }

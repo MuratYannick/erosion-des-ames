@@ -47,6 +47,9 @@ export * from './ui/MenuBurgerButton'
 // TableOfContents
 export { TableOfContents } from './ui/TableOfContents'
 
+// ScrollToTop
+export { ScrollToTop } from './ui/ScrollToTop'
+
 // Sidebar
 export {
   Sidebar,

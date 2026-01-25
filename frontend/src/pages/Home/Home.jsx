@@ -1,4 +1,5 @@
 import { HeroSection, PresentationSection, NewsSection, QuickLinksSection } from './components'
+import { ScrollToTop } from '@/components'
 import { mockNews } from '@/data/mockNews'
 import './Home.css'
 
@@ -43,6 +44,8 @@ const Home = () => {
         title="Sentiers des Ruines"
         subtitle="Choisis ton chemin dans les décombres"
       />
+
+      <ScrollToTop />
     </div>
   )
 }
