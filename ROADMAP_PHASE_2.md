@@ -85,40 +85,46 @@ frontend/src/
 ### Structure des fichiers
 ```
 frontend/src/
+├── components/ui/
+│   └── TableOfContents/
+│       ├── TableOfContents.jsx
+│       ├── TableOfContents.css
+│       └── index.js
 ├── pages/
-│   ├── Foreword/
-│   │   ├── Foreword.jsx
-│   │   ├── Foreword.css
-│   │   ├── components/
-│   │   │   ├── TableOfContents.jsx
-│   │   │   ├── RuleSection.jsx
-│   │   │   ├── RuleItem.jsx
-│   │   │   └── index.js
-│   │   ├── data/
-│   │   │   └── rules.js
-│   │   └── index.js
+│   └── Foreword/
+│       ├── Foreword.jsx
+│       └── index.js
 ```
 
 ### Navigation interne (Table des matières)
-- [ ] Créer le composant TableOfContents
-- [ ] Liste des sections cliquables
-- [ ] Scroll smooth vers les ancres
-- [ ] Indicateur de section active au scroll
-- [ ] Position sticky sur desktop
-- [ ] Collapse sur mobile
-- [ ] **Thématique tribal**: Style parchemin, marqueurs rituels
+- [x] Créer le composant TableOfContents (dans components/ui)
+- [x] Liste des sections cliquables
+- [x] Scroll smooth vers les ancres
+- [x] Indicateur de section active au scroll (Intersection Observer)
+- [x] Position sticky sur desktop
+- [x] Collapse sur mobile
+- [x] **Thématique tribal**: TribalCorner, TribalDivider, TribalMarker, TribalBookIcon, TribalFooter
 
-### Sections de règles
-- [ ] Créer le composant RuleSection
-- [ ] Titre de section avec ancre
-- [ ] Contenu texte formaté
-- [ ] Numérotation des règles
-- [ ] Support pour sous-sections
-- [ ] **Thématique tribal**: Bordures gravées, icônes de section
+### Page Foreword complète
+- [x] Layout avec sidebar TOC + contenu principal
+- [x] Sections hiérarchiques (niveau 1 et 2)
+- [x] Titre de section avec TribalBullet
+- [x] Contenu texte formaté (listes, paragraphes)
+- [x] Support pour sous-sections
+- [x] **Thématique tribal**: Bordures gravées, coins tribaux, dividers
 
-### Items de règles
-- [ ] Créer le composant RuleItem
-- [ ] Numéro de règle
+### Contenu du règlement
+- [x] Introduction / Bienvenue
+- [x] Règles générales de conduite (respect, langage)
+- [x] Règles du roleplay (metagaming, godmodding, cohérence)
+- [x] Création de personnage (fiche, validation)
+- [x] Système de jeu (actions, combat)
+- [x] Modération et sanctions
+- [x] Mentions légales
+
+### Items de règles (intégrés dans Foreword.jsx)
+- [x] Composant Section avec id pour ancrage
+- [x] Composant Subsection pour sous-sections
 - [ ] Texte de la règle
 - [ ] Notes/précisions en retrait
 - [ ] Mise en évidence des points importants

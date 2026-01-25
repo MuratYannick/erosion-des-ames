@@ -44,6 +44,9 @@ export * from './ui/ImageCard'
 // MenuBurgerButton (if exists)
 export * from './ui/MenuBurgerButton'
 
+// TableOfContents
+export { TableOfContents } from './ui/TableOfContents'
+
 // Sidebar
 export {
   Sidebar,
