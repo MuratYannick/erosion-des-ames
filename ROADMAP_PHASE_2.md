@@ -53,12 +53,12 @@ frontend/src/
 - [x] **Thématique tribal**: Séparateurs tribaux, coins décorés
 
 ### Section Actualités/Annonces
-- [ ] Créer le composant NewsSection
-- [ ] Liste des 3-4 dernières annonces
-- [ ] Card pour chaque annonce (titre, date, extrait)
-- [ ] Badge "Nouveau" pour annonces récentes
-- [ ] Lien "Voir toutes les actualités"
-- [ ] **Thématique tribal**: Cards avec variante `ancient`
+- [x] Créer le composant NewsSection
+- [x] Liste des 3-4 dernières annonces
+- [x] Card pour chaque annonce (titre, date, extrait)
+- [x] Badge "Nouveau" pour annonces récentes
+- [x] Lien "Voir toutes les actualités"
+- [x] **Thématique tribal**: Cards avec variante `tribal`, icônes tribales par type
 
 ### Section Liens Rapides
 - [ ] Créer le composant QuickLinksSection

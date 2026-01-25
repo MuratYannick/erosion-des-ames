@@ -1,0 +1,234 @@
+/* ===========================================
+   NewsSection - Chroniques des Ruines
+   Animations et styles spécifiques
+   =========================================== */
+
+/* -------------------------------------------
+   Pattern d'arrière-plan
+   ------------------------------------------- */
+.news-pattern {
+  opacity: 0.5;
+  z-index: 0;
+}
+
+/* -------------------------------------------
+   Animations au scroll
+   ------------------------------------------- */
+.news-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 800ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 800ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.news-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header animation */
+.news-header {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 600ms cubic-bezier(0.23, 1, 0.32, 1) 100ms,
+              transform 600ms cubic-bezier(0.23, 1, 0.32, 1) 100ms;
+}
+
+.news-section.is-visible .news-header {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* -------------------------------------------
+   Cards animations échelonnées
+   ------------------------------------------- */
+.news-card-featured,
+.news-card-item {
+  opacity: 0;
+  transform: translateY(30px) scale(0.97);
+  transition: opacity 600ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.news-section.is-visible .news-card-featured {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: 300ms;
+}
+
+.news-section.is-visible .news-card-item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: calc(400ms + var(--animation-delay, 0ms));
+}
+
+/* -------------------------------------------
+   Card hover effects
+   ------------------------------------------- */
+.news-card {
+  position: relative;
+  transition: all 250ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.news-card:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.news-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: currentColor;
+  transition: height 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0.6;
+}
+
+.news-card:hover::before {
+  height: 100%;
+}
+
+/* -------------------------------------------
+   Badge "Nouveau" avec pulse
+   ------------------------------------------- */
+.news-card [data-badge] {
+  animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+/* -------------------------------------------
+   Ember dot pulsant (pour badges nouveaux)
+   ------------------------------------------- */
+.ember-pulse {
+  animation: ember-pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes ember-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(230, 115, 21, 0.4),
+                0 0 8px rgba(230, 115, 21, 0.2);
+    opacity: 0.8;
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(230, 115, 21, 0.6),
+                0 0 16px rgba(230, 115, 21, 0.3);
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------
+   Line-clamp utilities (pour truncate texte)
+   ------------------------------------------- */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* -------------------------------------------
+   CTA animation
+   ------------------------------------------- */
+.news-cta {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms cubic-bezier(0.23, 1, 0.32, 1),
+              transform 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.news-section.is-visible .news-cta {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 800ms;
+}
+
+/* -------------------------------------------
+   Responsive adjustments
+   ------------------------------------------- */
+@media (max-width: 768px) {
+  /* Réduire l'offset des animations sur mobile */
+  .news-card-featured,
+  .news-card-item {
+    transform: translateY(20px) scale(0.98);
+  }
+
+  /* Simplifier hover sur tactile */
+  .news-card:hover {
+    transform: translateY(-2px) scale(1);
+  }
+}
+
+/* -------------------------------------------
+   Effet de brillance au survol (featured card)
+   ------------------------------------------- */
+.news-card-featured .news-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 600ms cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.news-card-featured .news-card:hover::after {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+/* -------------------------------------------
+   Accents colorés pour types
+   ------------------------------------------- */
+.border-l-primary-400 {
+  border-left-color: #c2985f;
+}
+
+.border-l-secondary-400 {
+  border-left-color: #c27123;
+}
+
+.border-l-warning {
+  border-left-color: #f59e0b;
+}
+
+/* -------------------------------------------
+   Time icon subtle animation
+   ------------------------------------------- */
+.news-card:hover [data-time-icon] {
+  animation: tick 1s linear infinite;
+}
+
+@keyframes tick {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,4 +1,5 @@
-import { HeroSection, PresentationSection } from './components'
+import { HeroSection, PresentationSection, NewsSection } from './components'
+import { mockNews } from '@/data/mockNews'
 import './Home.css'
 
 /**
@@ -7,10 +8,11 @@ import './Home.css'
  * Sections:
  * - Hero: Bannière d'accroche immersive
  * - Présentation: Texte d'immersion dans l'univers
- * - Actualités: Annonces récentes (à venir)
+ * - Actualités: Annonces et nouvelles récentes
  * - Liens rapides: Navigation vers sections clés (à venir)
  */
 const Home = () => {
+
   return (
     <div className="home-page">
       <HeroSection
@@ -31,8 +33,14 @@ const Home = () => {
         }}
       />
 
+      <NewsSection
+        title="Chroniques des Ruines"
+        subtitle="Les dernières nouvelles des terres désolées"
+        newsItems={mockNews}
+        viewAllLink="/news"
+      />
+
       {/* Placeholder pour les sections suivantes */}
-      {/* <NewsSection /> */}
       {/* <QuickLinksSection /> */}
     </div>
   )
