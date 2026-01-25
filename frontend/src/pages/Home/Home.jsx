@@ -1,4 +1,4 @@
-import { HeroSection, PresentationSection, NewsSection } from './components'
+import { HeroSection, PresentationSection, NewsSection, QuickLinksSection } from './components'
 import { mockNews } from '@/data/mockNews'
 import './Home.css'
 
@@ -9,10 +9,9 @@ import './Home.css'
  * - Hero: Bannière d'accroche immersive
  * - Présentation: Texte d'immersion dans l'univers
  * - Actualités: Annonces et nouvelles récentes
- * - Liens rapides: Navigation vers sections clés (à venir)
+ * - Liens rapides: Navigation vers sections clés
  */
 const Home = () => {
-
   return (
     <div className="home-page">
       <HeroSection
@@ -40,8 +39,10 @@ const Home = () => {
         viewAllLink="/news"
       />
 
-      {/* Placeholder pour les sections suivantes */}
-      {/* <QuickLinksSection /> */}
+      <QuickLinksSection
+        title="Sentiers des Ruines"
+        subtitle="Choisis ton chemin dans les décombres"
+      />
     </div>
   )
 }

@@ -61,21 +61,21 @@ frontend/src/
 - [x] **Thématique tribal**: Cards avec variante `tribal`, icônes tribales par type
 
 ### Section Liens Rapides
-- [ ] Créer le composant QuickLinksSection
-- [ ] Grille de liens vers sections importantes
-  - [ ] Inscription
-  - [ ] Règlement
-  - [ ] Univers
-  - [ ] Créer un personnage
-  - [ ] Forum
-- [ ] Icônes tribaux pour chaque lien
-- [ ] Effet hover avec glow
-- [ ] **Thématique tribal**: Cards `fire` avec animations
+- [x] Créer le composant QuickLinksSection
+- [x] Grille de liens vers sections importantes
+  - [x] Inscription (Portail)
+  - [x] Règlement (Tablette gravée)
+  - [x] Univers (Carte/Étoiles)
+  - [x] Créer un personnage (Masque rituel)
+  - [x] Forum (Cercle des voix)
+- [x] Icônes tribaux pour chaque lien (5 icônes SVG custom)
+- [x] Effet hover avec glow (couleurs distinctes par lien)
+- [x] **Thématique tribal**: Cards avec glow coloré, pattern progressif, transition vers footer
 
 ### Intégration Page Home
-- [ ] Assembler tous les composants dans Home.jsx
-- [ ] Responsive design (mobile, tablette, desktop)
-- [ ] Scroll fluide entre sections
+- [x] Assembler tous les composants dans Home.jsx
+- [x] Responsive design (mobile, tablette, desktop)
+- [x] Scroll fluide entre sections (Intersection Observer)
 - [ ] SEO: meta title, description
 
 ---
