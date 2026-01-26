@@ -1,0 +1,395 @@
+/**
+ * FactionCard Styles
+ * Inspiration: Tablettes de pierre gravées, totems tribaux, sceaux de guerre
+ */
+
+.faction-card {
+  position: relative;
+  background: linear-gradient(135deg, #1a1613 0%, #0d0b09 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  /* Effet de tablette de pierre biseautée */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+
+  /* Bordure subtile */
+  border: 1px solid rgba(107, 114, 128, 0.15);
+}
+
+/* État hover - La carte s'élève et s'illumine */
+.faction-card--hovered {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.7),
+    0 8px 16px var(--faction-primary, #6B7280);
+
+  border-color: var(--faction-accent, #94A3B8);
+}
+
+/**
+ * Bordure de braises animée
+ */
+.faction-card__ember-border {
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--faction-glow, #CBD5E1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: ember-flow 3s linear infinite;
+}
+
+.faction-card--hovered .faction-card__ember-border {
+  opacity: 0.4;
+}
+
+@keyframes ember-flow {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/**
+ * Texture de pierre (overlay subtil)
+ */
+.faction-card__stone-texture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px
+    );
+}
+
+/**
+ * Contenu principal
+ */
+.faction-card__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/**
+ * Emblème de faction
+ */
+.faction-card__emblem-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faction-card__emblem-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--faction-glow, #CBD5E1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  filter: blur(12px);
+}
+
+.faction-card--hovered .faction-card__emblem-glow {
+  opacity: 0.6;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.faction-card__emblem {
+  width: 80px;
+  height: 80px;
+  color: var(--faction-accent, #94A3B8);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faction-card--hovered .faction-card__emblem {
+  color: var(--faction-glow, #CBD5E1);
+  transform: scale(1.08) rotateZ(2deg);
+  filter:
+    drop-shadow(0 8px 16px var(--faction-primary))
+    drop-shadow(0 0 20px var(--faction-glow));
+}
+
+/**
+ * Header (Nom + Tagline)
+ */
+.faction-card__header {
+  text-align: center;
+  border-bottom: 1px solid rgba(230, 115, 21, 0.2);
+  padding-bottom: 1rem;
+}
+
+.faction-card__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--faction-accent, #94A3B8);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+
+  /* Effet de gravure */
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.8),
+    0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.faction-card--hovered .faction-card__name {
+  color: var(--faction-glow, #CBD5E1);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.9),
+    0 0 12px var(--faction-glow);
+}
+
+.faction-card__tagline {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  margin: 0;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/**
+ * Philosophie (Citation gravée)
+ */
+.faction-card__philosophy {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--faction-primary, #6B7280);
+  font-style: italic;
+  margin: 0;
+  padding: 1rem;
+  border-left: 3px solid var(--faction-primary, #6B7280);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.25rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.faction-card__philosophy::before {
+  content: '\201C';
+  position: absolute;
+  top: -0.5rem;
+  left: 0.5rem;
+  font-size: 2.5rem;
+  color: var(--faction-accent, #94A3B8);
+  opacity: 0.3;
+  font-family: Georgia, serif;
+}
+
+.faction-card--hovered .faction-card__philosophy {
+  color: var(--faction-accent, #94A3B8);
+  border-left-color: var(--faction-glow, #CBD5E1);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/**
+ * Description
+ */
+.faction-card__description {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #D1D5DB;
+  margin: 0;
+  text-align: justify;
+}
+
+/**
+ * Valeurs (Runes tribales)
+ */
+.faction-card__values {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(230, 115, 21, 0.2);
+}
+
+.faction-card__values-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.faction-card__values-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.faction-card__value-item {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: color 0.3s ease;
+}
+
+.faction-card--hovered .faction-card__value-item {
+  color: var(--faction-accent, #94A3B8);
+}
+
+.faction-card__value-rune {
+  color: var(--faction-primary, #6B7280);
+  font-size: 0.625rem;
+  transition: color 0.3s ease;
+}
+
+.faction-card--hovered .faction-card__value-rune {
+  color: var(--faction-glow, #CBD5E1);
+}
+
+/**
+ * Particules de cendre animées
+ */
+.faction-card__ash-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.faction-card__ash-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--faction-glow, #CBD5E1);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ash-float 3s ease-out forwards;
+  box-shadow: 0 0 4px var(--faction-glow);
+}
+
+/* Décalage pour chaque particule */
+.faction-card__ash-particle:nth-child(1) { left: 15%; animation-delay: 0s; }
+.faction-card__ash-particle:nth-child(2) { left: 35%; animation-delay: 0.2s; }
+.faction-card__ash-particle:nth-child(3) { left: 55%; animation-delay: 0.4s; }
+.faction-card__ash-particle:nth-child(4) { left: 75%; animation-delay: 0.6s; }
+.faction-card__ash-particle:nth-child(5) { left: 25%; animation-delay: 0.8s; }
+.faction-card__ash-particle:nth-child(6) { left: 45%; animation-delay: 1s; }
+.faction-card__ash-particle:nth-child(7) { left: 65%; animation-delay: 1.2s; }
+.faction-card__ash-particle:nth-child(8) { left: 85%; animation-delay: 1.4s; }
+
+@keyframes ash-float {
+  0% {
+    bottom: 0%;
+    opacity: 0;
+    transform: translateX(0) scale(0);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    bottom: 100%;
+    opacity: 0;
+    transform: translateX(calc(var(--random-x, 0) * 20px)) scale(0.5);
+  }
+}
+
+/**
+ * Responsive
+ */
+@media (max-width: 768px) {
+  .faction-card {
+    padding: 1.5rem;
+  }
+
+  .faction-card__emblem-container {
+    width: 64px;
+    height: 64px;
+  }
+
+  .faction-card__emblem {
+    width: 64px;
+    height: 64px;
+  }
+
+  .faction-card__name {
+    font-size: 1.25rem;
+  }
+
+  .faction-card__description {
+    text-align: left;
+  }
+}
+
+/**
+ * Préférence de mouvement réduit
+ */
+@media (prefers-reduced-motion: reduce) {
+  .faction-card,
+  .faction-card__emblem,
+  .faction-card__emblem-glow,
+  .faction-card__ember-border {
+    animation: none;
+    transition: none;
+  }
+
+  .faction-card--hovered {
+    transform: none;
+  }
+
+  .faction-card__ash-particles {
+    display: none;
+  }
+}

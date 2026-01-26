@@ -203,15 +203,15 @@ frontend/src/
 - [ ] **Thématique tribal**: Carte style parchemin
 
 ### Section Factions/Groupes
-- [ ] Créer le composant FactionCard
-- [ ] Card pour chaque faction
-  - [ ] Nom et emblème
-  - [ ] Description courte
-  - [ ] Philosophie/valeurs
-  - [ ] Territoire (si applicable)
-- [ ] Grille responsive de cards
-- [ ] Modal ou page détail au clic
-- [ ] **Thématique tribal**: Emblèmes SVG, couleurs par faction
+- [x] Créer le composant FactionCard
+- [x] Card pour chaque faction
+  - [x] Nom et emblème (5 emblèmes SVG tribaux)
+  - [x] Description courte
+  - [x] Philosophie/valeurs (citation gravée + liste avec runes)
+  - [x] Couleurs par faction (primary, accent, glow)
+- [x] Grille responsive de cards (FactionSection avec auto-fit)
+- [ ] Modal ou page détail au clic (reporté)
+- [x] **Thématique tribal**: Emblèmes SVG (bouclier, flamme, lune, spirale, boussole), couleurs par faction, particules de cendre au hover
 
 ### Section Lieux importants
 - [ ] Créer le composant LocationCard

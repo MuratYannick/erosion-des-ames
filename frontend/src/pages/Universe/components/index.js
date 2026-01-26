@@ -1,3 +1,7 @@
 export { default as UniverseHero } from './UniverseHero'
 export { default as LoreSection } from './LoreSection'
 export { sampleLoreChapters, shortLoreChapters } from './loreSampleData'
+export { default as FactionCard } from './FactionCard'
+export { default as FactionSection } from './FactionSection'
+export { factionsData } from './factionData'
+export * from './FactionEmblems'
