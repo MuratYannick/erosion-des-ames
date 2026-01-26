@@ -181,11 +181,11 @@ frontend/src/
 ```
 
 ### Section Hero Univers
-- [ ] Créer le composant UniverseHero
-- [ ] Image d'accroche du monde
-- [ ] Titre "L'Univers d'Erosion des Ames"
-- [ ] Citation ou texte d'ambiance
-- [ ] **Thématique tribal**: Overlay mystique, bordures rituelles
+- [x] Créer le composant UniverseHero
+- [x] Image d'accroche du monde (background image prop)
+- [x] Titre "L'Univers d'Erosion des Ames"
+- [x] Citation ou texte d'ambiance (subtitle et description)
+- [x] **Thématique tribal**: Overlay mystique (cercle rituel), bordures rituelles (fragments de pierre), particules de cendre
 
 ### Section Histoire/Lore
 - [ ] Créer le composant LoreSection

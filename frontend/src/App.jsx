@@ -13,7 +13,7 @@ import {
   Avatar,
   Badge,
 } from '@/components'
-import { Home, Foreword } from '@/pages'
+import { Home, Foreword, Universe } from '@/pages'
 
 // Placeholder pages
 function AvantProposPage() {
@@ -221,7 +221,8 @@ function App() {
           >
             <Route path="/" element={<Home />} />
             <Route path="/avant-propos" element={<Foreword />} />
-            <Route path="/univers" element={<UniversLayout />}>
+            <Route path="/univers" element={<Universe />} />
+            <Route path="/univers/explorer" element={<UniversLayout />}>
               <Route index element={<UniversPage />} />
               <Route path="lore" element={<UniversLorePage />} />
               <Route path="factions" element={<UniversFactionsPage />} />

@@ -1,0 +1,639 @@
+/* ===================================================================
+   UniverseHero - "L'Éveil des Murmures"
+   Section hero immersive pour la page Univers
+   =================================================================== */
+
+/* ===================================================================
+   Variables CSS personnalisées pour UniverseHero
+   =================================================================== */
+.universe-hero {
+  /* Couleurs spécifiques */
+  --color-universe-deep: #0d0b09;
+  --color-universe-stone: #2f2722;
+  --color-universe-ember-core: #ff9635;
+  --color-universe-ember-glow: #e67315;
+  --color-universe-ash-veil: rgba(28, 23, 20, 0.85);
+  --color-universe-rune: #ffd5a3;
+  --color-universe-ash-text: #d4c9ba;
+  --color-universe-mist: rgba(245, 243, 240, 0.08);
+}
+
+/* ===================================================================
+   Container principal
+   =================================================================== */
+.universe-hero {
+  position: relative;
+  background: var(--color-universe-deep);
+  color: var(--color-universe-rune);
+}
+
+/* Background profond */
+.universe-hero__bg {
+  background: linear-gradient(
+    180deg,
+    var(--color-universe-deep) 0%,
+    #1c1714 50%,
+    var(--color-universe-stone) 100%
+  );
+}
+
+/* Background image avec blend */
+.universe-hero__bg-image {
+  transition: transform 0.1s linear;
+  mix-blend-mode: soft-light;
+  will-change: transform;
+}
+
+/* Texture overlay subtile */
+.universe-hero__texture {
+  background-image:
+    /* Noise subtil */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"),
+    /* Gradient radial pour vignette */
+    radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      var(--color-universe-ash-veil) 100%
+    );
+  pointer-events: none;
+}
+
+/* ===================================================================
+   Animation d'apparition
+   =================================================================== */
+.universe-hero {
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.universe-hero.is-visible {
+  opacity: 1;
+}
+
+/* ===================================================================
+   Cercle rituel animé
+   =================================================================== */
+.universe-hero__rune-circle {
+  opacity: 0;
+  animation: runeCircleFadeIn 2s cubic-bezier(0.33, 1, 0.68, 1) 0.5s forwards;
+}
+
+.universe-hero__rune-circle-svg {
+  width: min(90vw, 800px);
+  height: min(90vw, 800px);
+  animation: runeCircleRotate 60s linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes runeCircleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes runeCircleRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Runes cardinales - animation de pulsation */
+.universe-hero__rune {
+  animation: runePulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.universe-hero__rune:nth-child(2) {
+  animation-delay: 0.75s;
+}
+
+.universe-hero__rune:nth-child(3) {
+  animation-delay: 1.5s;
+}
+
+.universe-hero__rune:nth-child(4) {
+  animation-delay: 2.25s;
+}
+
+@keyframes runePulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===================================================================
+   Pattern de cendres
+   =================================================================== */
+.universe-hero__ash-pattern {
+  opacity: 0.4;
+  animation: ashPatternFlow 40s linear infinite;
+}
+
+@keyframes ashPatternFlow {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(200px);
+  }
+}
+
+/* ===================================================================
+   Particules de cendre
+   =================================================================== */
+.ash-particle {
+  width: 3px;
+  height: 3px;
+  background: radial-gradient(
+    circle,
+    var(--color-universe-ember-core) 0%,
+    var(--color-universe-ember-glow) 50%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  animation: ashFloat linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes ashFloat {
+  0% {
+    transform: translateY(0) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+    transform: translateY(-10vh) translateX(-10px) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-50vh) translateX(15px) scale(1.2);
+  }
+  90% {
+    opacity: 0.4;
+    transform: translateY(-90vh) translateX(-20px) scale(0.8);
+  }
+  100% {
+    transform: translateY(-100vh) translateX(5px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Variation de taille pour plus de naturel */
+.ash-particle:nth-child(even) {
+  width: 2px;
+  height: 2px;
+}
+
+.ash-particle:nth-child(3n) {
+  width: 4px;
+  height: 4px;
+}
+
+/* ===================================================================
+   Fragments de pierre décoratifs
+   =================================================================== */
+.universe-hero__stone-fragment {
+  opacity: 0;
+  animation: stoneFragmentAppear 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+/* Délais différenciés pour apparition progressive */
+.universe-hero__stone-fragment:nth-of-type(1) {
+  animation-delay: 0.8s;
+}
+
+.universe-hero__stone-fragment:nth-of-type(2) {
+  animation-delay: 1s;
+}
+
+.universe-hero__stone-fragment:nth-of-type(3) {
+  animation-delay: 1.2s;
+}
+
+.universe-hero__stone-fragment:nth-of-type(4) {
+  animation-delay: 1.4s;
+}
+
+@keyframes stoneFragmentAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  to {
+    opacity: 0.2;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* ===================================================================
+   Contenu principal
+   =================================================================== */
+.universe-hero__content {
+  animation: contentReveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.3s both;
+}
+
+@keyframes contentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================================================
+   Titre principal
+   =================================================================== */
+.universe-hero__title-wrapper {
+  position: relative;
+}
+
+.universe-hero__title {
+  position: relative;
+  z-index: 2;
+  text-shadow:
+    0 0 20px rgba(230, 115, 21, 0.4),
+    0 0 40px rgba(230, 115, 21, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.05em;
+  /* Effet de texture gravée */
+  background: linear-gradient(
+    180deg,
+    var(--color-universe-rune) 0%,
+    #ffb86a 50%,
+    var(--color-universe-rune) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animation des lignes du titre */
+.universe-hero__title-line {
+  display: inline-block;
+  opacity: 0;
+  animation: titleLineReveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes titleLineReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px) rotateX(-90deg);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Effet de lueur pulsante derrière le titre */
+.universe-hero__title-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(230, 115, 21, 0.3) 0%,
+    rgba(230, 115, 21, 0.1) 40%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  animation: titleGlowPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  z-index: 1;
+}
+
+@keyframes titleGlowPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* ===================================================================
+   Divider avec fragments
+   =================================================================== */
+.universe-hero__divider {
+  opacity: 0;
+  animation: dividerAppear 0.8s cubic-bezier(0.23, 1, 0.32, 1) 1s forwards;
+}
+
+@keyframes dividerAppear {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* ===================================================================
+   Sous-titre et description
+   =================================================================== */
+.universe-hero__subtitle {
+  color: var(--color-universe-ash-text);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: subtitleFade 0.8s cubic-bezier(0.33, 1, 0.68, 1) 1.2s forwards;
+}
+
+.universe-hero__description-wrapper {
+  opacity: 0;
+  animation: descriptionFade 0.8s cubic-bezier(0.33, 1, 0.68, 1) 1.4s forwards;
+}
+
+.universe-hero__description {
+  line-height: 1.8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes subtitleFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes descriptionFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================================================
+   CTA Button avec effet ember
+   =================================================================== */
+.universe-hero__cta {
+  opacity: 0;
+  animation: ctaAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s forwards;
+}
+
+@keyframes ctaAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.universe-hero__cta-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.universe-hero__cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px rgba(230, 115, 21, 0.5),
+    0 0 40px rgba(230, 115, 21, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Effet de lueur animé au hover */
+.universe-hero__cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(230, 115, 21, 0.4) 50%,
+    transparent 100%
+  );
+  transform: translate(-50%, -50%);
+  transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+              height 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.universe-hero__cta-button:hover .universe-hero__cta-glow {
+  width: 300px;
+  height: 300px;
+}
+
+/* ===================================================================
+   Hint et scroll indicator
+   =================================================================== */
+.universe-hero__hint {
+  opacity: 0;
+  animation: hintFade 0.8s cubic-bezier(0.33, 1, 0.68, 1) 2s forwards;
+}
+
+@keyframes hintFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+}
+
+.universe-hero__scroll-indicator {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.universe-hero__scroll-indicator:hover {
+  opacity: 1;
+}
+
+/* Animation de bounce lent */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===================================================================
+   Responsive adjustments
+   =================================================================== */
+
+/* Tablettes */
+@media (max-width: 768px) {
+  .universe-hero__rune-circle-svg {
+    width: min(100vw, 600px);
+    height: min(100vw, 600px);
+  }
+
+  .universe-hero__title {
+    font-size: 3rem;
+    line-height: 1.1;
+  }
+
+  .universe-hero__subtitle {
+    font-size: 1.25rem;
+  }
+
+  .universe-hero__description {
+    font-size: 0.95rem;
+  }
+
+  .universe-hero__stone-fragment {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .universe-hero {
+    min-height: 100vh;
+  }
+
+  .universe-hero__content {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+
+  .universe-hero__rune-circle-svg {
+    width: 100vw;
+    height: 100vw;
+    max-width: 400px;
+    max-height: 400px;
+  }
+
+  .universe-hero__title {
+    font-size: 2.5rem;
+    text-shadow:
+      0 0 15px rgba(230, 115, 21, 0.4),
+      0 2px 6px rgba(0, 0, 0, 0.6);
+  }
+
+  .universe-hero__subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .universe-hero__description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .universe-hero__stone-fragment {
+    width: 60px;
+    height: 60px;
+    opacity: 0.1;
+  }
+
+  .universe-hero__divider {
+    max-width: 280px;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .universe-hero__cta-button {
+    min-width: 200px;
+    font-size: 0.95rem;
+  }
+
+  /* Réduire le nombre de particules sur mobile */
+  .ash-particle:nth-child(n+5) {
+    display: none;
+  }
+}
+
+/* ===================================================================
+   Mode sombre (déjà optimisé pour dark theme)
+   =================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* Le composant est conçu nativement pour le dark theme */
+  /* Pas d'ajustements nécessaires */
+}
+
+/* ===================================================================
+   Préférence de mouvement réduit
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .universe-hero__rune-circle-svg,
+  .universe-hero__ash-pattern,
+  .ash-particle,
+  .universe-hero__title-glow,
+  .universe-hero__scroll-indicator,
+  .universe-hero__rune {
+    animation: none;
+  }
+
+  .universe-hero__cta-button:hover {
+    transform: none;
+  }
+
+  .universe-hero,
+  .universe-hero__content,
+  .universe-hero__title-line,
+  .universe-hero__subtitle,
+  .universe-hero__description-wrapper,
+  .universe-hero__cta,
+  .universe-hero__hint,
+  .universe-hero__stone-fragment,
+  .universe-hero__divider {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===================================================================
+   Performance - GPU acceleration
+   =================================================================== */
+.universe-hero__rune-circle-svg,
+.ash-particle,
+.universe-hero__title-glow,
+.universe-hero__bg-image {
+  will-change: transform;
+}
+
+/* Optimisation du rendering */
+.universe-hero__rune-circle,
+.universe-hero__ash-pattern,
+.universe-hero__particles {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
