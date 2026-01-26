@@ -188,12 +188,12 @@ frontend/src/
 - [x] **Thématique tribal**: Overlay mystique (cercle rituel), bordures rituelles (fragments de pierre), particules de cendre
 
 ### Section Histoire/Lore
-- [ ] Créer le composant LoreSection
-- [ ] Récit de l'histoire du monde
-- [ ] Chapitres/époques clés
-- [ ] Mise en page texte long avec illustrations
-- [ ] Collapse/expand pour sections longues
-- [ ] **Thématique tribal**: Style manuscrit ancien
+- [x] Créer le composant LoreSection
+- [x] Récit de l'histoire du monde (5 chapitres exemple: Genèse, Cataclysme, Ère des Cendres, Redécouverte, Temps Présent)
+- [x] Chapitres/époques clés (navigation par runes, timeline interactive)
+- [x] Mise en page texte long avec illustrations (lettrines, images lazy-loaded)
+- [x] Collapse/expand pour sections longues (tablettes de pierre animées)
+- [x] **Thématique tribal**: Style "Codex des Anciens" - tablettes de pierre, runes navigables, ornements tribaux, coins décoratifs
 
 ### Section Géographie (optionnel)
 - [ ] Créer le composant WorldMap

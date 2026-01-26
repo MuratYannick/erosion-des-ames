@@ -1,0 +1,946 @@
+/* ===================================================================
+   LoreSection - "Le Codex des Anciens"
+   Section présentant l'histoire du monde sous forme de tablettes
+   =================================================================== */
+
+/* ===================================================================
+   Variables CSS personnalisées pour LoreSection
+   =================================================================== */
+.lore-section {
+  /* Couleurs spécifiques au codex */
+  --color-lore-parchment: #1a1612;
+  --color-lore-stone-tablet: #2a2520;
+  --color-lore-text-primary: #e8dcc8;
+  --color-lore-text-muted: #a89885;
+  --color-lore-text-accent: #ffd5a3;
+  --color-lore-border: #3d342b;
+  --color-lore-ember-active: #E67315;
+  --color-lore-ember-inactive: #5a4a3a;
+  --color-lore-ash-overlay: rgba(61, 52, 43, 0.3);
+}
+
+/* ===================================================================
+   Container principal
+   =================================================================== */
+.lore-section {
+  position: relative;
+  background: var(--color-lore-parchment);
+  color: var(--color-lore-text-primary);
+  overflow: hidden;
+}
+
+/* Background avec dégradé subtil depuis le hero */
+.lore-section__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #0d0b09 0%,
+    var(--color-lore-parchment) 15%,
+    var(--color-lore-parchment) 100%
+  );
+}
+
+/* Texture overlay */
+.lore-section__texture {
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Pattern de cendres subtil */
+.lore-section__ash-pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.5;
+  animation: ashPatternDrift 60s linear infinite;
+}
+
+@keyframes ashPatternDrift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(150px);
+  }
+}
+
+/* ===================================================================
+   Animation de révélation de section
+   =================================================================== */
+.lore-section {
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.lore-section.is-visible {
+  opacity: 1;
+}
+
+/* ===================================================================
+   Header de section
+   =================================================================== */
+.lore-section__header {
+  opacity: 0;
+  animation: headerReveal 1s cubic-bezier(0.23, 1, 0.32, 1) 0.3s forwards;
+}
+
+@keyframes headerReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lore-section__title {
+  letter-spacing: 0.03em;
+  text-shadow:
+    0 0 20px rgba(230, 115, 21, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(
+    180deg,
+    var(--color-lore-text-accent) 0%,
+    #ffb86a 50%,
+    var(--color-lore-text-accent) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lore-section__subtitle {
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+/* Ornements tribaux */
+.lore-section__ornament {
+  width: 200px;
+  height: 20px;
+  margin: 1.5rem auto;
+  color: var(--color-lore-text-muted);
+}
+
+.lore-section__ornament--top {
+  margin-bottom: 2rem;
+}
+
+.lore-section__ornament--bottom {
+  margin-top: 2rem;
+}
+
+/* ===================================================================
+   Timeline de navigation par runes
+   =================================================================== */
+.lore-section__timeline {
+  position: relative;
+  opacity: 0;
+  animation: timelineReveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
+}
+
+@keyframes timelineReveal {
+  from {
+    opacity: 0;
+    transform: scaleX(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.lore-section__timeline-track {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+
+/* Ligne de connexion entre runes */
+.lore-section__timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-lore-border) 20%,
+    var(--color-lore-border) 80%,
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* ===================================================================
+   Boutons de navigation par runes
+   =================================================================== */
+.lore-section__rune-button {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  background: var(--color-lore-stone-tablet);
+  border: 2px solid var(--color-lore-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal) var(--ease-tribal);
+  opacity: 0;
+  animation: runeButtonAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  z-index: 3;
+}
+
+@keyframes runeButtonAppear {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.lore-section__rune-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  border-color: var(--color-lore-ember-inactive);
+  background: #33292180;
+}
+
+.lore-section__rune-button.is-active {
+  border-color: var(--color-lore-ember-active);
+  background: #2a252080;
+  box-shadow:
+    0 0 15px rgba(230, 115, 21, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.lore-section__rune-button.is-active .lore-section__rune-symbol {
+  color: var(--color-lore-ember-active);
+  animation: runeActivePulse 2s ease-in-out infinite;
+}
+
+@keyframes runeActivePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Glow effect derrière rune active */
+.lore-section__rune-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: var(--radius-md);
+  background: radial-gradient(
+    circle,
+    rgba(230, 115, 21, 0.2) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-normal) var(--ease-organic);
+}
+
+.lore-section__rune-button.is-active .lore-section__rune-glow {
+  opacity: 1;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+/* Symbole de rune */
+.lore-section__rune-symbol {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  color: var(--color-lore-text-muted);
+  transition: all var(--transition-normal) var(--ease-organic);
+}
+
+/* Tooltip au hover */
+.lore-section__rune-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--color-lore-stone-tablet);
+  border: 1px solid var(--color-lore-border);
+  border-radius: var(--radius-base);
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: all var(--transition-normal) var(--ease-organic);
+  z-index: 10;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.lore-section__rune-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--color-lore-border);
+}
+
+.lore-section__rune-button:hover .lore-section__rune-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.lore-section__rune-tooltip span {
+  color: var(--color-lore-text-primary);
+  line-height: 1.2;
+}
+
+/* ===================================================================
+   Tablettes de chapitres
+   =================================================================== */
+.lore-section__tablet {
+  position: relative;
+  background: var(--color-lore-stone-tablet);
+  border: 1px solid var(--color-lore-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  opacity: 0;
+  animation: tabletAppear 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  transition: all var(--transition-normal) var(--ease-organic);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+@keyframes tabletAppear {
+  from {
+    opacity: 0;
+    transform: translateY(60px) rotateX(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+  }
+}
+
+.lore-section__tablet:hover {
+  border-color: var(--color-lore-ember-inactive);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lore-section__tablet.is-active {
+  border-color: var(--color-lore-ember-active);
+  background: #2f2722;
+  box-shadow:
+    0 0 20px rgba(230, 115, 21, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(230, 115, 21, 0.1);
+}
+
+/* Coins de pierre décoratifs */
+.lore-section__stone-corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: var(--color-lore-text-muted);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.lore-section__stone-corner--top-left {
+  top: -1px;
+  left: -1px;
+}
+
+.lore-section__stone-corner--top-right {
+  top: -1px;
+  right: -1px;
+}
+
+.lore-section__stone-corner--bottom-left {
+  bottom: -1px;
+  left: -1px;
+}
+
+.lore-section__stone-corner--bottom-right {
+  bottom: -1px;
+  right: -1px;
+}
+
+/* ===================================================================
+   Header de tablette
+   =================================================================== */
+.lore-section__tablet-header {
+  cursor: pointer;
+  transition: all var(--transition-normal) var(--ease-organic);
+}
+
+.lore-section__tablet-header:hover {
+  transform: translateX(4px);
+}
+
+.lore-section__tablet-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.lore-section__tablet-rune {
+  flex-shrink: 0;
+  color: var(--color-lore-text-muted);
+  transition: all var(--transition-normal) var(--ease-organic);
+}
+
+.lore-section__tablet.is-active .lore-section__tablet-rune {
+  color: var(--color-lore-ember-active);
+  filter: drop-shadow(0 0 8px rgba(230, 115, 21, 0.5));
+}
+
+.lore-section__tablet-header-text {
+  flex: 1;
+}
+
+.lore-section__tablet-title {
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+  transition: color var(--transition-fast) var(--ease-organic);
+}
+
+.lore-section__tablet:hover .lore-section__tablet-title {
+  color: #ffdfb3;
+}
+
+.lore-section__tablet.is-active .lore-section__tablet-title {
+  color: var(--color-lore-ember-active);
+  text-shadow: 0 0 10px rgba(230, 115, 21, 0.3);
+}
+
+.lore-section__tablet-timeframe {
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.lore-section__tablet-summary {
+  line-height: 1.7;
+  opacity: 0.9;
+  max-width: 90%;
+}
+
+/* Toggle button */
+.lore-section__tablet-toggle {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-lore-parchment);
+  border: 1px solid var(--color-lore-border);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--transition-normal) var(--ease-organic);
+  color: var(--color-lore-text-muted);
+}
+
+.lore-section__tablet-toggle:hover {
+  background: var(--color-lore-stone-tablet);
+  border-color: var(--color-lore-ember-inactive);
+  color: var(--color-lore-text-accent);
+  transform: scale(1.1);
+}
+
+.lore-section__tablet.is-expanded .lore-section__tablet-toggle {
+  border-color: var(--color-lore-ember-active);
+  color: var(--color-lore-ember-active);
+}
+
+/* Divider */
+.lore-section__tablet-divider {
+  margin: 2rem 0;
+  opacity: 0;
+  animation: dividerSlide 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+}
+
+@keyframes dividerSlide {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.lore-section__tablet-divider svg {
+  width: 100%;
+  height: 4px;
+  color: var(--color-lore-border);
+}
+
+/* ===================================================================
+   Contenu de tablette (collapsible)
+   =================================================================== */
+.lore-section__tablet-content-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              opacity 0.4s var(--ease-organic);
+}
+
+.lore-section__tablet-content {
+  padding-top: 1rem;
+}
+
+/* Image de chapitre */
+.lore-section__tablet-image {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.lore-section__tablet-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: var(--filter-aged);
+  transition: transform var(--transition-slow) var(--ease-organic);
+}
+
+.lore-section__tablet-image:hover img {
+  transform: scale(1.05);
+}
+
+.lore-section__tablet-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+}
+
+/* Texte du contenu */
+.lore-section__tablet-text {
+  line-height: 1.8;
+  font-size: 1rem;
+  color: var(--color-lore-text-primary);
+}
+
+/* Paragraphe avec lettrine */
+.lore-section__paragraph {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.lore-section__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Lettrine - Première lettre stylisée */
+.lore-section__drop-cap {
+  float: left;
+  font-family: var(--font-display), serif;
+  font-size: 4rem;
+  line-height: 0.8;
+  margin-right: 0.5rem;
+  margin-top: 0.2rem;
+  color: var(--color-lore-ember-active);
+  text-shadow:
+    0 0 10px rgba(230, 115, 21, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Style prose pour contenu riche */
+.lore-section__tablet-text.prose {
+  max-width: none;
+}
+
+.lore-section__tablet-text.prose p {
+  margin-bottom: 1.25rem;
+  color: var(--color-lore-text-primary);
+}
+
+.lore-section__tablet-text.prose h3 {
+  font-family: var(--font-heading);
+  color: var(--color-lore-text-accent);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.lore-section__tablet-text.prose strong {
+  color: var(--color-lore-text-accent);
+  font-weight: 600;
+}
+
+.lore-section__tablet-text.prose em {
+  color: var(--color-lore-text-muted);
+}
+
+/* Footnote */
+.lore-section__tablet-footnote {
+  font-style: italic;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ===================================================================
+   Scroll Progress Indicator (sticky sidebar)
+   =================================================================== */
+.lore-section__progress-indicator {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .lore-section__progress-indicator {
+    display: block;
+  }
+}
+
+.lore-section__progress-track {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-lore-stone-tablet);
+  border: 1px solid var(--color-lore-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.lore-section__progress-dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-lore-parchment);
+  border: 2px solid var(--color-lore-border);
+  transition: all var(--transition-normal) var(--ease-organic);
+  cursor: pointer;
+}
+
+.lore-section__progress-dot:hover {
+  transform: scale(1.4);
+  border-color: var(--color-lore-ember-inactive);
+}
+
+.lore-section__progress-dot.is-active {
+  border-color: var(--color-lore-ember-active);
+  box-shadow: 0 0 12px rgba(230, 115, 21, 0.6);
+}
+
+.lore-section__progress-dot-inner {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background var(--transition-fast) var(--ease-organic);
+}
+
+.lore-section__progress-dot.is-active .lore-section__progress-dot-inner {
+  background: var(--color-lore-ember-active);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===================================================================
+   Responsive Design
+   =================================================================== */
+
+/* Tablettes */
+@media (max-width: 1024px) {
+  .lore-section__timeline-track {
+    gap: 0.75rem;
+  }
+
+  .lore-section__rune-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .lore-section__tablet {
+    padding: 1.5rem;
+  }
+
+  .lore-section__tablet-header-content {
+    gap: 1rem;
+  }
+
+  .lore-section__tablet-rune svg {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .lore-section__container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .lore-section__title {
+    font-size: 2rem;
+  }
+
+  .lore-section__subtitle {
+    font-size: 1rem;
+  }
+
+  .lore-section__ornament {
+    width: 150px;
+  }
+
+  .lore-section__timeline-track {
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+
+  .lore-section__timeline-line {
+    display: none;
+  }
+
+  .lore-section__rune-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .lore-section__rune-tooltip {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+  }
+
+  .lore-section__tablet {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .lore-section__tablet-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .lore-section__tablet-rune {
+    order: -1;
+  }
+
+  .lore-section__tablet-rune svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .lore-section__tablet-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .lore-section__tablet-title {
+    font-size: 1.5rem;
+  }
+
+  .lore-section__tablet-timeframe {
+    font-size: 0.875rem;
+  }
+
+  .lore-section__tablet-summary {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+
+  .lore-section__tablet-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .lore-section__drop-cap {
+    font-size: 3rem;
+    margin-right: 0.375rem;
+  }
+
+  .lore-section__stone-corner {
+    width: 30px;
+    height: 30px;
+    opacity: 0.2;
+  }
+
+  .lore-section__tablet-image {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 480px) {
+  .lore-section__header {
+    margin-bottom: 2rem;
+  }
+
+  .lore-section__title {
+    font-size: 1.75rem;
+  }
+
+  .lore-section__timeline {
+    margin-bottom: 2rem;
+  }
+
+  .lore-section__rune-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .lore-section__tablet {
+    padding: 0.875rem;
+  }
+
+  .lore-section__tablet-header {
+    padding-right: 3rem;
+  }
+
+  .lore-section__tablet-title {
+    font-size: 1.25rem;
+  }
+
+  .lore-section__drop-cap {
+    font-size: 2.5rem;
+  }
+}
+
+/* ===================================================================
+   Préférence de mouvement réduit
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .lore-section,
+  .lore-section__header,
+  .lore-section__timeline,
+  .lore-section__tablet,
+  .lore-section__rune-button,
+  .lore-section__tablet-divider {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .lore-section__ash-pattern {
+    animation: none;
+  }
+
+  .lore-section__rune-button:hover,
+  .lore-section__tablet:hover,
+  .lore-section__tablet-header:hover {
+    transform: none;
+  }
+
+  .lore-section__tablet-image:hover img {
+    transform: none;
+  }
+
+  .lore-section__tablet-toggle {
+    transition: none;
+  }
+
+  .lore-section__rune-glow,
+  .lore-section__progress-dot-inner {
+    animation: none;
+  }
+}
+
+/* ===================================================================
+   Print styles
+   =================================================================== */
+@media print {
+  .lore-section__timeline,
+  .lore-section__progress-indicator,
+  .lore-section__tablet-toggle {
+    display: none;
+  }
+
+  .lore-section__tablet {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .lore-section__tablet-content-wrapper {
+    max-height: none !important;
+    opacity: 1 !important;
+  }
+
+  .lore-section__bg,
+  .lore-section__texture,
+  .lore-section__ash-pattern {
+    display: none;
+  }
+}
+
+/* ===================================================================
+   Performance - GPU acceleration
+   =================================================================== */
+.lore-section__tablet,
+.lore-section__rune-button,
+.lore-section__tablet-image img {
+  will-change: transform;
+}
+
+.lore-section__ash-pattern,
+.lore-section__rune-glow {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
