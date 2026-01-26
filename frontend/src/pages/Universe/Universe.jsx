@@ -1,4 +1,4 @@
-import { UniverseHero, LoreSection, sampleLoreChapters, FactionSection, factionsData } from './components'
+import { UniverseHero, LoreSection, sampleLoreChapters, FactionSection, factionsData, LocationSection } from './components'
 import { ScrollToTop } from '@/components'
 
 /**
@@ -27,17 +27,14 @@ const Universe = () => {
 
       <FactionSection factions={factionsData} />
 
-      {/* Placeholder pour les sections futures */}
-      <section className="py-20 px-6 bg-gradient-to-b from-[#0d0b09] to-neutral-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-display text-3xl md:text-4xl text-primary-900 mb-6">
-            Prochainement...
-          </h2>
-          <p className="font-body text-primary-700">
-            La section Lieux importants sera bientot disponible.
-          </p>
-        </div>
-      </section>
+      <LocationSection
+        title="Territoires Maudits"
+        subtitle="Explorez les terres brisées où rôdent ombres et mystères"
+        onLocationClick={(location) => {
+          console.log('Location clicked:', location)
+          // TODO: Ouvrir une modal ou naviguer vers une page de détail
+        }}
+      />
 
       <ScrollToTop />
     </div>

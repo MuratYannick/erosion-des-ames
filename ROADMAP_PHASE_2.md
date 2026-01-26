@@ -214,14 +214,16 @@ frontend/src/
 - [x] **Thématique tribal**: Emblèmes SVG (bouclier, flamme, lune, spirale, boussole), couleurs par faction, particules de cendre au hover
 
 ### Section Lieux importants
-- [ ] Créer le composant LocationCard
-- [ ] Card pour chaque lieu
-  - [ ] Nom du lieu
-  - [ ] Image/illustration
-  - [ ] Description
-  - [ ] Importance dans l'histoire
-- [ ] Grille avec ImageCard
-- [ ] **Thématique tribal**: Style carte ancienne
+- [x] Créer le composant LocationCard
+- [x] Card pour chaque lieu
+  - [x] Nom du lieu
+  - [x] Image/illustration (avec placeholder si absent)
+  - [x] Description (courte + complète)
+  - [x] Type de lieu (6 types avec icônes SVG)
+  - [x] Niveau de danger (1-5 avec code couleur)
+  - [x] Coordonnées révélées au hover
+- [x] Grille responsive avec filtres (type, danger)
+- [x] **Thématique tribal**: Style carte ancienne, particules de cendre, lueur ember selon danger, icônes tribales (ruines, sanctuaire, désert, forêt, gouffre, refuge)
 
 ### Section Chronologie (optionnel)
 - [ ] Créer le composant TimelineEvent
