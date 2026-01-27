@@ -408,63 +408,78 @@ frontend/src/
 
 ## Composants partagés pour pages statiques
 
-### Structure des fichiers
+### Structure des fichiers (implémentée)
 ```
 frontend/src/
 ├── components/
 │   ├── content/
-│   │   ├── PageHeader.jsx
-│   │   ├── SectionTitle.jsx
-│   │   ├── TextBlock.jsx
-│   │   ├── ImageGallery.jsx
-│   │   ├── ScrollToTop.jsx
-│   │   ├── Breadcrumb.jsx
-│   │   └── index.js
+│   │   ├── PageHeader.jsx         ✅
+│   │   ├── PageHeader.css         ✅
+│   │   ├── SectionTitle.jsx       ✅
+│   │   ├── SectionTitle.css       ✅
+│   │   ├── TextBlock.jsx          ✅
+│   │   ├── TextBlock.css          ✅
+│   │   ├── ImageGallery.jsx       ✅
+│   │   ├── ImageGallery.css       ✅
+│   │   ├── Breadcrumb.jsx         ✅
+│   │   ├── Breadcrumb.css         ✅
+│   │   └── index.js               ✅
+│   └── ui/
+│       └── ScrollToTop/           ✅ (existant)
 ```
 
 ### PageHeader
-- [ ] Créer le composant PageHeader
-- [ ] Titre de page (h1)
-- [ ] Sous-titre/description optionnelle
-- [ ] Image de fond optionnelle
-- [ ] Breadcrumb optionnel
-- [ ] **Thématique tribal**: Bordure inférieure gravée
+- [x] Créer le composant PageHeader
+- [x] Titre de page (h1) avec Metal Mania
+- [x] Sous-titre/description optionnelle
+- [x] Image de fond optionnelle avec overlay
+- [x] Breadcrumb optionnel intégré
+- [x] Tailles: compact, default, large, hero
+- [x] Alignements: left, center, right
+- [x] **Thématique tribal**: Ornement SVG décoratif, bordure gravée
 
 ### SectionTitle
-- [ ] Créer le composant SectionTitle
-- [ ] Titre de section (h2, h3)
-- [ ] Icône optionnelle
-- [ ] Ancre pour navigation
-- [ ] **Thématique tribal**: Séparateurs tribaux
+- [x] Créer le composant SectionTitle
+- [x] Titre de section (h2-h6) avec styles par niveau
+- [x] Icône optionnelle
+- [x] Ancre auto-générée pour navigation (#id)
+- [x] Sous-titre optionnel
+- [x] **Thématique tribal**: Séparateur tribal SVG avec diamant
 
 ### TextBlock
-- [ ] Créer le composant TextBlock
-- [ ] Container pour texte long
-- [ ] Typography optimisée lecture
-- [ ] Support markdown ou rich text
-- [ ] Drop caps optionnel
-- [ ] **Thématique tribal**: Style manuscrit
+- [x] Créer le composant TextBlock
+- [x] Container pour texte long
+- [x] Typography optimisée lecture (Patrick Hand 1.1rem)
+- [x] Variantes: default, manuscript, quote, lore
+- [x] Colonnes: 1-3 avec responsive
+- [x] Drop caps optionnel (lettrine Metal Mania)
+- [x] Sous-composants: Paragraph, BlockQuote, TribalList
+- [x] **Thématique tribal**: Puces tribales ◇, style manuscrit
 
 ### ImageGallery
-- [ ] Créer le composant ImageGallery
-- [ ] Grille d'images cliquables
-- [ ] Lightbox au clic
-- [ ] Navigation entre images
-- [ ] Légendes
+- [x] Créer le composant ImageGallery
+- [x] Grille responsive 1-4 colonnes
+- [x] Lightbox au clic avec animation
+- [x] Navigation clavier (flèches, Escape)
+- [x] Navigation boutons prev/next
+- [x] Légendes optionnelles
+- [x] Compteur d'images
+- [x] Ratios: auto, square, 4/3, 16/9, 3/2
 
 ### ScrollToTop
-- [x] Créer le composant ScrollToTop
+- [x] Créer le composant ScrollToTop (existant dans ui/)
 - [x] Bouton fixe en bas à droite
 - [x] Apparaît après scroll
 - [x] Animation smooth au clic
 - [x] **Thématique tribal**: Icône flèche tribale
 
 ### Breadcrumb
-- [ ] Créer le composant Breadcrumb
-- [ ] Fil d'Ariane
-- [ ] Liens cliquables
-- [ ] Séparateurs tribaux
-- [ ] Intégration React Router
+- [x] Créer le composant Breadcrumb
+- [x] Fil d'Ariane avec React Router Link
+- [x] Liens cliquables (sauf dernier élément)
+- [x] Icône maison pour l'accueil
+- [x] Responsive: masque éléments intermédiaires sur mobile
+- [x] **Thématique tribal**: Séparateurs tribaux SVG
 
 ---
 

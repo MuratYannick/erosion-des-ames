@@ -71,3 +71,15 @@ export {
   CollapseTotem,
   useSidebar,
 } from './ui/Sidebar'
+
+// Content components (shared for static pages)
+export {
+  PageHeader,
+  SectionTitle,
+  TextBlock,
+  Paragraph,
+  BlockQuote,
+  TribalList,
+  ImageGallery,
+  Breadcrumb
+} from './content'

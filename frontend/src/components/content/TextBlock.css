@@ -1,0 +1,265 @@
+/**
+ * TextBlock - Styles pour le contenu texte long
+ * Typographie optimisée lecture avec style manuscrit tribal
+ */
+
+/* ===== Variables ===== */
+.text-block {
+  --tb-text: #e8e0d5;
+  --tb-text-muted: #b0a090;
+  --tb-accent: #e67315;
+  --tb-gold: #c9a227;
+  --tb-quote-bg: rgba(122, 100, 84, 0.1);
+  --tb-quote-border: #e67315;
+}
+
+/* ===== Container ===== */
+.text-block {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--tb-text);
+}
+
+/* Largeurs maximales */
+.text-block--prose {
+  max-width: 70ch;
+}
+
+.text-block--wide {
+  max-width: 90ch;
+}
+
+.text-block--full {
+  max-width: 100%;
+}
+
+/* ===== Colonnes ===== */
+.text-block--cols-2 {
+  column-count: 2;
+  column-gap: 2.5rem;
+}
+
+.text-block--cols-3 {
+  column-count: 3;
+  column-gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .text-block--cols-3 {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .text-block--cols-2,
+  .text-block--cols-3 {
+    column-count: 1;
+  }
+}
+
+/* ===== Variantes ===== */
+
+/* Manuscrit - style écriture ancienne */
+.text-block--manuscript {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* Citation - style emphase */
+.text-block--quote {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--tb-text-muted);
+}
+
+/* Lore - style codex ancien */
+.text-block--lore {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.1rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(28, 23, 20, 0.3) 0%,
+    rgba(28, 23, 20, 0.1) 50%,
+    rgba(28, 23, 20, 0.3) 100%
+  );
+  padding: 1.5rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--tb-accent);
+}
+
+/* ===== Drop Cap (Lettrine) ===== */
+.text-block--drop-cap > p:first-of-type::first-letter,
+.text-block--drop-cap > .text-block__paragraph:first-of-type::first-letter {
+  float: left;
+  font-family: 'Metal Mania', cursive;
+  font-size: 4rem;
+  line-height: 0.8;
+  padding-right: 0.5rem;
+  padding-top: 0.1rem;
+  color: var(--tb-gold);
+  text-shadow: 0 2px 10px rgba(201, 162, 39, 0.4);
+}
+
+/* ===== Paragraphes ===== */
+.text-block p,
+.text-block__paragraph {
+  margin: 0 0 1.25rem;
+}
+
+.text-block p:last-child,
+.text-block__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Paragraphe lead (introduction) */
+.text-block__paragraph--lead {
+  font-size: 1.25rem;
+  color: var(--tb-text);
+  font-weight: 500;
+}
+
+/* ===== Citations ===== */
+.text-block__quote {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--tb-quote-bg);
+  border-left: 4px solid var(--tb-quote-border);
+  border-radius: 0 4px 4px 0;
+}
+
+.text-block__quote-text {
+  margin: 0;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--tb-accent);
+  line-height: 1.6;
+}
+
+.text-block__quote-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.95rem;
+  color: var(--tb-text-muted);
+}
+
+.text-block__quote-author {
+  font-style: normal;
+}
+
+.text-block__quote-author::before {
+  content: '— ';
+}
+
+.text-block__quote-source {
+  opacity: 0.7;
+}
+
+.text-block__quote-source::before {
+  content: ', ';
+}
+
+/* ===== Listes ===== */
+.text-block ul,
+.text-block ol,
+.text-block__list {
+  margin: 1rem 0 1.5rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.text-block li,
+.text-block__list li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Puce tribale pour ul */
+.text-block ul li::before,
+.text-block__list:not(.text-block__list--ordered) li::before {
+  content: '◇';
+  position: absolute;
+  left: 0;
+  color: var(--tb-accent);
+  font-size: 0.8rem;
+}
+
+/* Numéros pour ol */
+.text-block ol,
+.text-block__list--ordered {
+  counter-reset: tribal-counter;
+}
+
+.text-block ol li::before,
+.text-block__list--ordered li::before {
+  counter-increment: tribal-counter;
+  content: counter(tribal-counter) '.';
+  position: absolute;
+  left: 0;
+  color: var(--tb-gold);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem;
+}
+
+/* ===== Liens dans le texte ===== */
+.text-block a {
+  color: var(--tb-accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(230, 115, 21, 0.3);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.text-block a:hover {
+  text-decoration-color: var(--tb-accent);
+}
+
+/* ===== Emphase ===== */
+.text-block strong,
+.text-block b {
+  color: var(--tb-gold);
+  font-weight: 600;
+}
+
+.text-block em,
+.text-block i {
+  color: var(--tb-text-muted);
+  font-style: italic;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .text-block {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .text-block--drop-cap > p:first-of-type::first-letter,
+  .text-block--drop-cap > .text-block__paragraph:first-of-type::first-letter {
+    font-size: 3rem;
+  }
+
+  .text-block__quote {
+    padding: 1rem 1.25rem;
+  }
+
+  .text-block__quote-text {
+    font-size: 1rem;
+  }
+}
+
+/* ===== Préférence mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .text-block a {
+    transition: none;
+  }
+}

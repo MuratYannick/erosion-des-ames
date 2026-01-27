@@ -1,0 +1,121 @@
+/**
+ * Breadcrumb - Styles pour le fil d'Ariane tribal
+ */
+
+/* ===== Variables ===== */
+.breadcrumb {
+  --bc-text: #7a6454;
+  --bc-text-hover: #c9a227;
+  --bc-text-current: #e8e0d5;
+  --bc-separator: #7a6454;
+}
+
+/* ===== Container ===== */
+.breadcrumb {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ===== Liste ===== */
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ===== Items ===== */
+.breadcrumb__item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ===== Liens ===== */
+.breadcrumb__link {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--bc-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0.25rem 0;
+}
+
+.breadcrumb__link:hover {
+  color: var(--bc-text-hover);
+}
+
+.breadcrumb__link:focus-visible {
+  outline: 1px dashed var(--bc-text-hover);
+  outline-offset: 2px;
+}
+
+/* ===== Élément courant ===== */
+.breadcrumb__current {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--bc-text-current);
+  font-weight: 500;
+}
+
+/* ===== Icône maison ===== */
+.breadcrumb__home-icon {
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.breadcrumb__link:hover .breadcrumb__home-icon {
+  opacity: 1;
+}
+
+/* ===== Séparateur ===== */
+.breadcrumb__separator {
+  display: flex;
+  align-items: center;
+  color: var(--bc-separator);
+  opacity: 0.5;
+  margin: 0 0.15rem;
+}
+
+/* ===== Label ===== */
+.breadcrumb__label {
+  white-space: nowrap;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .breadcrumb {
+    font-size: 0.7rem;
+  }
+
+  .breadcrumb__list {
+    gap: 0.15rem;
+  }
+
+  /* Masquer les éléments intermédiaires sur mobile */
+  .breadcrumb__item:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  /* Afficher "..." entre le premier et le dernier */
+  .breadcrumb__item:first-child:not(:last-child)::after {
+    content: '...';
+    color: var(--bc-separator);
+    margin-left: 0.5rem;
+    opacity: 0.5;
+  }
+}
+
+/* ===== Préférence mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb__link {
+    transition: none;
+  }
+}
