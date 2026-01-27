@@ -12,6 +12,7 @@ import {
   SidebarDivider,
   Avatar,
   Badge,
+  ScrollToTopOnNavigate,
 } from '@/components'
 import { Home, Foreword, Universe, Characters } from '@/pages'
 
@@ -207,6 +208,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTopOnNavigate />
       <ToastProvider position="top-right">
         <Routes>
           <Route

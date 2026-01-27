@@ -83,3 +83,6 @@ export {
   ImageGallery,
   Breadcrumb
 } from './content'
+
+// Utility components
+export { ScrollToTopOnNavigate } from './utils'

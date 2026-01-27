@@ -485,51 +485,47 @@ frontend/src/
 
 ## Configuration des routes
 
-### Mise à jour de App.jsx
-```jsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { MainLayout } from '@/layouts'
-import { Home, Foreword, Universe, Characters } from '@/pages'
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/foreword" element={<Foreword />} />
-          <Route path="/universe" element={<Universe />} />
-          <Route path="/characters" element={<Characters />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  )
-}
-```
+### Mise à jour de App.jsx ✅
+Routes configurées:
+- `/` → Home
+- `/avant-propos` → Foreword
+- `/univers` → Universe
+- `/personnages` → Characters
+- `/forum` → ForumPage (placeholder)
+- `*` → NotFoundPage
 
 ### Navigation
-- [ ] Mettre à jour les liens dans Header
-- [ ] Activer les NavLink avec état actif
-- [ ] Scroll to top au changement de route
+- [x] Mettre à jour les liens dans Header (navItems configurés)
+- [x] Activer les NavLink avec état actif (className isActive)
+- [x] Scroll to top au changement de route (ScrollToTopOnNavigate)
+
+### Composant ScrollToTopOnNavigate
+```
+frontend/src/components/utils/
+├── ScrollToTopOnNavigate.jsx  ✅
+└── index.js                   ✅
+```
 
 ---
 
 ## Styles globaux pour contenu
 
-### Typographie texte long (index.css)
-- [ ] Styles pour articles/prose
-- [ ] Headings hierarchy (h1-h6)
-- [ ] Paragraphes avec espacement
-- [ ] Listes stylisées (ul, ol)
-- [ ] Blockquotes tribaux
-- [ ] Links inline stylisés
-- [ ] **Thématique tribal**: First-letter drop cap, underline rituel
+### Typographie texte long
+Couverts par `TextBlock.css` et les composants content:
+- [x] Styles pour articles/prose (TextBlock variantes)
+- [x] Headings hierarchy (SectionTitle h2-h6)
+- [x] Paragraphes avec espacement (Paragraph component)
+- [x] Listes stylisées ul/ol (TribalList avec puces ◇)
+- [x] Blockquotes tribaux (BlockQuote component)
+- [x] Links inline stylisés (TextBlock a styles)
+- [x] **Thématique tribal**: Drop cap (TextBlock--drop-cap), underline rituel
 
 ### Utilitaires de mise en page
-- [ ] Container avec max-width
-- [ ] Grid layouts prédéfinis
-- [ ] Spacing sections
-- [ ] Responsive breakpoints
+Couverts par Tailwind et variables CSS (index.css):
+- [x] Container avec max-width (Tailwind `.container`, TextBlock--prose/wide/full)
+- [x] Grid layouts prédéfinis (Tailwind `.grid`)
+- [x] Spacing sections (variables --spacing-xs à --spacing-3xl)
+- [x] Responsive breakpoints (Tailwind responsive modifiers)
 
 ---
 
