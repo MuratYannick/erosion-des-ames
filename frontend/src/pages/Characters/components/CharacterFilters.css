@@ -1,0 +1,394 @@
+/**
+ * CharacterFilters - Styles pour l'Autel de Sélection
+ * Style tablette rituelle avec runes tribales
+ */
+
+/* ===== Variables ===== */
+.character-filters {
+  --filter-bg: rgba(28, 23, 20, 0.95);
+  --filter-border: rgba(230, 115, 21, 0.3);
+  --filter-text: #e8e0d5;
+  --filter-text-muted: #7a6454;
+  --filter-accent: #e67315;
+  --filter-gold: #c9a227;
+  --dropdown-bg: #2a2420;
+  --dropdown-hover: rgba(230, 115, 21, 0.1);
+}
+
+/* ===== Container Principal ===== */
+.character-filters {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+}
+
+.character-filters__tablet {
+  position: relative;
+  background: var(--filter-bg);
+  border: 1px solid var(--filter-border);
+  border-radius: 4px;
+  padding: 1.5rem 2rem;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(201, 162, 39, 0.1);
+}
+
+/* Pattern de runes en watermark */
+.character-filters__tablet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='30' y='35' text-anchor='middle' font-size='20' fill='%237a6454' opacity='0.05'%3E◆%3C/text%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ===== Ornements ===== */
+.character-filters__ornament {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 200px;
+  pointer-events: none;
+}
+
+.character-filters__ornament--top {
+  top: -8px;
+}
+
+.character-filters__ornament--bottom {
+  bottom: -8px;
+}
+
+.character-filters__ornament svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ===== Grille de Filtres ===== */
+.character-filters__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* ===== Dropdown Tribal ===== */
+.tribal-dropdown {
+  position: relative;
+}
+
+.tribal-dropdown__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.7rem;
+  color: var(--filter-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tribal-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--dropdown-bg);
+  border: 1px solid rgba(122, 100, 84, 0.3);
+  border-radius: 3px;
+  color: var(--filter-text);
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.tribal-dropdown__trigger:hover {
+  border-color: var(--filter-accent);
+  background: rgba(42, 36, 32, 0.9);
+}
+
+.tribal-dropdown__trigger:focus-visible {
+  outline: none;
+  border-color: var(--filter-accent);
+  box-shadow: 0 0 0 2px rgba(230, 115, 21, 0.2);
+}
+
+.tribal-dropdown--open .tribal-dropdown__trigger {
+  border-color: var(--filter-accent);
+  box-shadow: 0 0 12px rgba(230, 115, 21, 0.2);
+}
+
+.tribal-dropdown__rune {
+  color: var(--filter-gold);
+  font-size: 0.85rem;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.tribal-dropdown--open .tribal-dropdown__rune {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.tribal-dropdown__value {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tribal-dropdown__chevron {
+  color: var(--filter-text-muted);
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.tribal-dropdown--open .tribal-dropdown__chevron {
+  transform: rotate(180deg);
+  color: var(--filter-accent);
+}
+
+/* Backdrop pour fermer le menu */
+.tribal-dropdown__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+/* Menu déroulant */
+.tribal-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--filter-border);
+  border-radius: 3px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(230, 115, 21, 0.1);
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  animation: dropdownOpen 0.2s ease-out;
+}
+
+@keyframes dropdownOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar custom */
+.tribal-dropdown__menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tribal-dropdown__menu::-webkit-scrollbar-track {
+  background: rgba(122, 100, 84, 0.1);
+}
+
+.tribal-dropdown__menu::-webkit-scrollbar-thumb {
+  background: rgba(122, 100, 84, 0.4);
+  border-radius: 3px;
+}
+
+.tribal-dropdown__menu::-webkit-scrollbar-thumb:hover {
+  background: var(--filter-accent);
+}
+
+/* Options */
+.tribal-dropdown__option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.95rem;
+  color: var(--filter-text);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.tribal-dropdown__option:hover {
+  background: var(--dropdown-hover);
+  color: var(--filter-accent);
+}
+
+.tribal-dropdown__option--selected {
+  background: rgba(230, 115, 21, 0.15);
+  color: var(--filter-accent);
+}
+
+.tribal-dropdown__option-rune {
+  color: var(--filter-gold);
+  font-size: 0.8rem;
+  width: 1rem;
+  text-align: center;
+}
+
+.tribal-dropdown__option-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: auto;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ===== Footer (Compteur + Reset) ===== */
+.character-filters__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(122, 100, 84, 0.2);
+  position: relative;
+  z-index: 5;
+}
+
+/* Compteur d'âmes */
+.character-filters__count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.character-filters__count .soul-flame-icon {
+  filter: drop-shadow(0 0 4px rgba(230, 115, 21, 0.5));
+}
+
+.character-filters__count-number {
+  font-family: 'Metal Mania', cursive;
+  font-size: 1.4rem;
+  color: var(--filter-accent);
+  text-shadow: 0 0 10px rgba(230, 115, 21, 0.4);
+}
+
+.character-filters__count-label {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.95rem;
+  color: var(--filter-text-muted);
+}
+
+.character-filters__count-total {
+  opacity: 0.6;
+}
+
+/* Bouton Reset */
+.character-filters__reset {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(122, 100, 84, 0.4);
+  border-radius: 3px;
+  color: var(--filter-text-muted);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.character-filters__reset:hover {
+  color: var(--filter-accent);
+  border-color: var(--filter-accent);
+  background: rgba(230, 115, 21, 0.05);
+}
+
+.character-filters__reset:focus-visible {
+  outline: none;
+  border-color: var(--filter-accent);
+  box-shadow: 0 0 0 2px rgba(230, 115, 21, 0.2);
+}
+
+.character-filters__reset svg {
+  opacity: 0.7;
+}
+
+.character-filters__reset:hover svg {
+  opacity: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .character-filters__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .character-filters__tablet {
+    padding: 1.25rem 1rem;
+  }
+
+  .character-filters__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .tribal-dropdown__trigger {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .tribal-dropdown__label {
+    font-size: 0.65rem;
+  }
+
+  .character-filters__footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .character-filters__reset {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .character-filters__count-label {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .character-filters__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Préférence mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .tribal-dropdown__menu {
+    animation: none;
+  }
+
+  .tribal-dropdown__rune,
+  .tribal-dropdown__chevron {
+    transition: none;
+  }
+}

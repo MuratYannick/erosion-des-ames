@@ -13,7 +13,7 @@ import {
   Avatar,
   Badge,
 } from '@/components'
-import { Home, Foreword, Universe } from '@/pages'
+import { Home, Foreword, Universe, Characters } from '@/pages'
 
 // Placeholder pages
 function AvantProposPage() {
@@ -229,7 +229,7 @@ function App() {
               <Route path="regions/:region" element={<UniversPage />} />
               <Route path="archives" element={<UniversPage />} />
             </Route>
-            <Route path="/personnages" element={<PersonnagesPage />} />
+            <Route path="/personnages" element={<Characters />} />
             <Route path="/forum" element={<ForumPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

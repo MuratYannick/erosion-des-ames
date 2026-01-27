@@ -1,0 +1,532 @@
+/**
+ * CharacterCard - Styles pour les cartes "Soul Shard"
+ * Concept: Fragment cristallin avec âme légendaire
+ */
+
+/* ===== Variables locales ===== */
+.character-card {
+  --card-bg: rgba(28, 23, 20, 0.95);
+  --card-bg-hover: rgba(34, 25, 21, 0.98);
+  --crystal-edge: rgba(201, 162, 39, 0.3);
+  --text-primary: #e8e0d5;
+  --text-secondary: #7a6454;
+  --text-accent: #c9a227;
+}
+
+/* ===== Container principal ===== */
+.character-card {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 3 / 4;
+  background: var(--card-bg);
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.4s ease,
+    filter 0.4s ease;
+  animation: soulShardReveal 0.6s ease-out backwards;
+  animation-delay: var(--animation-delay, 0s);
+
+  /* État dormant */
+  filter: brightness(0.88) saturate(0.75);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(230, 115, 21, 0.08);
+}
+
+/* Animation d'entrée */
+@keyframes soulShardReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) rotateX(-15deg);
+    filter: blur(6px) brightness(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+    filter: blur(0) brightness(0.88) saturate(0.75);
+  }
+}
+
+/* ===== État Hover - Âme Éveillée ===== */
+.character-card:hover,
+.character-card:focus-visible,
+.character-card--hovered {
+  transform: translateY(-10px) scale(1.03);
+  filter: brightness(1.1) saturate(1.15);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.5),
+    0 0 50px var(--faction-glow, rgba(230, 115, 21, 0.3)),
+    inset 0 0 30px rgba(230, 115, 21, 0.05);
+  z-index: 10;
+}
+
+.character-card:focus-visible {
+  outline: 2px solid var(--faction-color, #e67315);
+  outline-offset: 4px;
+}
+
+/* État filtré (non-correspondant) */
+.character-card--filtered {
+  opacity: 0.3;
+  transform: scale(0.92);
+  filter: grayscale(0.8) brightness(0.6);
+  pointer-events: none;
+}
+
+/* ===== Bordure SVG ===== */
+.character-card .soul-shard-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+.character-card:hover .soul-shard-border {
+  opacity: 1;
+}
+
+/* Animation des fissures au hover */
+.character-card:hover .shard-fissures path {
+  animation: fissureGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes fissureGlow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ===== Lueur de faction ===== */
+.character-card__glow-container {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  aspect-ratio: 1;
+  z-index: 1;
+  opacity: 0.3;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.character-card:hover .character-card__glow-container {
+  opacity: 0.7;
+}
+
+.character-card__glow-container .faction-glow {
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== Zone Avatar ===== */
+.character-card__avatar-zone {
+  position: relative;
+  height: 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.5rem 0.5rem;
+  z-index: 5;
+}
+
+.character-card__avatar-frame {
+  position: relative;
+  width: 85%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(122, 100, 84, 0.2) 0%,
+    rgba(28, 23, 20, 0.6) 100%
+  );
+  border: 1px solid var(--crystal-edge);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.character-card__avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s ease, filter 0.4s ease;
+}
+
+.character-card:hover .character-card__avatar-image {
+  transform: scale(1.08);
+  filter: brightness(1.15);
+}
+
+/* Placeholder si pas d'image */
+.character-card__avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at center,
+    rgba(122, 100, 84, 0.3) 0%,
+    rgba(28, 23, 20, 0.8) 70%
+  );
+}
+
+.character-card__avatar-placeholder .race-symbol {
+  opacity: 0.4;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.character-card:hover .character-card__avatar-placeholder .race-symbol {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+/* Overlay cristallin */
+.character-card__crystal-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(201, 162, 39, 0.05) 0%,
+      transparent 40%,
+      transparent 60%,
+      rgba(230, 115, 21, 0.03) 100%
+    );
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Badge de race */
+.character-card__race-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(28, 23, 20, 0.9);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 50%;
+  z-index: 10;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.character-card:hover .character-card__race-badge {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(201, 162, 39, 0.5);
+}
+
+/* ===== Zone Informations ===== */
+.character-card__info-zone {
+  position: relative;
+  height: 45%;
+  padding: 0.75rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(28, 23, 20, 0.7) 20%,
+    var(--card-bg) 100%
+  );
+}
+
+/* Nom du personnage */
+.character-card__name {
+  margin: 0 0 0.35rem;
+  font-family: 'Metal Mania', cursive;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-accent);
+  text-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+  line-height: 1.2;
+  transition: text-shadow 0.3s ease;
+}
+
+.character-card:hover .character-card__name {
+  text-shadow:
+    0 2px 8px rgba(201, 162, 39, 0.5),
+    0 0 20px rgba(230, 115, 21, 0.3);
+}
+
+/* Race et Classe */
+.character-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.character-card__race,
+.character-card__class {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.character-card__rune {
+  font-size: 0.8rem;
+  color: var(--text-accent);
+}
+
+.character-card__separator {
+  opacity: 0.4;
+}
+
+.character-card__class .class-symbol {
+  opacity: 0.7;
+}
+
+/* Faction */
+.character-card__faction {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.85rem;
+  color: var(--faction-color, var(--text-secondary));
+}
+
+.character-card__faction-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--faction-color, #e67315);
+  box-shadow: 0 0 8px var(--faction-color, rgba(230, 115, 21, 0.6));
+  animation: factionPulse 2s ease-in-out infinite;
+}
+
+@keyframes factionPulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* Description */
+.character-card__description {
+  flex: 1;
+  margin: 0;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+  opacity: 0.85;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+/* Difficulté RP */
+.character-card__difficulty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(122, 100, 84, 0.2);
+}
+
+.character-card__difficulty-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.character-card__difficulty .difficulty-runes {
+  display: flex;
+  gap: 3px;
+}
+
+.character-card__difficulty .difficulty-rune {
+  transition: transform 0.2s ease;
+}
+
+.character-card:hover .character-card__difficulty .difficulty-rune.active {
+  animation: runeGlow 1s ease-in-out infinite;
+}
+
+@keyframes runeGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(230, 115, 21, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(230, 115, 21, 0.9));
+  }
+}
+
+/* ===== Particules de cendres ===== */
+.character-card__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  overflow: hidden;
+}
+
+.character-card__particles .ash-particle {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(
+    circle,
+    rgba(230, 115, 21, 0.9) 0%,
+    rgba(201, 162, 39, 0.4) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: ashRise var(--duration, 2.5s) ease-out infinite;
+  animation-delay: var(--delay, 0s);
+  transform: translateX(var(--x-offset, 0));
+}
+
+@keyframes ashRise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(var(--x-offset, 0)) scale(1);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) translateX(calc(var(--x-offset, 0) + 15px)) scale(0.3);
+  }
+}
+
+/* ===== CTA "Invoquer l'Âme" ===== */
+.character-card__cta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.6rem;
+  background: linear-gradient(
+    to top,
+    rgba(230, 115, 21, 0.15) 0%,
+    transparent 100%
+  );
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 30;
+}
+
+.character-card:hover .character-card__cta,
+.character-card:focus-visible .character-card__cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.character-card__cta-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.7rem;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .character-card {
+    max-width: 260px;
+  }
+
+  .character-card__name {
+    font-size: 1.1rem;
+  }
+
+  .character-card__description {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .character-card__cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .character-card {
+    max-width: 100%;
+    aspect-ratio: 4 / 5;
+  }
+
+  .character-card__avatar-zone {
+    height: 50%;
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  .character-card__info-zone {
+    height: 50%;
+    padding: 0.5rem 1rem 1rem;
+  }
+
+  .character-card__name {
+    font-size: 1rem;
+  }
+
+  .character-card__meta {
+    font-size: 0.65rem;
+  }
+}
+
+/* ===== Préférence mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .character-card {
+    animation: none;
+    transition: none;
+  }
+
+  .character-card:hover {
+    transform: none;
+  }
+
+  .character-card__particles .ash-particle,
+  .character-card__faction-dot,
+  .character-card .shard-fissures path,
+  .character-card__difficulty .difficulty-rune.active {
+    animation: none;
+  }
+}

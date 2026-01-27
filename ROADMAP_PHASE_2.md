@@ -286,80 +286,123 @@ frontend/src/
 
 ## 2.4 Page Characters (Personnages prédéfinis)
 
-### Structure des fichiers
+### Concept créatif: "Les Âmes Marquées - Sanctuaire des Légendes"
+- Métaphore: Fragments d'âmes (Soul Shards) dans un sanctuaire mystique
+- Cards hexagonales cristallines avec effets de fissures lumineuses
+- Filtres style "Autel de Sélection" avec runes tribales
+- Modal "Codex de l'Âme" style parchemin ancien
+
+### Structure des fichiers (implémentée)
 ```
 frontend/src/
 ├── pages/
 │   ├── Characters/
-│   │   ├── Characters.jsx
-│   │   ├── Characters.css
+│   │   ├── Characters.jsx             ✅
+│   │   ├── Characters.css             ✅
 │   │   ├── components/
-│   │   │   ├── CharacterGrid.jsx
-│   │   │   ├── CharacterCard.jsx
-│   │   │   ├── CharacterFilters.jsx
-│   │   │   ├── CharacterModal.jsx
-│   │   │   └── index.js
+│   │   │   ├── CharacterCard.jsx      ✅
+│   │   │   ├── CharacterCard.css      ✅
+│   │   │   ├── CharacterFilters.jsx   ✅
+│   │   │   ├── CharacterFilters.css   ✅
+│   │   │   ├── CharacterGrid.jsx      ✅
+│   │   │   ├── CharacterGrid.css      ✅
+│   │   │   ├── CharacterModal.jsx     ✅
+│   │   │   ├── CharacterModal.css     ✅
+│   │   │   ├── SoulShardElements.jsx  ✅
+│   │   │   └── index.js               ✅
 │   │   ├── data/
-│   │   │   └── presetCharacters.js
-│   │   └── index.js
+│   │   │   └── presetCharacters.js    ✅
+│   │   └── index.js                   ✅
 ```
 
 ### Grille de personnages
-- [ ] Créer le composant CharacterGrid
-- [ ] Affichage en grille responsive
-- [ ] Espacement cohérent
-- [ ] Animations d'apparition staggered
-- [ ] État vide si aucun résultat de filtre
+- [x] Créer le composant CharacterGrid
+- [x] Affichage en grille responsive (auto-fill 280px min)
+- [x] Espacement cohérent (gap 2rem)
+- [x] Animations d'apparition staggered (0.08s delay)
+- [x] État vide si aucun résultat de filtre
+- [x] Particules d'ambiance (braises flottantes)
 
-### Card de personnage
-- [ ] Créer le composant CharacterCard
-- [ ] Avatar/portrait du personnage
-- [ ] Nom du personnage
-- [ ] Race/classe ou archétype
-- [ ] Courte description
-- [ ] Badges (faction, statut, etc.)
-- [ ] Action au clic (ouvrir modal)
-- [ ] **Thématique tribal**: Card `tribal` avec frame rituel
+### Card de personnage - "Soul Shard"
+- [x] Créer le composant CharacterCard
+- [x] Bordure cristalline SVG (SoulShardBorder)
+- [x] Avatar/portrait avec placeholder race-symbol
+- [x] Nom du personnage (Metal Mania)
+- [x] Race/classe avec runes et symboles
+- [x] Faction avec couleur et point lumineux
+- [x] Courte description (ellipsis 2 lignes)
+- [x] Runes de difficulté RP (DifficultyRunes)
+- [x] Action au clic (ouvrir modal)
+- [x] Effets hover: lueur faction, particules cendres, CTA
+- [x] **Thématique tribal**: Fissures lumineuses, coins tribaux, lueur pulsante
 
-### Système de filtres
-- [ ] Créer le composant CharacterFilters
-- [ ] Filtres possibles:
-  - [ ] Par race
-  - [ ] Par classe/archétype
-  - [ ] Par faction
-  - [ ] Par niveau de difficulté RP
-- [ ] Dropdown ou checkboxes
-- [ ] Reset des filtres
-- [ ] Compteur de résultats
-- [ ] **Thématique tribal**: Style dropdown tribal
+### Système de filtres - "Autel de Sélection"
+- [x] Créer le composant CharacterFilters
+- [x] Style tablette rituelle avec ornements
+- [x] Filtres implémentés:
+  - [x] Par race (4 races: Humain, Marqué, Ombre, Braise)
+  - [x] Par classe (6 classes: Guerrier, Chamane, Éclaireur, Guérisseur, Mystique, Artisan)
+  - [x] Par faction (5 factions avec couleurs)
+  - [x] Par niveau de difficulté RP (1-5)
+- [x] Dropdown tribal personnalisé avec runes
+- [x] Reset des filtres ("Réinitialiser les Runes")
+- [x] Compteur de résultats avec SoulFlameIcon
+- [x] **Thématique tribal**: Runes, ornements SVG, pattern watermark
 
-### Modal détail personnage
-- [ ] Créer le composant CharacterModal
-- [ ] Portrait en grand
-- [ ] Informations complètes:
-  - [ ] Nom complet
-  - [ ] Race, âge, classe
-  - [ ] Faction/allégeance
-  - [ ] Histoire/background
-  - [ ] Traits de personnalité
-  - [ ] Capacités notables
-  - [ ] Notes pour le RP
-- [ ] Bouton "Utiliser ce personnage" (futur)
-- [ ] **Thématique tribal**: Modal avec frame `ancient`
+### Modal détail personnage - "Codex de l'Âme"
+- [x] Créer le composant CharacterModal
+- [x] Overlay avec backdrop blur
+- [x] Portrait en grand avec lueur faction
+- [x] Informations complètes:
+  - [x] Nom complet (Metal Mania 2rem)
+  - [x] Race, âge, classe avec symboles
+  - [x] Faction/allégeance avec emblème
+  - [x] Citation du personnage
+  - [x] Histoire/background (paragraphes)
+  - [x] Traits de personnalité (Force/Faiblesse/Particularité)
+  - [x] Capacités signature (liste)
+  - [x] Équipement (liste)
+  - [x] Notes pour le RP
+- [x] Bouton "Incarner cette Âme" (désactivé pour v1)
+- [x] Animations d'entrée en cascade
+- [x] Focus trap et gestion clavier (Escape)
+- [x] **Thématique tribal**: Parchemin ancien, bords brûlés, ornements
 
-### Données des personnages (data/presetCharacters.js)
-- [ ] Structure de données pour chaque personnage
-- [ ] 5-10 personnages exemples variés
-- [ ] Diversité de races/classes/factions
-- [ ] Images placeholder ou illustrations
+### Données des personnages (presetCharacters.js)
+- [x] Structure de données complète
+- [x] 8 personnages exemples variés:
+  - Kael Cendrenuit (Guerrier Marqué)
+  - Lyria Brumemonde (Mystique Ombre)
+  - Theron Maindefer (Artisan Humain)
+  - Vera Florenuit (Guérisseuse Braise)
+  - Renn Piedléger (Éclaireur Humain)
+  - Morgana Appelle-Tempête (Chamane Marquée)
+  - Dex Ravaudombre (Éclaireur Ombre)
+  - Alba Porteaurore (Guérisseuse Braise)
+- [x] Diversité de races/classes/factions
+- [x] Niveaux de difficulté RP variés (1-5)
+- [x] Helpers: getRaceById, getClassById, getFactionById
+
+### Éléments SVG tribaux (SoulShardElements.jsx)
+- [x] SoulShardBorder - Bordure cristalline avec fissures
+- [x] SoulFlameIcon - Flamme d'âme animée
+- [x] DifficultyRunes - Système de runes 1-5
+- [x] FactionGlow - Cercle de lueur faction
+- [x] RaceSymbol - Symboles tribaux par race
+- [x] ClassSymbol - Symboles par classe
+- [x] AshParticles - Particules de cendres
+- [x] ModalOrnament - Ornements décoratifs
 
 ### Intégration Page Characters
-- [ ] Header avec titre et introduction
-- [ ] Filtres en haut ou sidebar
-- [ ] Grille de personnages
-- [ ] Pagination si beaucoup de personnages
-- [ ] Responsive design
-- [ ] SEO: meta title, description
+- [x] Header avec titre et introduction
+- [x] Icône SoulFlame centrale
+- [x] Ornements tribaux SVG
+- [x] Filtres en haut (tablette rituelle)
+- [x] Grille de personnages
+- [x] ScrollToTop
+- [x] Route /personnages configurée
+- [x] Responsive design (breakpoints 480, 600, 768, 900, 1200px)
+- [ ] SEO: meta title, description (reporté)
 
 ---
 

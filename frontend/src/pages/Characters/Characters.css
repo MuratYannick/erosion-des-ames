@@ -1,0 +1,185 @@
+/**
+ * Characters Page - Styles pour "Les Âmes Marquées"
+ * Page principale du Sanctuaire des Légendes
+ */
+
+/* ===== Variables ===== */
+.characters-page {
+  --page-bg: #0d0b09;
+  --page-text: #e8e0d5;
+  --page-text-muted: #7a6454;
+  --page-accent: #e67315;
+  --page-gold: #c9a227;
+}
+
+/* ===== Container Principal ===== */
+.characters-page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--page-bg);
+  color: var(--page-text);
+  overflow-x: hidden;
+}
+
+/* ===== Fond avec effets ===== */
+.characters-page__background {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.characters-page__bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgba(230, 115, 21, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 20% 80%,
+      rgba(122, 100, 84, 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 60%,
+      rgba(201, 162, 39, 0.04) 0%,
+      transparent 50%
+    );
+}
+
+.characters-page__bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M50 10 L55 20 L50 30 L45 20 Z' fill='%237a6454' opacity='0.02'/%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* ===== Header ===== */
+.characters-page__header {
+  position: relative;
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  z-index: 10;
+}
+
+.characters-page__header-content {
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.characters-page__header.is-visible .characters-page__header-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ornements */
+.characters-page__ornament {
+  margin-bottom: 1.5rem;
+}
+
+.characters-page__ornament svg {
+  width: 250px;
+  max-width: 80%;
+  height: auto;
+}
+
+.characters-page__ornament--bottom {
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
+/* Icône header */
+.characters-page__header-icon {
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 20px rgba(230, 115, 21, 0.5));
+}
+
+/* Titre */
+.characters-page__title {
+  margin: 0 0 0.5rem;
+  font-family: 'Metal Mania', cursive;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 400;
+  color: var(--page-gold);
+  text-shadow:
+    0 2px 20px rgba(201, 162, 39, 0.5),
+    0 0 60px rgba(230, 115, 21, 0.3);
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+}
+
+/* Sous-titre */
+.characters-page__subtitle {
+  margin: 0 0 1.5rem;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  color: var(--page-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.9;
+}
+
+/* Description */
+.characters-page__description {
+  margin: 0;
+  font-family: 'Patrick Hand', cursive;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--page-text-muted);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== Main Content ===== */
+.characters-page__main {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  z-index: 10;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .characters-page__header {
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  .characters-page__description {
+    font-size: 1rem;
+  }
+
+  .characters-page__main {
+    padding: 0 1rem 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .characters-page__header {
+    padding: 3rem 1rem 2rem;
+  }
+
+  .characters-page__ornament svg {
+    width: 200px;
+  }
+
+  .characters-page__subtitle {
+    letter-spacing: 0.1em;
+  }
+}
+
+/* ===== Préférence mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .characters-page__header-content {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
