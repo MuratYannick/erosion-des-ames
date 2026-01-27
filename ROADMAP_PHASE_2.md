@@ -157,27 +157,40 @@ frontend/src/
 
 ## 2.3 Page Univers
 
-### Structure des fichiers
+### Structure des fichiers (implémentée)
 ```
 frontend/src/
 ├── pages/
 │   ├── Universe/
-│   │   ├── Universe.jsx
-│   │   ├── Universe.css
+│   │   ├── Universe.jsx              ✅
 │   │   ├── components/
-│   │   │   ├── UniverseHero.jsx
-│   │   │   ├── LoreSection.jsx
-│   │   │   ├── WorldMap.jsx (optionnel)
-│   │   │   ├── FactionCard.jsx
-│   │   │   ├── LocationCard.jsx
-│   │   │   ├── TimelineEvent.jsx
-│   │   │   └── index.js
-│   │   ├── data/
-│   │   │   ├── lore.js
-│   │   │   ├── factions.js
-│   │   │   ├── locations.js
-│   │   │   └── timeline.js
-│   │   └── index.js
+│   │   │   ├── UniverseHero.jsx      ✅
+│   │   │   ├── UniverseHero.css      ✅
+│   │   │   ├── LoreSection.jsx       ✅
+│   │   │   ├── LoreSection.css       ✅
+│   │   │   ├── loreSampleData.js     ✅
+│   │   │   ├── FactionCard.jsx       ✅
+│   │   │   ├── FactionCard.css       ✅
+│   │   │   ├── FactionSection.jsx    ✅
+│   │   │   ├── FactionSection.css    ✅
+│   │   │   ├── FactionEmblems.jsx    ✅
+│   │   │   ├── factionData.js        ✅
+│   │   │   ├── LocationCard.jsx      ✅
+│   │   │   ├── LocationCard.css      ✅
+│   │   │   ├── LocationSection.jsx   ✅
+│   │   │   ├── LocationSection.css   ✅
+│   │   │   ├── LocationIcons.jsx     ✅
+│   │   │   ├── WorldMap.jsx          ✅
+│   │   │   ├── WorldMap.css          ✅
+│   │   │   ├── GeographySection.jsx  ✅
+│   │   │   ├── GeographySection.css  ✅
+│   │   │   ├── DawnTransition.jsx    ✅
+│   │   │   ├── DawnTransition.css    ✅
+│   │   │   ├── TimelineSection.jsx   ✅
+│   │   │   ├── TimelineSection.css   ✅
+│   │   │   ├── timelineData.js       ✅
+│   │   │   └── index.js              ✅
+│   │   └── index.js                  ✅
 ```
 
 ### Section Hero Univers
@@ -195,12 +208,19 @@ frontend/src/
 - [x] Collapse/expand pour sections longues (tablettes de pierre animées)
 - [x] **Thématique tribal**: Style "Codex des Anciens" - tablettes de pierre, runes navigables, ornements tribaux, coins décoratifs
 
-### Section Géographie (optionnel)
-- [ ] Créer le composant WorldMap
-- [ ] Carte interactive ou image cliquable
-- [ ] Points d'intérêt avec tooltips
-- [ ] Zoom et navigation
-- [ ] **Thématique tribal**: Carte style parchemin
+### Section Géographie
+- [x] Créer le composant WorldMap
+- [x] Créer le composant GeographySection (wrapper)
+- [x] Carte SVG interactive avec 6 marqueurs de lieux
+- [x] Points d'intérêt avec tooltips au survol
+- [x] Sélection de lieu avec affichage détails
+- [x] Rose des vents tribale animée
+- [x] Routes tribales entre lieux
+- [x] Légende de carte complète
+- [x] Effets de bords brûlés (radial-gradient)
+- [x] Animation de révélation (clip-path)
+- [x] Lueurs ember animées sur les coins
+- [x] **Thématique tribal**: Carte style parchemin ancien, marqueurs tribaux, bordure décorative
 
 ### Section Factions/Groupes
 - [x] Créer le composant FactionCard
@@ -225,28 +245,42 @@ frontend/src/
 - [x] Grille responsive avec filtres (type, danger)
 - [x] **Thématique tribal**: Style carte ancienne, particules de cendre, lueur ember selon danger, icônes tribales (ruines, sanctuaire, désert, forêt, gouffre, refuge)
 
-### Section Chronologie (optionnel)
-- [ ] Créer le composant TimelineEvent
-- [ ] Frise chronologique verticale
-- [ ] Événements clés de l'histoire
-- [ ] Date/époque + description
-- [ ] Marqueurs visuels
-- [ ] **Thématique tribal**: Ligne rituelle, marqueurs tribaux
+### Section Chronologie - "Le Fleuve des Âges"
+- [x] Créer le composant TimelineSection
+- [x] Créer timelineData.js avec 4 ères (Genèse, Cataclysme, Survie, Renaissance)
+- [x] Strates géologiques verticales (concept lave solidifiée)
+- [x] 4 températures visuelles (cold, warm, hot, incandescent)
+- [x] Événements clés par ère avec icônes SVG
+- [x] Runes de navigation par ère (∆, ⧖, ◇, ◉)
+- [x] Sidebar sticky avec navigation rapide (desktop)
+- [x] Connecteurs de lave animés entre ères
+- [x] Citations par ère avec auteurs
+- [x] Expansion/collapse des détails
+- [x] Révélation au scroll (Intersection Observer)
+- [x] Animation heartbeat pour l'ère actuelle
+- [x] Braises flottantes en overlay
+- [x] **Thématique tribal**: Strates de roche, runes tribales, flux de lave, particules de cendre
 
 ### Navigation Univers
-- [ ] Sidebar avec sections (Aside)
-  - [ ] Histoire
-  - [ ] Factions
-  - [ ] Lieux
-  - [ ] Chronologie
-- [ ] Scroll spy actif
-- [ ] Mobile: menu dropdown ou accordion
+- [x] Scroll vertical fluide entre sections
+- [x] Indicateurs de progression par section (LoreSection, TimelineSidebar)
+- [ ] Sidebar globale avec sections (optionnel, reporté)
+- [ ] Mobile: menu dropdown ou accordion (optionnel, reporté)
+
+### Composant DawnTransition
+- [x] Créer le composant DawnTransition
+- [x] Transition visuelle entre sections sombre/clair
+- [x] Rayons de lumière SVG décoratifs
+- [x] Citation thématique des Cartographes
+- [x] Ornements tribaux animés
+- [x] **Thématique tribal**: Gradient progressif, lueurs dorées
 
 ### Intégration Page Universe
-- [ ] Assembler tous les composants
-- [ ] Layout avec aside navigation
-- [ ] Transitions entre sections
-- [ ] SEO: meta title, description
+- [x] Assembler tous les composants dans Universe.jsx
+- [x] Ordre des sections: Hero → Lore → Factions → Geography → DawnTransition → Locations → Timeline → ScrollToTop
+- [x] Exports centralisés dans components/index.js
+- [x] Responsive design (tous composants)
+- [ ] SEO: meta title, description (reporté)
 
 ---
 

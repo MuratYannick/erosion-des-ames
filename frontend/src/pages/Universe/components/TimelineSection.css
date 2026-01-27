@@ -1,0 +1,911 @@
+/**
+ * TimelineSection Styles - "Le Fleuve des Âges"
+ * Design: Strates géologiques de lave solidifiée
+ */
+
+/* ===================================================================
+   Section Container
+   =================================================================== */
+.timeline-section {
+  position: relative;
+  padding: 5rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    #0d0b09 0%,
+    #1a1613 30%,
+    #1c1714 70%,
+    #0d0b09 100%
+  );
+  overflow: hidden;
+}
+
+.timeline-section__bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(230, 115, 21, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(230, 115, 21, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.timeline-section__container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===================================================================
+   Header
+   =================================================================== */
+.timeline-section__header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.timeline-section__title {
+  font-family: 'Metal Mania', cursive;
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 400;
+  color: #e67315;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 30px rgba(230, 115, 21, 0.6),
+    0 0 60px rgba(230, 115, 21, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  animation: title-glow 4s ease-in-out infinite;
+}
+
+@keyframes title-glow {
+  0%, 100% { text-shadow: 0 0 30px rgba(230, 115, 21, 0.6), 0 0 60px rgba(230, 115, 21, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8); }
+  50% { text-shadow: 0 0 40px rgba(230, 115, 21, 0.8), 0 0 80px rgba(230, 115, 21, 0.5), 0 2px 6px rgba(0, 0, 0, 0.9); }
+}
+
+.timeline-section__subtitle {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.25rem;
+  color: #d4c9ba;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.6;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.timeline-section__ornament {
+  display: block;
+  width: 200px;
+  height: 20px;
+  margin: 1.5rem auto;
+  color: #e67315;
+}
+
+/* ===================================================================
+   Sidebar Navigation
+   =================================================================== */
+.timeline-sidebar {
+  position: fixed;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .timeline-sidebar {
+    display: block;
+  }
+}
+
+.timeline-sidebar__track {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: rgba(28, 23, 20, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 2rem;
+  border: 1px solid rgba(230, 115, 21, 0.2);
+}
+
+.timeline-sidebar__rune {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid rgba(122, 100, 84, 0.3);
+  border-radius: 50%;
+  color: #7a6454;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.timeline-sidebar__rune:hover {
+  border-color: #e67315;
+  color: #e67315;
+  transform: scale(1.1);
+}
+
+.timeline-sidebar__rune.is-active {
+  border-color: #e67315;
+  color: #e67315;
+  box-shadow: 0 0 20px rgba(230, 115, 21, 0.4);
+}
+
+.timeline-sidebar__rune.is-current {
+  animation: sidebar-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sidebar-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(230, 115, 21, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(230, 115, 21, 0.6); }
+}
+
+.timeline-sidebar__rune svg {
+  width: 28px;
+  height: 28px;
+}
+
+.timeline-sidebar__tooltip {
+  position: absolute;
+  left: calc(100% + 1rem);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem 1rem;
+  background: rgba(28, 23, 20, 0.95);
+  border: 1px solid rgba(230, 115, 21, 0.3);
+  border-radius: 0.5rem;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.875rem;
+  color: #ffd5a3;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.timeline-sidebar__rune:hover .timeline-sidebar__tooltip {
+  opacity: 1;
+}
+
+/* ===================================================================
+   Timeline Flow
+   =================================================================== */
+.timeline-section__flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===================================================================
+   Era Strata
+   =================================================================== */
+.timeline-era {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(28, 23, 20, 0.95), rgba(47, 39, 34, 0.8));
+  border: 2px solid rgba(122, 100, 84, 0.3);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Animation d'entrée */
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.timeline-era.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Températures visuelles par ère */
+.timeline-era--cold {
+  background: linear-gradient(135deg, #1c1714, #2f2722);
+  border-color: #5e4d40;
+}
+
+.timeline-era--warm {
+  background: linear-gradient(135deg, #2f2722, rgba(122, 100, 84, 0.3));
+  border-color: #a68968;
+  box-shadow: 0 0 20px rgba(230, 115, 21, 0.1);
+}
+
+.timeline-era--hot {
+  background: linear-gradient(135deg, rgba(122, 100, 84, 0.2), rgba(187, 167, 148, 0.15));
+  border-color: #e67315;
+  box-shadow: 0 0 30px rgba(230, 115, 21, 0.2);
+}
+
+.timeline-era--incandescent {
+  background: linear-gradient(135deg, #1c1714, rgba(230, 115, 21, 0.1));
+  border-color: #e67315;
+  box-shadow: 0 0 40px rgba(230, 115, 21, 0.3);
+}
+
+.timeline-era.is-current {
+  animation: era-heartbeat 4s ease-in-out infinite;
+}
+
+@keyframes era-heartbeat {
+  0%, 100% { box-shadow: 0 0 30px rgba(230, 115, 21, 0.3); }
+  50% { box-shadow: 0 0 60px rgba(230, 115, 21, 0.5); }
+}
+
+.timeline-era:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(230, 115, 21, 0.2);
+}
+
+.timeline-era.is-active {
+  border-color: #e67315;
+  box-shadow: 0 0 50px rgba(230, 115, 21, 0.4), 0 15px 50px rgba(0, 0, 0, 0.5);
+}
+
+.timeline-era.is-expanded {
+  cursor: default;
+}
+
+/* Coins décoratifs */
+.timeline-era__corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  color: #e67315;
+  pointer-events: none;
+}
+
+.timeline-era__corner--top-left { top: -2px; left: -2px; }
+.timeline-era__corner--top-right { top: -2px; right: -2px; }
+.timeline-era__corner--bottom-left { bottom: -2px; left: -2px; }
+.timeline-era__corner--bottom-right { bottom: -2px; right: -2px; }
+
+/* ===================================================================
+   Era Header
+   =================================================================== */
+.timeline-era__header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.timeline-era__rune-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.timeline-era__rune-glow {
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle, rgba(230, 115, 21, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.timeline-era:hover .timeline-era__rune-glow,
+.timeline-era.is-active .timeline-era__rune-glow {
+  opacity: 1;
+}
+
+.timeline-era__rune {
+  width: 56px;
+  height: 56px;
+  color: #e67315;
+  transition: transform 0.3s ease;
+}
+
+.timeline-era:hover .timeline-era__rune {
+  transform: scale(1.1);
+}
+
+.timeline-era.is-active .timeline-era__rune {
+  animation: rune-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rune-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+/* Pulse ring pour l'ère actuelle */
+.rune-pulse-ring {
+  animation: ring-expand 3s ease-out infinite;
+}
+
+@keyframes ring-expand {
+  0% { r: 6; opacity: 0.5; }
+  100% { r: 14; opacity: 0; }
+}
+
+.timeline-era__header-content {
+  flex: 1;
+}
+
+.timeline-era__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: #ffd5a3;
+  margin: 0;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.timeline-era__timeline {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1rem;
+  color: #bba794;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.timeline-era__toggle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(230, 115, 21, 0.1);
+  border: 1px solid rgba(230, 115, 21, 0.3);
+  border-radius: 50%;
+  color: #e67315;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.timeline-era__toggle:hover {
+  background: rgba(230, 115, 21, 0.2);
+  transform: scale(1.1);
+}
+
+.timeline-era__chevron {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+/* ===================================================================
+   Era Summary & Content
+   =================================================================== */
+.timeline-era__summary {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.125rem;
+  color: #d4c9ba;
+  line-height: 1.6;
+  margin: 1.5rem 0 0 0;
+  font-style: italic;
+}
+
+.timeline-era__content-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease;
+}
+
+.timeline-era.is-expanded .timeline-era__content-wrapper {
+  opacity: 1;
+}
+
+.timeline-era__content {
+  padding-top: 1.5rem;
+}
+
+/* Divider */
+.timeline-era__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-era__divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(230, 115, 21, 0.3), transparent);
+}
+
+.timeline-era__divider-icon {
+  width: 24px;
+  height: 24px;
+  color: #e67315;
+}
+
+/* Description */
+.timeline-era__description {
+  margin-bottom: 2rem;
+}
+
+.timeline-era__description p {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.0625rem;
+  color: #d4c9ba;
+  line-height: 1.8;
+  margin: 0 0 1rem 0;
+}
+
+.timeline-era__description p:last-child {
+  margin-bottom: 0;
+}
+
+/* Quote */
+.timeline-era__quote {
+  margin: 2rem 0 0 0;
+  padding: 1.5rem;
+  background: rgba(47, 39, 34, 0.5);
+  border-left: 3px solid #e67315;
+  border-radius: 0.5rem;
+}
+
+.timeline-era__quote p {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.125rem;
+  color: #ffd5a3;
+  font-style: italic;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.timeline-era__quote cite {
+  display: block;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.9375rem;
+  color: #9d8570;
+  font-style: normal;
+  margin-top: 0.75rem;
+  text-align: right;
+}
+
+/* ===================================================================
+   Events
+   =================================================================== */
+.timeline-era__events {
+  margin-bottom: 1.5rem;
+}
+
+.timeline-era__events-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffd5a3;
+  margin: 0 0 1.25rem 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.timeline-era__events-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline-event {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(28, 23, 20, 0.5);
+  border-radius: 0.75rem;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: event-slide-in 0.4s ease forwards;
+}
+
+@keyframes event-slide-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-event:hover {
+  background: rgba(47, 39, 34, 0.6);
+  border-left-color: #e67315;
+  transform: translateX(5px);
+}
+
+.timeline-event__marker {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(230, 115, 21, 0.15);
+  border: 1px solid rgba(230, 115, 21, 0.3);
+  border-radius: 50%;
+}
+
+.timeline-event__icon {
+  width: 24px;
+  height: 24px;
+  color: #e67315;
+}
+
+.timeline-event__content {
+  flex: 1;
+}
+
+.timeline-event__year {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.8125rem;
+  color: #9d8570;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-event__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd5a3;
+  margin: 0 0 0.5rem 0;
+}
+
+.timeline-event__description {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.9375rem;
+  color: #bba794;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===================================================================
+   Connector
+   =================================================================== */
+.timeline-connector {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: -1rem 0;
+}
+
+.timeline-connector__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.timeline-connector__path {
+  opacity: 0.5;
+}
+
+.timeline-connector__flow {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.timeline-connector.is-flowing .timeline-connector__flow {
+  stroke-dashoffset: 0;
+}
+
+.timeline-connector__particle {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.timeline-connector.is-flowing .timeline-connector__particle {
+  opacity: 0.6;
+  animation: particle-float 4s ease-in-out infinite;
+}
+
+.timeline-connector__particle--1 { animation-delay: 0s; }
+.timeline-connector__particle--2 { animation-delay: 1s; }
+.timeline-connector__particle--3 { animation-delay: 2s; }
+
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-10px) scale(1.3); opacity: 0.3; }
+}
+
+/* ===================================================================
+   Footer
+   =================================================================== */
+.timeline-section__footer {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.timeline-section__final-quote {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(28, 23, 20, 0.6);
+  border-radius: 1rem;
+  border: 1px solid rgba(230, 115, 21, 0.2);
+}
+
+.timeline-section__final-quote p {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.25rem;
+  color: #d4c9ba;
+  font-style: italic;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.timeline-section__final-quote cite {
+  display: block;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1rem;
+  color: #9d8570;
+  font-style: normal;
+  margin-top: 1rem;
+}
+
+/* ===================================================================
+   Embers Overlay
+   =================================================================== */
+.timeline-embers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.timeline-embers__particle {
+  position: absolute;
+  bottom: -20px;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ff9635 0%, #e67315 50%, transparent 100%);
+  border-radius: 50%;
+  animation: ember-rise 15s linear infinite;
+  opacity: 0;
+}
+
+@keyframes ember-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100vh) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ===================================================================
+   Responsive
+   =================================================================== */
+@media (max-width: 1024px) {
+  .timeline-section {
+    padding: 4rem 1rem;
+  }
+
+  .timeline-era {
+    padding: 1.75rem;
+  }
+
+  .timeline-era__rune {
+    width: 48px;
+    height: 48px;
+  }
+
+  .timeline-era__title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-section {
+    padding: 3rem 1rem;
+  }
+
+  .timeline-section__header {
+    margin-bottom: 3rem;
+  }
+
+  .timeline-section__title {
+    font-size: 2rem;
+  }
+
+  .timeline-section__subtitle {
+    font-size: 1.0625rem;
+  }
+
+  .timeline-era {
+    padding: 1.5rem;
+  }
+
+  .timeline-era__header {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .timeline-era__rune {
+    width: 40px;
+    height: 40px;
+  }
+
+  .timeline-era__title {
+    font-size: 1.25rem;
+  }
+
+  .timeline-era__timeline {
+    font-size: 0.875rem;
+  }
+
+  .timeline-era__toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .timeline-era__summary {
+    font-size: 1rem;
+  }
+
+  .timeline-era__description p {
+    font-size: 0.9375rem;
+  }
+
+  .timeline-era__events-title {
+    font-size: 1rem;
+  }
+
+  .timeline-event {
+    padding: 0.875rem;
+  }
+
+  .timeline-event__marker {
+    width: 36px;
+    height: 36px;
+  }
+
+  .timeline-event__title {
+    font-size: 0.9375rem;
+  }
+
+  .timeline-event__description {
+    font-size: 0.875rem;
+  }
+
+  .timeline-connector {
+    height: 80px;
+  }
+
+  .timeline-section__final-quote p {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-section {
+    padding: 2.5rem 0.75rem;
+  }
+
+  .timeline-era {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+  }
+
+  .timeline-era__corner {
+    width: 30px;
+    height: 30px;
+  }
+
+  .timeline-era__rune-container {
+    display: none;
+  }
+
+  .timeline-era__title {
+    font-size: 1.125rem;
+  }
+
+  .timeline-era__summary {
+    font-size: 0.9375rem;
+    margin-top: 1rem;
+  }
+
+  .timeline-era__quote {
+    padding: 1rem;
+  }
+
+  .timeline-era__quote p {
+    font-size: 1rem;
+  }
+
+  .timeline-connector {
+    height: 60px;
+  }
+
+  .timeline-section__final-quote {
+    padding: 1.5rem;
+  }
+
+  .timeline-section__final-quote p {
+    font-size: 1rem;
+  }
+}
+
+/* ===================================================================
+   Reduced Motion
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-section__title,
+  .timeline-era,
+  .timeline-era__rune,
+  .timeline-event,
+  .timeline-embers__particle,
+  .timeline-connector__particle,
+  .timeline-sidebar__rune.is-current,
+  .timeline-era.is-current,
+  .rune-pulse-ring {
+    animation: none;
+  }
+
+  .timeline-era {
+    opacity: 1;
+    transform: none;
+  }
+
+  .timeline-event {
+    opacity: 1;
+    transform: none;
+  }
+
+  .timeline-connector.is-flowing .timeline-connector__flow {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .timeline-era__content-wrapper {
+    transition: none;
+  }
+}
+
+/* ===================================================================
+   Print
+   =================================================================== */
+@media print {
+  .timeline-sidebar,
+  .timeline-embers,
+  .timeline-era__toggle,
+  .timeline-connector__svg {
+    display: none;
+  }
+
+  .timeline-section {
+    background: white;
+    color: black;
+  }
+
+  .timeline-era {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+  }
+
+  .timeline-era__content-wrapper {
+    max-height: none !important;
+    opacity: 1 !important;
+  }
+
+  .timeline-section__title,
+  .timeline-era__title {
+    color: #e67315;
+  }
+}

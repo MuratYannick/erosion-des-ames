@@ -1,4 +1,4 @@
-import { UniverseHero, LoreSection, sampleLoreChapters, FactionSection, factionsData, LocationSection } from './components'
+import { UniverseHero, LoreSection, sampleLoreChapters, FactionSection, factionsData, GeographySection, DawnTransition, LocationSection, TimelineSection, timelineEras } from './components'
 import { ScrollToTop } from '@/components'
 
 /**
@@ -27,6 +27,10 @@ const Universe = () => {
 
       <FactionSection factions={factionsData} />
 
+      <GeographySection />
+
+      <DawnTransition />
+
       <LocationSection
         title="Territoires Maudits"
         subtitle="Explorez les terres brisées où rôdent ombres et mystères"
@@ -34,6 +38,12 @@ const Universe = () => {
           console.log('Location clicked:', location)
           // TODO: Ouvrir une modal ou naviguer vers une page de détail
         }}
+      />
+
+      <TimelineSection
+        eras={timelineEras}
+        title="Le Fleuve des Âges"
+        subtitle="L'histoire de notre monde gravée dans la pierre du temps"
       />
 
       <ScrollToTop />

@@ -1,0 +1,265 @@
+/**
+ * DawnTransition Styles
+ * Transition visuelle entre sections sombres et claires
+ */
+
+.dawn-transition {
+  position: relative;
+  padding: 4rem 1.5rem;
+  background: linear-gradient(
+    180deg,
+    #0d0b09 0%,
+    #1a1613 20%,
+    #2a221c 50%,
+    #3a302a 80%,
+    #2f2722 100%
+  );
+  overflow: hidden;
+}
+
+/* ===================================================================
+   Rayons de lumière SVG
+   =================================================================== */
+.dawn-transition__rays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.dawn-transition__ray {
+  transform-origin: top center;
+  animation: ray-shimmer 8s ease-in-out infinite;
+}
+
+.dawn-transition__ray--1 { animation-delay: 0s; }
+.dawn-transition__ray--2 { animation-delay: 1.5s; }
+.dawn-transition__ray--3 { animation-delay: 3s; }
+.dawn-transition__ray--4 { animation-delay: 4.5s; }
+.dawn-transition__ray--5 { animation-delay: 6s; }
+
+@keyframes ray-shimmer {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleY(0.8) scaleX(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleY(1.1) scaleX(1.05);
+  }
+}
+
+/* ===================================================================
+   Contenu central
+   =================================================================== */
+.dawn-transition__content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+/* ===================================================================
+   Ornements
+   =================================================================== */
+.dawn-transition__ornament {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  animation: ornament-pulse 4s ease-in-out infinite;
+}
+
+.dawn-transition__ornament--left {
+  animation-delay: 0s;
+}
+
+.dawn-transition__ornament--right {
+  animation-delay: 2s;
+}
+
+.dawn-transition__ornament svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes ornament-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* ===================================================================
+   Citation
+   =================================================================== */
+.dawn-transition__quote {
+  margin: 0;
+  text-align: center;
+  flex: 1;
+  max-width: 600px;
+}
+
+.dawn-transition__quote-text {
+  font-family: 'Patrick Hand', cursive;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-style: italic;
+  color: #d4c9ba;
+  line-height: 1.8;
+  margin: 0 0 1rem 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  animation: quote-fade-in 1s ease-out forwards;
+}
+
+.dawn-transition__quote-author {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.875rem;
+  font-style: normal;
+  color: #9d8570;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: block;
+}
+
+@keyframes quote-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================================================
+   Divider
+   =================================================================== */
+.dawn-transition__divider {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dawn-transition__divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(230, 115, 21, 0.4) 50%,
+    transparent 100%
+  );
+}
+
+.dawn-transition__divider-dot {
+  width: 8px;
+  height: 8px;
+  background: #e67315;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(230, 115, 21, 0.6);
+  animation: dot-glow 3s ease-in-out infinite;
+}
+
+@keyframes dot-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(230, 115, 21, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(230, 115, 21, 0.8);
+    transform: scale(1.2);
+  }
+}
+
+/* ===================================================================
+   Responsive
+   =================================================================== */
+@media (max-width: 768px) {
+  .dawn-transition {
+    padding: 3rem 1rem;
+  }
+
+  .dawn-transition__content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dawn-transition__ornament {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dawn-transition__quote-text {
+    font-size: 1.0625rem;
+  }
+
+  .dawn-transition__quote-author {
+    font-size: 0.8125rem;
+  }
+
+  .dawn-transition__divider {
+    margin-top: 2rem;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dawn-transition {
+    padding: 2.5rem 0.75rem;
+  }
+
+  .dawn-transition__ornament {
+    display: none;
+  }
+
+  .dawn-transition__quote-text {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .dawn-transition__quote-author {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===================================================================
+   Préférence de mouvement réduit
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .dawn-transition__ray,
+  .dawn-transition__ornament,
+  .dawn-transition__quote-text,
+  .dawn-transition__divider-dot {
+    animation: none;
+  }
+
+  .dawn-transition__ray {
+    opacity: 0.5;
+  }
+
+  .dawn-transition__ornament {
+    opacity: 0.6;
+  }
+
+  .dawn-transition__divider-dot {
+    box-shadow: 0 0 8px rgba(230, 115, 21, 0.5);
+  }
+}

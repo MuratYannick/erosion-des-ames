@@ -1,0 +1,612 @@
+/**
+ * WorldMap Styles
+ * Design: Carte tribale gravée sur pierre avec marqueurs incandescents
+ */
+
+/* ===================================================================
+   Container principal
+   =================================================================== */
+.world-map {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #0d0b09 0%,
+    #1c1714 50%,
+    #2f2722 100%
+  );
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(230, 115, 21, 0.05);
+}
+
+/* ===================================================================
+   SVG de la carte
+   =================================================================== */
+.world-map__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* Fond de carte */
+.world-map__background {
+  transition: opacity 0.5s ease;
+}
+
+/* Effet de texture animé subtilement */
+.world-map__svg:hover .world-map__background {
+  opacity: 0.95;
+}
+
+/* ===================================================================
+   Bordure tribale
+   =================================================================== */
+.world-map__border {
+  transition: opacity 0.3s ease;
+}
+
+.world-map:hover .world-map__border {
+  opacity: 1 !important;
+}
+
+/* ===================================================================
+   Régions topographiques
+   =================================================================== */
+.world-map__region {
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.world-map__region:hover {
+  opacity: 0.5 !important;
+  filter: brightness(1.2);
+}
+
+/* Styles spécifiques par type de région */
+.world-map__region--ruins {
+  stroke: #7a6454;
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+  animation: region-pulse-subtle 8s ease-in-out infinite;
+}
+
+.world-map__region--safe {
+  stroke: rgba(107, 142, 111, 0.4);
+  stroke-width: 1;
+}
+
+.world-map__region--desert {
+  stroke: rgba(187, 167, 148, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.world-map__region--forest {
+  stroke: rgba(74, 111, 77, 0.4);
+  stroke-width: 1;
+}
+
+.world-map__region--danger {
+  stroke: rgba(166, 63, 56, 0.6);
+  stroke-width: 1.5;
+  animation: region-danger-pulse 3s ease-in-out infinite;
+}
+
+@keyframes region-pulse-subtle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes region-danger-pulse {
+  0%, 100% {
+    opacity: 0.25;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.35;
+    filter: brightness(1.3);
+  }
+}
+
+/* ===================================================================
+   Routes entre lieux
+   =================================================================== */
+.world-map__route {
+  transition: all 0.3s ease;
+}
+
+.world-map__route:hover {
+  opacity: 0.6 !important;
+  stroke-width: 2;
+  stroke: #e67315;
+}
+
+/* ===================================================================
+   Marqueurs des lieux
+   =================================================================== */
+.world-map__marker {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: center;
+}
+
+.world-map__marker:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px rgba(230, 115, 21, 0.8));
+}
+
+.world-map__marker.is-selected {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 20px rgba(230, 115, 21, 1));
+}
+
+/* Lueur du marqueur */
+.world-map__marker-glow {
+  transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+  animation: marker-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes marker-glow-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+.world-map__marker.is-hovered .world-map__marker-glow,
+.world-map__marker.is-selected .world-map__marker-glow {
+  opacity: 0.6;
+  transform: scale(1.2);
+}
+
+/* Cercle du marqueur */
+.world-map__marker-circle {
+  transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.world-map__marker:hover .world-map__marker-circle {
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px rgba(230, 115, 21, 0.8));
+}
+
+.world-map__marker.is-selected .world-map__marker-circle {
+  stroke-width: 4;
+  animation: marker-circle-rotate 20s linear infinite;
+}
+
+@keyframes marker-circle-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Label du marqueur */
+.world-map__marker-label {
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+  pointer-events: none;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(28, 23, 20, 0.9);
+}
+
+.world-map__marker:hover .world-map__marker-label,
+.world-map__marker.is-selected .world-map__marker-label {
+  opacity: 1;
+}
+
+/* Pulse animé pour marqueur sélectionné */
+.world-map__marker-pulse {
+  animation: marker-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes marker-pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+/* ===================================================================
+   Rose des vents
+   =================================================================== */
+.world-map__compass {
+  opacity: 0.6;
+  transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.world-map:hover .world-map__compass {
+  opacity: 0.9;
+}
+
+.world-map__compass-points {
+  animation: compass-subtle-rotate 60s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes compass-subtle-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===================================================================
+   Tooltip
+   =================================================================== */
+.world-map__tooltip {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 15px));
+  min-width: 280px;
+  max-width: 350px;
+
+  /* Apparence */
+  background: linear-gradient(
+    135deg,
+    #1c1714 0%,
+    #2f2722 100%
+  );
+  border: 2px solid #e67315;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(230, 115, 21, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Animation d'apparition */
+  animation: tooltip-appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 25px)) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 15px)) scale(1);
+  }
+}
+
+/* Flèche du tooltip */
+.world-map__tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #e67315;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* En-tête du tooltip */
+.world-map__tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(230, 115, 21, 0.3);
+}
+
+.world-map__tooltip-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd5a3;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.world-map__tooltip-type {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.75rem;
+  color: #d4c9ba;
+  background: rgba(230, 115, 21, 0.2);
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  text-transform: capitalize;
+  border: 1px solid rgba(230, 115, 21, 0.3);
+}
+
+/* Description */
+.world-map__tooltip-description {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #d4c9ba;
+  margin: 0 0 0.75rem 0;
+  font-style: italic;
+}
+
+/* Métadonnées */
+.world-map__tooltip-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.world-map__tooltip-coords {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.75rem;
+  color: #9d8570;
+  font-weight: 600;
+}
+
+.world-map__tooltip-danger {
+  font-size: 0.875rem;
+  display: flex;
+  gap: 2px;
+}
+
+/* Niveaux de danger */
+.world-map__tooltip-danger--1 { filter: grayscale(0.7) brightness(1.2); }
+.world-map__tooltip-danger--2 { filter: grayscale(0.5); }
+.world-map__tooltip-danger--3 { filter: none; }
+.world-map__tooltip-danger--4 { filter: brightness(1.2) saturate(1.2); }
+.world-map__tooltip-danger--5 {
+  filter: brightness(1.3) saturate(1.3);
+  animation: danger-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes danger-pulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.4) saturate(1.4);
+  }
+}
+
+/* ===================================================================
+   Texte de légende sur la carte
+   =================================================================== */
+.world-map__legend-text {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.world-map:hover .world-map__legend-text {
+  opacity: 1;
+}
+
+/* ===================================================================
+   Responsive
+   =================================================================== */
+
+/* Tablettes */
+@media (max-width: 1024px) {
+  .world-map {
+    border-radius: 0.75rem;
+  }
+
+  .world-map__tooltip {
+    min-width: 240px;
+    max-width: 300px;
+    padding: 0.875rem 1rem;
+  }
+
+  .world-map__tooltip-title {
+    font-size: 0.9375rem;
+  }
+
+  .world-map__tooltip-description {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .world-map {
+    border-radius: 0.5rem;
+  }
+
+  /* Simplifier la carte sur mobile */
+  .world-map__grid {
+    opacity: 0.08;
+  }
+
+  .world-map__routes {
+    opacity: 0.5;
+  }
+
+  /* Tooltip adapté mobile */
+  .world-map__tooltip {
+    min-width: 200px;
+    max-width: 260px;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    transform: translate(-50%, calc(-100% - 10px));
+  }
+
+  .world-map__tooltip-title {
+    font-size: 0.875rem;
+  }
+
+  .world-map__tooltip-description {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .world-map__tooltip-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+  }
+
+  /* Rose des vents plus petite */
+  .world-map__compass {
+    transform: translate(850, 720) scale(0.8);
+  }
+
+  /* Labels des marqueurs */
+  .world-map__marker-label {
+    font-size: 10px;
+  }
+
+  /* Légende */
+  .world-map__legend-text text {
+    font-size: 18px;
+  }
+}
+
+/* Petit mobile */
+@media (max-width: 480px) {
+  .world-map {
+    border-radius: 0.375rem;
+  }
+
+  /* Cacher certains éléments décoratifs */
+  .world-map__legend-text > g[transform*="100, 720"] {
+    opacity: 0;
+  }
+
+  .world-map__routes {
+    opacity: 0.3;
+  }
+
+  /* Tooltip encore plus compact */
+  .world-map__tooltip {
+    min-width: 180px;
+    max-width: 220px;
+    padding: 0.625rem;
+  }
+
+  .world-map__tooltip-title {
+    font-size: 0.8125rem;
+  }
+
+  .world-map__tooltip-type {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.5rem;
+  }
+
+  .world-map__tooltip-description {
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+
+  .world-map__tooltip-coords {
+    font-size: 0.6875rem;
+  }
+
+  /* Rose des vents cachée */
+  .world-map__compass {
+    display: none;
+  }
+
+  /* Marqueurs plus visibles */
+  .world-map__marker:hover {
+    transform: scale(1.3);
+  }
+}
+
+/* ===================================================================
+   Mode impression
+   =================================================================== */
+@media print {
+  .world-map {
+    box-shadow: none;
+    border: 2px solid #5e4d40;
+  }
+
+  .world-map__tooltip {
+    display: none;
+  }
+
+  .world-map__marker-label {
+    opacity: 1 !important;
+  }
+
+  /* Forcer les couleurs en impression */
+  .world-map__background {
+    fill: #1c1714 !important;
+  }
+
+  .world-map__marker-circle {
+    stroke: #e67315 !important;
+  }
+}
+
+/* ===================================================================
+   Préférence de mouvement réduit
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .world-map__region,
+  .world-map__marker-glow,
+  .world-map__compass-points,
+  .world-map__marker-circle,
+  .world-map__marker-pulse,
+  .world-map__tooltip-danger--5 {
+    animation: none !important;
+  }
+
+  .world-map__marker:hover,
+  .world-map__marker.is-selected {
+    transform: scale(1.1);
+  }
+
+  .world-map__tooltip {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 15px)) scale(1);
+  }
+}
+
+/* ===================================================================
+   Mode haute performance (réduit les effets visuels)
+   =================================================================== */
+@media (prefers-reduced-data: reduce) {
+  .world-map__marker-glow,
+  .world-map__marker-pulse {
+    display: none;
+  }
+
+  .world-map__region {
+    opacity: 0.2 !important;
+  }
+
+  .world-map__routes {
+    opacity: 0.2 !important;
+  }
+}
+
+/* ===================================================================
+   Dark mode (déjà optimisé nativement)
+   =================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* Le composant est conçu pour le dark theme par défaut */
+  /* Pas d'ajustements nécessaires */
+}
