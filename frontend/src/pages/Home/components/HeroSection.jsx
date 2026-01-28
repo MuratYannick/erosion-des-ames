@@ -19,12 +19,12 @@ const HeroSection = ({
   subtitle = "Là où les pierres murmurent et les braises se souviennent",
   primaryCta = { label: "Découvrir l'univers", href: "/universe" },
   secondaryCta = { label: "Éveiller ton âme", href: "/register" },
-  backgroundImage = "/images/hero-bg.jpg",
   showBadge = true,
   badgeText = "Alpha v0.1 - Premiers pas dans les ruines"
 }) => {
   const heroRef = useRef(null)
   const [scrollY, setScrollY] = useState(0)
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   // Parallax effect - optimisé pour performance
   useEffect(() => {
@@ -43,14 +43,25 @@ const HeroSection = ({
       ref={heroRef}
       className="hero-section relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-neutral-900"
     >
-      {/* Background image avec parallax */}
-      <div
-        className="hero-bg absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('${backgroundImage}')`,
-          transform: `translateY(${scrollY * 0.3}px)`,
-        }}
-      />
+      {/* Background image avec parallax et blur-up */}
+      <div className="hero-bg-container absolute inset-0 overflow-hidden">
+        {/* Placeholder gradient */}
+        <div
+          className={`hero-bg-placeholder absolute inset-0 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
+          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+        />
+
+        {/* Image optimisée */}
+        <img
+          src="/images/banner.png"
+          alt="Cité en ruines sous un ciel orageux"
+          className={`hero-bg-image absolute inset-0 w-full h-full object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+          onLoad={() => setImageLoaded(true)}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
 
       {/* Overlay gradient - brume montante */}
       <div className="hero-overlay absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/80 to-neutral-900/40" />
@@ -68,12 +79,12 @@ const HeroSection = ({
           <TribalCorner
             position="top-left"
             size="lg"
-            className="text-secondary/30 hero-corner"
+            className="text-secondary/70 hero-corner"
           />
           <TribalCorner
             position="top-right"
             size="lg"
-            className="text-secondary/30 hero-corner hero-corner-delay-1"
+            className="text-secondary/70 hero-corner hero-corner-delay-1"
           />
 
           <div className="px-8 md:px-16 py-8">
@@ -96,12 +107,12 @@ const HeroSection = ({
           <TribalCorner
             position="bottom-left"
             size="lg"
-            className="text-secondary/30 hero-corner hero-corner-delay-2"
+            className="text-secondary/70 hero-corner hero-corner-delay-2"
           />
           <TribalCorner
             position="bottom-right"
             size="lg"
-            className="text-secondary/30 hero-corner hero-corner-delay-3"
+            className="text-secondary/70 hero-corner hero-corner-delay-3"
           />
         </div>
 

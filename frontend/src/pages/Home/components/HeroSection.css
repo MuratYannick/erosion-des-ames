@@ -6,12 +6,80 @@
 /* -------------------------------------------
    Background & Layers
    ------------------------------------------- */
-.hero-bg {
-  filter: sepia(0.15) brightness(0.6) contrast(1.1);
-  will-change: transform;
+
+/* Container */
+.hero-bg-container {
+  background-color: #1c1714; /* Fallback suie profonde */
 }
 
-.hero-bg::after {
+/* Placeholder avec gradient approximatif */
+.hero-bg-placeholder {
+  background: linear-gradient(
+    to bottom,
+    #151a1f 0%,
+    #2f2722 50%,
+    #1c1714 100%
+  );
+  filter: blur(20px);
+  transform: scale(1.1);
+  transition: opacity 0.6s ease-out;
+  will-change: opacity;
+}
+
+/* Image avec filtres atmosphériques */
+.hero-bg-image {
+  filter: sepia(0.5) brightness(0.9) contrast(1.5) saturate(1.5);
+  transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity, object-position;
+  height: 90%;
+  top: -10%;
+  animation: hero-pan 120s linear infinite;
+}
+
+@keyframes hero-pan {
+  0% {
+    object-position: center 40%;
+  }
+  2% {
+    object-position: 45% 40%;
+  }
+  23% {
+    object-position: 5% 40%;
+  }
+  25% {
+    object-position: left 40%;
+  }
+  27% {
+    object-position: 5% 40%;
+  }
+  48% {
+    object-position: 45% 40%;
+  }
+  50% {
+    object-position: center 40%;
+  }
+  52% {
+    object-position: 55% 40%;
+  }
+  73% {
+    object-position: 95% 40%;
+  }
+  75% {
+    object-position: right 40%;
+  }
+  77% {
+    object-position: 95% 40%;
+  }
+  98% {
+    object-position: 55% 40%;
+  }
+  100% {
+    object-position: center 40%;
+  }
+}
+
+/* Glow ambiant sur le container */
+.hero-bg-container::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -21,6 +89,7 @@
     transparent 60%
   );
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Pattern tribal */
@@ -39,8 +108,9 @@
    ------------------------------------------- */
 .hero-title {
   text-shadow:
-    0 0 20px rgba(230, 115, 21, 0.4),
-    0 0 40px rgba(230, 115, 21, 0.2),
+    0 0 30px rgba(230, 115, 21, 0.6),
+    0 0 60px rgba(230, 115, 21, 0.4),
+    0 0 100px rgba(230, 115, 21, 0.2),
     0 2px 4px rgba(0, 0, 0, 0.8);
   animation:
     title-glow-pulse 3s ease-in-out infinite,
@@ -51,14 +121,16 @@
 @keyframes title-glow-pulse {
   0%, 100% {
     text-shadow:
-      0 0 20px rgba(230, 115, 21, 0.3),
-      0 0 40px rgba(230, 115, 21, 0.15),
+      0 0 30px rgba(230, 115, 21, 0.5),
+      0 0 60px rgba(230, 115, 21, 0.3),
+      0 0 100px rgba(230, 115, 21, 0.15),
       0 2px 4px rgba(0, 0, 0, 0.8);
   }
   50% {
     text-shadow:
-      0 0 30px rgba(230, 115, 21, 0.5),
-      0 0 60px rgba(230, 115, 21, 0.25),
+      0 0 40px rgba(230, 115, 21, 0.7),
+      0 0 80px rgba(230, 115, 21, 0.5),
+      0 0 120px rgba(230, 115, 21, 0.3),
       0 2px 4px rgba(0, 0, 0, 0.8);
   }
 }
@@ -98,6 +170,7 @@
    ------------------------------------------- */
 .hero-corner {
   animation: corner-fade-in 0.6s ease-out both;
+  filter: drop-shadow(0 0 8px rgba(230, 115, 21, 0.6));
 }
 
 .hero-corner-delay-1 { animation-delay: 0.1s; }
@@ -315,7 +388,7 @@
 /* -------------------------------------------
    Optimisations performance
    ------------------------------------------- */
-.hero-bg,
+.hero-bg-image,
 .ember-particle,
 .hero-title {
   will-change: transform;
@@ -332,12 +405,18 @@
   .hero-divider::before,
   .hero-divider::after,
   .scroll-arrow,
-  .hero-pattern {
+  .hero-pattern,
+  .hero-bg-image {
     animation: none !important;
   }
 
-  .hero-bg {
+  .hero-bg-image,
+  .hero-bg-placeholder {
     transform: none !important;
+  }
+
+  .hero-bg-image {
+    object-position: center 40%;
   }
 
   .hero-title {
