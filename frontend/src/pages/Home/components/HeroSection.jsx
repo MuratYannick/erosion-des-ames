@@ -41,7 +41,7 @@ const HeroSection = ({
   return (
     <section
       ref={heroRef}
-      className="hero-section relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-neutral-900"
+      className="hero-section relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-neutral-900"
     >
       {/* Background image avec parallax et blur-up */}
       <div className="hero-bg-container absolute inset-0 overflow-hidden">
@@ -51,16 +51,49 @@ const HeroSection = ({
           style={{ transform: `translateY(${scrollY * 0.3}px)` }}
         />
 
-        {/* Image optimisée */}
-        <img
-          src="/images/banner.png"
-          alt="Cité en ruines sous un ciel orageux"
-          className={`hero-bg-image absolute inset-0 w-full h-full object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-          onLoad={() => setImageLoaded(true)}
-          fetchpriority="high"
-          decoding="async"
-        />
+        {/* Image optimisée - responsive avec picture element */}
+        <picture>
+          {/* Desktop 2xl (≥ 1536px) - 2035x620 */}
+          <source
+            media="(min-width: 1536px)"
+            srcSet="/images/banner-2xl.png"
+          />
+
+          {/* Desktop xl (1280px - 1536px) - 1696x517 */}
+          <source
+            media="(min-width: 1280px)"
+            srcSet="/images/banner-xl.png"
+          />
+
+          {/* Desktop lg (1024px - 1280px) - 1413x431 */}
+          <source
+            media="(min-width: 1024px)"
+            srcSet="/images/banner-lg.png"
+          />
+
+          {/* Tablet md (768px - 1024px) - 1131x345 */}
+          <source
+            media="(min-width: 768px)"
+            srcSet="/images/banner-md.png"
+          />
+
+          {/* Tablet sm (640px - 768px) - 848x258 */}
+          <source
+            media="(min-width: 640px)"
+            srcSet="/images/banner-sm.png"
+          />
+
+          {/* Mobile xs (< 640px) - 707x215 - fallback */}
+          <img
+            src="/images/banner-xs.png"
+            alt="Cité en ruines sous un ciel orageux"
+            className={`hero-bg-image absolute inset-0 w-full h-full object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+            onLoad={() => setImageLoaded(true)}
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
       </div>
 
       {/* Overlay gradient - brume montante */}

@@ -5,8 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Érosion des Âmes</title>
-    <!-- Preload hero image for LCP optimization -->
-    <link rel="preload" as="image" href="/images/banner.png" fetchpriority="high" />
+    <!-- Preload hero image for LCP optimization - responsive -->
+    <link rel="preload" as="image" href="/images/banner-xs.png" media="(max-width: 639px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/banner-sm.png" media="(min-width: 640px) and (max-width: 767px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/banner-md.png" media="(min-width: 768px) and (max-width: 1023px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/banner-lg.png" media="(min-width: 1024px) and (max-width: 1279px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/banner-xl.png" media="(min-width: 1280px) and (max-width: 1535px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/banner-2xl.png" media="(min-width: 1536px)" fetchpriority="high" />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

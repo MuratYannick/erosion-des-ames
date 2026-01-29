@@ -39,15 +39,25 @@
 .dropdown-menu {
   position: absolute;
   z-index: 50;
-  min-width: 180px;
+  min-width: 200px;
   padding: 0.5rem 0;
-  background: var(--color-surface);
-  border: 2px solid var(--color-primary-300);
+  /* Fond: Tablette de pierre élevée avec translucidité */
+  background: linear-gradient(
+    135deg,
+    rgba(232, 227, 220, 0.98) 0%,     /* primary-100 */
+    rgba(245, 243, 240, 0.96) 100%    /* surface.elevated */
+  );
+  backdrop-filter: blur(8px);
+  /* Bordure tribale: couleur feu sacré */
+  border: 2px solid theme('colors.secondary.400');
   border-radius: var(--radius-stone);
+  /* Ombres: profondeur élevée + lueur subtile */
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.2),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    0 20px 40px -8px rgba(28, 23, 20, 0.3),
+    0 12px 24px -8px rgba(28, 23, 20, 0.2),
+    0 0 0 1px rgba(255, 150, 53, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(28, 23, 20, 0.05);
 }
 
 .dropdown-menu-enter {
@@ -58,14 +68,33 @@
   animation: dropdown-exit 150ms ease-in forwards;
 }
 
-/* Stone texture */
+/* Stone texture + tribal pattern overlay */
 .dropdown-menu::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  /* Texture pierre subtile */
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   border-radius: inherit;
+  z-index: 1;
+}
+
+/* Tribal corner accents */
+.dropdown-menu::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* Motif tribal aux coins */
+  background-image:
+    linear-gradient(45deg, rgba(230, 115, 21, 0.05) 0%, transparent 15%),
+    linear-gradient(-45deg, rgba(230, 115, 21, 0.05) 0%, transparent 15%),
+    linear-gradient(135deg, transparent 85%, rgba(230, 115, 21, 0.05) 100%),
+    linear-gradient(-135deg, transparent 85%, rgba(230, 115, 21, 0.05) 100%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Position variants */
@@ -90,6 +119,13 @@
 /* -------------------------------------------
    MENU ITEM
    ------------------------------------------- */
+/* Links wrapping dropdown items */
+.dropdown-menu a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -97,28 +133,41 @@
   width: 100%;
   padding: 0.625rem 1rem;
   font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: var(--color-primary-700);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: theme('colors.primary.800');
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s var(--ease-organic);
   text-align: left;
   position: relative;
+  z-index: 2; /* Au-dessus des pseudo-éléments */
 }
 
+/* Hover: lueur de braise qui s'illumine */
 .dropdown-item:hover {
-  background: var(--color-primary-100);
-  color: var(--color-primary-900);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 248, 237, 0.6) 0%,     /* secondary-50 */
+    rgba(255, 236, 209, 0.4) 100%    /* secondary-100 */
+  );
+  color: theme('colors.secondary.700');
+  padding-left: 1.25rem;
 }
 
 .dropdown-item:focus {
   outline: none;
-  background: var(--color-primary-100);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 248, 237, 0.6) 0%,
+    rgba(255, 236, 209, 0.4) 100%
+  );
 }
 
 .dropdown-item:active {
-  background: var(--color-primary-200);
+  background: theme('colors.secondary.100');
+  color: theme('colors.secondary.800');
 }
 
 .dropdown-item-disabled {
@@ -139,32 +188,94 @@
   opacity: 1;
 }
 
+/* Danger variant for logout/delete actions */
+.dropdown-item-danger {
+  color: theme('colors.error.DEFAULT');
+}
+
+.dropdown-item-danger:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(166, 63, 56, 0.15) 0%,      /* error.DEFAULT with opacity */
+    rgba(201, 89, 81, 0.08) 100%     /* error.light with opacity */
+  );
+  color: theme('colors.error.dark');
+  padding-left: 1.25rem;
+}
+
+.dropdown-item-danger:active {
+  background: rgba(166, 63, 56, 0.2);
+}
+
 /* -------------------------------------------
    DIVIDER
    ------------------------------------------- */
 .dropdown-divider {
-  height: 1px;
+  height: 2px;
   margin: 0.5rem 0;
+  position: relative;
+  /* Ligne tribale dégradée */
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--color-primary-200) 20%,
-    var(--color-primary-200) 80%,
+    theme('colors.secondary.300') 5%,
+    theme('colors.secondary.400') 50%,
+    theme('colors.secondary.300') 95%,
     transparent 100%
   );
+  opacity: 0.3;
+  z-index: 2;
+}
+
+/* Accent lumineux au centre */
+.dropdown-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: theme('colors.secondary.500');
+  border-radius: 50%;
+  box-shadow: 0 0 6px theme('colors.secondary.400');
 }
 
 /* -------------------------------------------
    HEADER (Optional group label)
    ------------------------------------------- */
 .dropdown-header {
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1rem 0.5rem;
+  margin-bottom: 0.25rem;
   font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-primary-500);
+  letter-spacing: 0.08em;
+  color: theme('colors.secondary.600');
+  background: linear-gradient(
+    90deg,
+    rgba(255, 150, 53, 0.08) 0%,
+    transparent 100%
+  );
+  border-left: 3px solid theme('colors.secondary.400');
+  position: relative;
+  z-index: 2;
+}
+
+/* Accent tribal coin supérieur gauche */
+.dropdown-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    theme('colors.secondary.500') 0%,
+    transparent 100%
+  );
 }
 
 /* -------------------------------------------

@@ -10,6 +10,7 @@
 /* Container */
 .hero-bg-container {
   background-color: #1c1714; /* Fallback suie profonde */
+  overflow: hidden; /* Force prevent scrollbars */
 }
 
 /* Placeholder avec gradient approximatif */

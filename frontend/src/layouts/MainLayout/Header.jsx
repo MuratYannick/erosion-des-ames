@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Avatar, Dropdown, Button } from '@/components'
+import { Avatar } from '@/components'
+import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from '@/components/ui/Dropdown/Dropdown'
 import './Header.css'
 
 /**
@@ -188,7 +189,6 @@ const Header = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const location = useLocation()
 
   // Handle scroll for header compression
@@ -248,17 +248,18 @@ const Header = ({
         className={`header-tribal sticky top-0 z-fixed ${isScrolled ? 'scrolled' : ''} ${className}`}
         {...props}
       >
-        {/* Main navigation bar */}
-        <div className="container mx-auto px-4 h-[70px] flex items-center justify-between relative z-10">
-          {/* Logo zone */}
-          <Link to="/" className="logo-container">
-            <LogoEmblem className="w-12 h-12" />
-            <span className="logo-text hidden sm:inline">
+        {/* Main navigation bar - Mobile-first approach */}
+        <div className="w-full px-4 sm:px-6 h-[48px] lg:h-[70px] flex items-center justify-between relative z-10">
+
+          {/* Left side: Logo + Title */}
+          <Link to="/" className="logo-container flex items-center gap-3">
+            <LogoEmblem className="w-10 h-10 sm:w-12 sm:h-12" />
+            <span className="logo-text">
               Erosion des Ames
             </span>
           </Link>
 
-          {/* Desktop navigation */}
+          {/* Center: Desktop navigation - HIDDEN on mobile (< lg), FLEX on desktop (>= lg) */}
           <nav className="nav-tribal hidden lg:flex" aria-label="Navigation principale">
             {navItems.map((item, index) => (
               <span key={item.href} className="contents">
@@ -275,15 +276,14 @@ const Header = ({
             ))}
           </nav>
 
-          {/* User zone - Desktop */}
-          <div className="user-zone hidden lg:flex">
+          {/* Right side: User zone - HIDDEN on mobile (< sm), FLEX on small screens and up (>= sm) */}
+          <div className="user-zone hidden sm:flex">
             {user ? (
               <Dropdown
                 trigger={
                   <button
                     className="user-dropdown-trigger"
-                    aria-expanded={isUserDropdownOpen}
-                    aria-haspopup="true"
+                    aria-haspopup="menu"
                     aria-label="Menu utilisateur"
                   >
                     <Avatar
@@ -292,17 +292,43 @@ const Header = ({
                       size="sm"
                       className="user-avatar-header"
                     />
+                    <span className="hidden md:inline text-sm font-medium text-skin-base">
+                      {user.name}
+                    </span>
                     <ChevronDownIcon className="user-dropdown-chevron" />
                   </button>
                 }
-                items={[
-                  { label: 'Mon profil', onClick: () => {} },
-                  { label: 'Mes personnages', onClick: () => {} },
-                  { divider: true },
-                  { label: 'Deconnexion', onClick: onLogout, danger: true },
-                ]}
                 position="bottom-right"
-              />
+              >
+                {({ close }) => (
+                  <>
+                    <DropdownHeader>
+                      {user.name}
+                    </DropdownHeader>
+                    <DropdownDivider />
+                    <Link to="/profil" onClick={close}>
+                      <DropdownItem>
+                        Mon profil
+                      </DropdownItem>
+                    </Link>
+                    <Link to="/mes-personnages" onClick={close}>
+                      <DropdownItem>
+                        Mes personnages
+                      </DropdownItem>
+                    </Link>
+                    <DropdownDivider />
+                    <DropdownItem
+                      onClick={() => {
+                        close()
+                        onLogout?.()
+                      }}
+                      className="dropdown-item-danger"
+                    >
+                      Deconnexion
+                    </DropdownItem>
+                  </>
+                )}
+              </Dropdown>
             ) : (
               <>
                 <button
@@ -323,10 +349,10 @@ const Header = ({
             )}
           </div>
 
-          {/* Mobile burger menu button */}
+          {/* Right side on mobile: Burger button - VISIBLE on mobile (< lg), HIDDEN on desktop (>= lg) */}
           <button
             type="button"
-            className="burger-btn lg:hidden"
+            className="burger-btn flex lg:hidden"
             onClick={toggleMobileMenu}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
@@ -368,7 +394,7 @@ const Header = ({
             </button>
           </div>
 
-          {/* Mobile navigation */}
+          {/* Mobile navigation - All nav links shown in burger menu */}
           <nav className="mobile-nav" aria-label="Navigation mobile">
             {navItems.map((item) => (
               <NavLink
@@ -387,45 +413,48 @@ const Header = ({
           {/* Mobile divider */}
           <div className="mobile-nav-divider" />
 
-          {/* Mobile auth zone */}
+          {/* Mobile auth zone - Login/Register buttons and user badge shown here on mobile */}
           <div className="mobile-auth-zone">
             {user ? (
               <>
-                <div className="flex items-center gap-3 mb-4 px-1">
-                  <Avatar
-                    src={user.avatar}
-                    name={user.name}
-                    size="md"
-                  />
-                  <div>
-                    <p className="font-button text-skin-base">{user.name}</p>
-                    <p className="text-sm text-skin-muted">{user.email}</p>
+                {/* User section - ONLY visible on screens < sm (where user-zone is hidden) */}
+                <div className="sm:hidden">
+                  <div className="flex items-center gap-3 mb-4 px-1">
+                    <Avatar
+                      src={user.avatar}
+                      name={user.name}
+                      size="md"
+                    />
+                    <div>
+                      <p className="font-button text-skin-base">{user.name}</p>
+                      <p className="text-sm text-skin-muted">{user.email}</p>
+                    </div>
                   </div>
+                  <Link
+                    to="/profil"
+                    className="mobile-nav-item"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Mon profil
+                  </Link>
+                  <Link
+                    to="/mes-personnages"
+                    className="mobile-nav-item"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Mes personnages
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn-auth btn-auth-secondary"
+                    onClick={() => {
+                      onLogout?.()
+                      setIsMobileMenuOpen(false)
+                    }}
+                  >
+                    Deconnexion
+                  </button>
                 </div>
-                <Link
-                  to="/profil"
-                  className="mobile-nav-item"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Mon profil
-                </Link>
-                <Link
-                  to="/mes-personnages"
-                  className="mobile-nav-item"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Mes personnages
-                </Link>
-                <button
-                  type="button"
-                  className="btn-auth btn-auth-secondary"
-                  onClick={() => {
-                    onLogout?.()
-                    setIsMobileMenuOpen(false)
-                  }}
-                >
-                  Deconnexion
-                </button>
               </>
             ) : (
               <>

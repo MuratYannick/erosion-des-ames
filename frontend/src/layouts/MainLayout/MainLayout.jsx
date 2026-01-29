@@ -29,7 +29,7 @@ const MainLayout = ({
   children,
 }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-surface">
+    <div className="min-h-screen w-full flex flex-col bg-surface">
       {/* Header */}
       {showHeader && (
         <Header
@@ -41,7 +41,7 @@ const MainLayout = ({
       )}
 
       {/* Main content area */}
-      <main className={`flex-1 ${className}`}>
+      <main className={`flex-1 w-full ${className}`}>
         {children || <Outlet />}
       </main>
 

@@ -4,6 +4,7 @@
 
 .home-page {
   /* Les sections s'empilent verticalement */
+  width: 100%;
 }
 
 /* Spacing entre sections */
