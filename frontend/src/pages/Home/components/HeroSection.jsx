@@ -90,7 +90,7 @@ const HeroSection = ({
             className={`hero-bg-image absolute inset-0 w-full h-full object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ transform: `translateY(${scrollY * 0.3}px)` }}
             onLoad={() => setImageLoaded(true)}
-            fetchpriority="high"
+            fetchPriority="high"
             decoding="async"
           />
         </picture>

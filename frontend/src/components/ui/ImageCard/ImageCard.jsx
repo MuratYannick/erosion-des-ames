@@ -16,11 +16,44 @@ import './ImageCard.css'
  * - contrast: Contraste accentué (style BD)
  *
  * @example
+ * // Image simple
  * <ImageCard
  *   src="image.jpg"
  *   fx={['hover-zoom', 'vignette', 'sepia']}
  *   ratio="16/9"
  *   caption="Ruines de l'ancien monde"
+ * />
+ *
+ * @example
+ * // Image responsive avec sources par breakpoint
+ * <ImageCard
+ *   src="image-xs.png"
+ *   sources={[
+ *     { media: '(min-width: 1536px)', srcSet: 'image-2xl.png' },
+ *     { media: '(min-width: 1280px)', srcSet: 'image-xl.png' },
+ *     { media: '(min-width: 1024px)', srcSet: 'image-lg.png' },
+ *     { media: '(min-width: 768px)', srcSet: 'image-md.png' },
+ *     { media: '(min-width: 640px)', srcSet: 'image-sm.png' },
+ *   ]}
+ *   fx={['hover-zoom', 'overlay']}
+ *   ratio="4/3"
+ * />
+ *
+ * @example
+ * // Utilisation avec preset
+ * <ImageCard
+ *   src="image.jpg"
+ *   preset="tribal"
+ *   ratio="4/3"
+ * />
+ *
+ * @example
+ * // Preset avec overrides
+ * <ImageCard
+ *   src="image.jpg"
+ *   preset="tribal"
+ *   fx={['hover-zoom', 'overlay', 'sepia', 'vignette']}
+ *   ratio="4/3"
  * />
  */
 
@@ -44,9 +77,59 @@ const overlayVariants = {
   tribal: 'bg-gradient-to-t from-primary-900/70 via-transparent to-neutral-900/20'
 }
 
+// Presets d'effets - Combinaisons prêtes à l'emploi
+const PRESETS = {
+  nostalgia: {
+    fx: ['sepia', 'vignette', 'dust'],
+    overlayVariant: 'dark',
+    imageClassName: ''
+  },
+  desolation: {
+    fx: ['grayscale', 'overlay', 'vignette'],
+    overlayVariant: 'dark-heavy',
+    imageClassName: ''
+  },
+  tribal: {
+    fx: ['overlay', 'sepia', 'vignette'],
+    overlayVariant: 'tribal',
+    imageClassName: ''
+  },
+  comic: {
+    fx: ['hover-zoom', 'contrast'],
+    overlayVariant: 'dark',
+    imageClassName: ''
+  },
+  worn: {
+    fx: ['torn-edges', 'sepia', 'dust'],
+    overlayVariant: 'dark',
+    imageClassName: 'fx-sepia-aged'
+  },
+  mystery: {
+    fx: ['blur', 'overlay'],
+    overlayVariant: 'dust',
+    imageClassName: ''
+  },
+  memory: {
+    fx: [],
+    overlayVariant: 'dark',
+    imageClassName: 'fx-combo-memory'
+  },
+  desolate: {
+    fx: [],
+    overlayVariant: 'dark',
+    imageClassName: 'fx-combo-desolate'
+  },
+  tribalCombo: {
+    fx: [],
+    overlayVariant: 'dark',
+    imageClassName: 'fx-combo-tribal'
+  }
+}
+
 const ImageCard = forwardRef(({
   src,
   alt = '',
+  sources = [],
   fx = [],
   ratio = '16/9',
   caption = null,
@@ -55,10 +138,33 @@ const ImageCard = forwardRef(({
   imageClassName = '',
   captionClassName = '',
   loading = 'lazy',
+  preset = null,
   ...props
 }, ref) => {
+  // Appliquer le preset si fourni et merger avec les props manuelles
+  let effectiveFx = fx
+  let effectiveOverlayVariant = overlayVariant
+  let effectiveImageClassName = imageClassName
+
+  if (preset && PRESETS[preset]) {
+    const presetConfig = PRESETS[preset]
+
+    // Merger les effets: preset fx + manual fx (manual override/extend)
+    // Si fx est fourni manuellement, on l'utilise tel quel (override complet)
+    // Sinon on utilise les fx du preset
+    effectiveFx = fx.length > 0 ? fx : presetConfig.fx
+
+    // overlayVariant: manuel override preset
+    effectiveOverlayVariant = overlayVariant !== 'dark' ? overlayVariant : presetConfig.overlayVariant
+
+    // imageClassName: merger preset + manuel
+    effectiveImageClassName = [presetConfig.imageClassName, imageClassName]
+      .filter(Boolean)
+      .join(' ')
+  }
+
   // Construire les classes FX
-  const fxClasses = fx.map(effect => `fx-${effect}`).join(' ')
+  const fxClasses = effectiveFx.map(effect => `fx-${effect}`).join(' ')
 
   // Construire le style du ratio d'aspect
   const aspectRatioStyle = ratio !== 'auto'
@@ -66,10 +172,49 @@ const ImageCard = forwardRef(({
     : {}
 
   // Overlay est-il activé?
-  const hasOverlay = fx.includes('overlay')
+  const hasOverlay = effectiveFx.includes('overlay')
   const overlayClass = hasOverlay
-    ? overlayVariants[overlayVariant] || overlayVariants.dark
+    ? overlayVariants[effectiveOverlayVariant] || overlayVariants.dark
     : ''
+
+  // Classes communes pour l'image
+  const imgClasses = [
+    'image-card__img',
+    'w-full h-full object-cover',
+    fxClasses,
+    effectiveImageClassName
+  ].filter(Boolean).join(' ')
+
+  // Rendre l'image (simple <img> ou <picture> avec sources)
+  const renderImage = () => {
+    const imgElement = (
+      <img
+        src={src}
+        alt={alt}
+        loading={loading}
+        className={imgClasses}
+      />
+    )
+
+    // Si pas de sources, retourner l'image simple
+    if (!sources || sources.length === 0) {
+      return imgElement
+    }
+
+    // Sinon, wrapper dans <picture> avec <source> elements
+    return (
+      <picture>
+        {sources.map((source, index) => (
+          <source
+            key={index}
+            media={source.media}
+            srcSet={source.srcSet}
+          />
+        ))}
+        {imgElement}
+      </picture>
+    )
+  }
 
   return (
     <div
@@ -83,18 +228,8 @@ const ImageCard = forwardRef(({
       style={aspectRatioStyle}
       {...props}
     >
-      {/* Image avec effets */}
-      <img
-        src={src}
-        alt={alt}
-        loading={loading}
-        className={[
-          'image-card__img',
-          'w-full h-full object-cover',
-          fxClasses,
-          imageClassName
-        ].filter(Boolean).join(' ')}
-      />
+      {/* Image avec effets (simple ou responsive) */}
+      {renderImage()}
 
       {/* Overlay si demandé */}
       {hasOverlay && (
@@ -127,4 +262,4 @@ const ImageCard = forwardRef(({
 ImageCard.displayName = 'ImageCard'
 
 export default ImageCard
-export { ImageCard }
+export { ImageCard, PRESETS }

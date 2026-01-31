@@ -67,7 +67,7 @@ const QuickLinksSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`quicklinks-section relative py-20 md:py-32 bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-800 overflow-hidden ${isVisible ? 'is-visible' : ''}`}
+      className={`quicklinks-section relative w-full py-20 md:py-32 bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-800 overflow-hidden ${isVisible ? 'is-visible' : ''}`}
     >
       <QuickLinksPattern />
 

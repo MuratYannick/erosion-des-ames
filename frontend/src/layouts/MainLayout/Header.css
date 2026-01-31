@@ -32,10 +32,8 @@
 }
 
 /* === LOGO === */
+/* Note: display/flex/gap controlled by Tailwind classes in JSX */
 .logo-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   text-decoration: none;
   transition: var(--transition-transform);
 }
@@ -62,8 +60,9 @@
 }
 
 /* === NAVIGATION === */
+/* Removed custom media query - using Tailwind's hidden/lg:flex classes instead */
+/* Visual styles only - layout/display controlled by Tailwind */
 .nav-tribal {
-  display: flex;
   align-items: center;
   gap: 0.25rem;
 }
@@ -153,8 +152,9 @@
 }
 
 /* === USER ZONE === */
+/* Removed custom media query - using Tailwind's hidden/lg:flex classes instead */
+/* Visual styles only - layout/display controlled by Tailwind */
 .user-zone {
-  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
@@ -268,8 +268,8 @@
 }
 
 /* === MOBILE BURGER === */
+/* Note: display/flex/items controlled by Tailwind classes in JSX */
 .burger-btn {
-  display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -319,6 +319,34 @@
   box-shadow: var(--shadow-elevated-lg);
   transform: translateX(100%);
   transition: transform var(--transition-slow) var(--ease-tribal);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for mobile menu - discreet and tribal-themed */
+.mobile-menu-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-track {
+  background: theme('colors.primary.100');
+  border-radius: 3px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb {
+  background: theme('colors.primary.400');
+  border-radius: 3px;
+  transition: background var(--transition-fast) var(--ease-organic);
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.secondary.500');
+}
+
+/* Firefox scrollbar */
+.mobile-menu-content {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.primary.400') theme('colors.primary.100');
 }
 
 .mobile-menu-overlay.open .mobile-menu-content {
@@ -458,6 +486,7 @@
 }
 
 /* === RESPONSIVE === */
+/* Mobile-first: On mobile (< 1024px), header is compact */
 @media (max-width: 1023px) {
   .header-tribal {
     height: 56px !important;
@@ -465,12 +494,6 @@
 
   .logo-text {
     font-size: theme('fontSize.xl');
-  }
-}
-
-@media (max-width: 639px) {
-  .logo-text {
-    display: none;
   }
 }
 

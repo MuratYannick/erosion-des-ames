@@ -48,7 +48,7 @@ const NewsSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`news-section relative py-20 md:py-32 bg-surface overflow-hidden ${isVisible ? 'is-visible' : ''}`}
+      className={`news-section relative w-full py-20 md:py-32 bg-surface overflow-hidden ${isVisible ? 'is-visible' : ''}`}
     >
       {/* Pattern tribal subtil */}
       <NewsTribalPattern />

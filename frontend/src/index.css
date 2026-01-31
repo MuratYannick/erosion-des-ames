@@ -7,6 +7,17 @@
    ============================================ */
 
 @layer base {
+  /* === BASE STYLES === */
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  #root {
+    width: 100%;
+  }
+
   :root {
     /* === TRANSITIONS === */
     /* Durées */

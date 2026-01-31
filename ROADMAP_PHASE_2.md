@@ -558,37 +558,37 @@ Couverts par Tailwind et variables CSS (index.css):
 
 ## Critères de validation
 
-- [ ] Toutes les pages sont responsives (mobile, tablette, desktop)
-- [ ] Navigation fonctionnelle entre toutes les pages
-- [ ] Scroll fluide et animations cohérentes
-- [ ] Contenu placeholder pour toutes les sections
-- [ ] Images optimisées et lazy loading
-- [ ] SEO basique (meta tags)
-- [ ] Accessibilité (headings, alt text, focus)
-- [ ] Cohérence visuelle avec le système de design Phase 1
-- [ ] Export centralisé depuis `pages/index.js`
+- [x] Toutes les pages sont responsives (mobile, tablette, desktop)
+- [x] Navigation fonctionnelle entre toutes les pages
+- [x] Scroll fluide et animations cohérentes (ScrollToTopOnNavigate)
+- [x] Contenu placeholder pour toutes les sections
+- [x] Images optimisées et lazy loading (ImageCard avec loading="lazy")
+- [ ] SEO basique (meta tags) - **Reporté à une phase ultérieure**
+- [x] Accessibilité (headings, alt text, focus) - Implémenté dans les composants
+- [x] Cohérence visuelle avec le système de design Phase 1
+- [x] Export centralisé depuis `pages/index.js`
 
 ---
 
 ## Assets nécessaires
 
 ### Images (à préparer)
-- [ ] Image hero page accueil (1920x800 min)
-- [ ] Images sections présentation (800x600)
-- [ ] Illustrations règlement
-- [ ] Carte du monde (optionnel)
-- [ ] Emblèmes factions
-- [ ] Images lieux
-- [ ] Portraits personnages prédéfinis
+- [x] Image hero page accueil - **Créées en versions responsives (banner-xs à banner-2xl)**
+- [x] Images sections présentation - **Créées en versions responsives (presentation-ruine, ritual, travel)**
+- [ ] Illustrations règlement (optionnel)
+- [x] Carte du monde - **WorldMap SVG interactif implémenté**
+- [x] Emblèmes factions - **SVG tribaux implémentés (FactionEmblems.jsx)**
+- [ ] Images lieux (placeholders utilisés actuellement)
+- [ ] Portraits personnages prédéfinis (placeholders avec RaceSymbol)
 
 ### Contenu texte (à rédiger)
-- [ ] Texte d'accroche accueil
-- [ ] Texte de présentation du jeu
-- [ ] Contenu complet du règlement
-- [ ] Lore/histoire du monde
-- [ ] Descriptions des factions
-- [ ] Descriptions des lieux
-- [ ] Fiches des personnages prédéfinis
+- [x] Texte d'accroche accueil
+- [x] Texte de présentation du jeu
+- [x] Contenu complet du règlement
+- [x] Lore/histoire du monde (loreSampleData.js)
+- [x] Descriptions des factions (factionData.js)
+- [x] Descriptions des lieux (locationData.js)
+- [x] Fiches des personnages prédéfinis (presetCharacters.js)
 
 ---
 
@@ -600,3 +600,28 @@ Couverts par Tailwind et variables CSS (index.css):
 - Prévoir des états de chargement avec Loader
 - Stocker le contenu texte dans des fichiers data/ séparés
 - Utiliser des constantes pour les chemins d'images
+
+---
+
+## Résumé - Ce qui reste à faire
+
+### Reporté à une phase ultérieure
+| Élément | Priorité | Notes |
+|---------|----------|-------|
+| SEO meta tags (toutes pages) | Moyenne | Attendre stabilisation du contenu |
+| Modal détail faction | Basse | Optionnel, peut être ajouté plus tard |
+| Sidebar globale Universe | Basse | Optionnel pour navigation mobile |
+| Images lieux | Moyenne | Placeholders fonctionnels en attendant |
+| Portraits personnages | Moyenne | RaceSymbol utilisés comme placeholders |
+| Illustrations règlement | Basse | Optionnel, texte suffisant |
+
+### Bugs corrigés (Phase 2bis)
+- [x] Double scroll page Home
+- [x] Images hero responsives (performance)
+- [x] Alignement header/contenu mobile
+- [x] Navbar aux bords de la fenêtre
+- [x] Tremblement marqueurs carte (hover loop)
+- [x] Nettoyage code inutilisé
+
+### Phase 2 - Statut global
+**Complète à ~95%** - Toutes les pages principales sont fonctionnelles et responsives. Les éléments restants sont optionnels ou reportés.
