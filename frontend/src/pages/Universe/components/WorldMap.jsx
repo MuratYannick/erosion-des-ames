@@ -372,17 +372,24 @@ const LocationMarker = ({
     <g
       className={`world-map__marker ${isSelected ? 'is-selected' : ''} ${isHovered ? 'is-hovered' : ''}`}
       transform={`translate(${x}, ${y})`}
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
-      onClick={onClick}
       style={{ cursor: 'pointer' }}
     >
+      {/* Zone de détection invisible - ne scale jamais, évite le bug de tremblement */}
+      <circle
+        r={30}
+        fill="transparent"
+        onMouseEnter={onHover}
+        onMouseLeave={onLeave}
+        onClick={onClick}
+      />
+
       {/* Lueur de fond */}
       <circle
         r={glowSize}
         fill="url(#marker-glow)"
         opacity={isSelected ? 0.6 : isHovered ? 0.4 : 0.2}
         className="world-map__marker-glow"
+        pointerEvents="none"
       />
 
       {/* Cercle de base */}
@@ -393,10 +400,11 @@ const LocationMarker = ({
         strokeWidth={isSelected ? 3 : 2}
         filter="url(#map-glow)"
         className="world-map__marker-circle"
+        pointerEvents="none"
       />
 
       {/* Icône selon le type */}
-      <g transform={`scale(${size / 40})`}>
+      <g transform={`scale(${size / 40})`} style={{ pointerEvents: 'none' }}>
         <MarkerIcon type={location.type} />
       </g>
 

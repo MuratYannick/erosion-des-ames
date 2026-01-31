@@ -118,5 +118,89 @@ Cette phase regroupe les correctifs et optimisations apportés suite à la phase
 
 ---
 
+---
+
+### 5. Correction du bug de tremblement des marqueurs sur la carte
+**Fichiers modifiés :**
+- `frontend/src/pages/Universe/components/WorldMap.jsx`
+- `frontend/src/pages/Universe/components/WorldMap.css`
+
+**Problème :** Les marqueurs de la carte interactive bougeaient dans tous les sens au survol de la souris, créant une boucle infinie mouseEnter/mouseLeave qui empêchait de cliquer dessus.
+
+**Cause :** Le `transform: scale()` appliqué au groupe SVG `<g>` au hover déplaçait tous les éléments, y compris la zone de détection des événements, provoquant le tremblement.
+
+**Solution :**
+1. Ajout d'un cercle de détection invisible (`r={30}`, `fill="transparent"`) qui reçoit tous les événements et ne scale jamais
+2. Application de `pointerEvents="none"` sur les éléments visuels (lueur, cercle, icône)
+3. Modification du CSS pour appliquer le scale uniquement aux éléments visuels, pas au groupe parent
+
+```jsx
+/* WorldMap.jsx - Zone de détection invisible */
+<circle
+  r={30}
+  fill="transparent"
+  onMouseEnter={onHover}
+  onMouseLeave={onLeave}
+  onClick={onClick}
+/>
+```
+
+```css
+/* WorldMap.css - Scale sur éléments visuels seulement */
+.world-map__marker:hover .world-map__marker-circle,
+.world-map__marker:hover .world-map__marker-glow {
+  transform: scale(1.15);
+}
+```
+
+---
+
+### 6. Nettoyage du code - Éléments inutilisés
+**Fichiers modifiés :**
+- `frontend/src/pages/Home/components/PresentationSection.jsx`
+- `frontend/src/pages/Home/Home.jsx`
+- `frontend/src/components/ui/Sidebar/Sidebar.jsx`
+
+**Modifications :**
+
+| Fichier | Élément supprimé | Raison |
+|---------|------------------|--------|
+| `PresentationSection.jsx` | Paramètre `images` (lignes 18-22) | Les chemins d'images sont maintenant codés en dur avec sources responsives |
+| `Home.jsx` | Prop `images` passée à PresentationSection | Paramètre supprimé du composant enfant |
+| `Sidebar.jsx` | `isCollapsed` dans SidebarHeader (ligne 224) | Variable extraite du contexte mais jamais utilisée |
+| `Sidebar.jsx` | `isCollapsed` dans SidebarSection (ligne 241) | Variable extraite du contexte mais jamais utilisée |
+
+---
+
+## Résumé des fichiers modifiés
+
+| Fichier | Type de modification |
+|---------|---------------------|
+| `frontend/src/pages/Home/Home.css` | Suppression overflow-x |
+| `frontend/src/pages/Home/components/HeroSection.jsx` | Images responsives avec picture |
+| `frontend/src/pages/Home/components/HeroSection.css` | Déjà modifié en phase 2 |
+| `frontend/src/pages/Home/components/PresentationSection.jsx` | Suppression paramètre images inutilisé |
+| `frontend/src/pages/Home/Home.jsx` | Suppression prop images |
+| `frontend/src/layouts/MainLayout/Header.jsx` | Hauteur nav responsive |
+| `frontend/src/layouts/MainLayout/MainLayout.jsx` | Nettoyage (retrait padding-top) |
+| `frontend/src/pages/Universe/components/WorldMap.jsx` | Correction bug marqueurs + zone détection |
+| `frontend/src/pages/Universe/components/WorldMap.css` | Scale sur éléments visuels seulement |
+| `frontend/src/components/ui/Sidebar/Sidebar.jsx` | Suppression variables inutilisées |
+| `frontend/index.html` | Preloads responsifs |
+
+---
+
+## Tests effectués
+
+- [x] Vérification scroll page Home (plus de double scroll)
+- [x] Vérification chargement images responsives selon breakpoint
+- [x] Vérification alignement header/contenu sur écrans < 1024px
+- [x] Vérification alignement header/contenu sur écrans ≥ 1024px
+- [x] Vérification navbar aux bords de la fenêtre
+- [x] Vérification survol et clic des marqueurs sur la carte (plus de tremblement)
+- [x] Vérification ESLint (plus de warnings pour éléments inutilisés sur fichiers actifs)
+
+---
+
 ## Date
-29 janvier 2026
+31 janvier 2026

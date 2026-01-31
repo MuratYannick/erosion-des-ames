@@ -221,8 +221,6 @@ const CloseIcon = () => (
  * Sidebar Header
  */
 const SidebarHeader = forwardRef(({ children, className = '', ...props }, ref) => {
-  const { isCollapsed } = useSidebar()
-
   return (
     <div ref={ref} className={`sidebar-header ${className}`} {...props}>
       <div className="sidebar-header-content">
@@ -238,8 +236,6 @@ SidebarHeader.displayName = 'SidebarHeader'
  * Sidebar Section
  */
 const SidebarSection = forwardRef(({ title, children, className = '', ...props }, ref) => {
-  const { isCollapsed } = useSidebar()
-
   return (
     <div ref={ref} className={`sidebar-section ${className}`} {...props}>
       {title && (

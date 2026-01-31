@@ -139,13 +139,22 @@
 }
 
 .world-map__marker:hover {
-  transform: scale(1.15);
   filter: drop-shadow(0 0 12px rgba(230, 115, 21, 0.8));
 }
 
 .world-map__marker.is-selected {
-  transform: scale(1.2);
   filter: drop-shadow(0 0 20px rgba(230, 115, 21, 1));
+}
+
+/* Scale appliqué uniquement aux éléments visuels, pas au groupe entier */
+.world-map__marker:hover .world-map__marker-circle,
+.world-map__marker:hover .world-map__marker-glow {
+  transform: scale(1.15);
+}
+
+.world-map__marker.is-selected .world-map__marker-circle,
+.world-map__marker.is-selected .world-map__marker-glow {
+  transform: scale(1.2);
 }
 
 /* Lueur du marqueur */
@@ -157,18 +166,15 @@
 @keyframes marker-glow-pulse {
   0%, 100% {
     opacity: 0.2;
-    transform: scale(1);
   }
   50% {
     opacity: 0.4;
-    transform: scale(1.1);
   }
 }
 
 .world-map__marker.is-hovered .world-map__marker-glow,
 .world-map__marker.is-selected .world-map__marker-glow {
   opacity: 0.6;
-  transform: scale(1.2);
 }
 
 /* Cercle du marqueur */
@@ -528,7 +534,8 @@
   }
 
   /* Marqueurs plus visibles */
-  .world-map__marker:hover {
+  .world-map__marker:hover .world-map__marker-circle,
+  .world-map__marker:hover .world-map__marker-glow {
     transform: scale(1.3);
   }
 }
@@ -573,8 +580,10 @@
     animation: none !important;
   }
 
-  .world-map__marker:hover,
-  .world-map__marker.is-selected {
+  .world-map__marker:hover .world-map__marker-circle,
+  .world-map__marker:hover .world-map__marker-glow,
+  .world-map__marker.is-selected .world-map__marker-circle,
+  .world-map__marker.is-selected .world-map__marker-glow {
     transform: scale(1.1);
   }
 

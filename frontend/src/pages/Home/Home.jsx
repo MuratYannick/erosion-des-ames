@@ -14,7 +14,7 @@ import './Home.css'
  */
 const Home = () => {
   return (
-    <div className="home-page">
+    <div className="home-page w-full">
       <HeroSection
         title="EROSION DES AMES"
         subtitle="Là où les pierres murmurent&#10;et les braises se souviennent"
@@ -25,12 +25,7 @@ const Home = () => {
       />
 
       <PresentationSection
-        title="Un Monde de Cendres et de Murmures"
-        images={{
-          ruins: "/images/presentation-ruins.jpg",
-          ritual: "/images/presentation-ritual.jpg",
-          artifact: "/images/presentation-artifact.jpg"
-        }}
+        title="Un Monde de Cendres et de Désolation"
       />
 
       <NewsSection

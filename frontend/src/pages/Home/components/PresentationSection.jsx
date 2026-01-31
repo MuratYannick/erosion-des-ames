@@ -14,12 +14,7 @@ import './PresentationSection.css'
  * - Texte immersif avec images atmosphériques
  */
 const PresentationSection = ({
-  title = "Un Monde de Cendres et de Murmures",
-  images = {
-    ruins: "/images/presentation-ruins.jpg",
-    ritual: "/images/presentation-ritual.jpg",
-    artifact: "/images/presentation-artifact.jpg"
-  }
+  title = "Un Monde de Cendres et de Désolation"
 }) => {
   const sectionRef = useRef(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -45,7 +40,7 @@ const PresentationSection = ({
   return (
     <section
       ref={sectionRef}
-      className={`presentation-section relative py-20 md:py-32 bg-gradient-to-b from-neutral-900 via-neutral-100 to-surface overflow-hidden ${isVisible ? 'is-visible' : ''}`}
+      className={`presentation-section relative w-full py-20 md:py-32 bg-gradient-to-b from-neutral-900 via-neutral-100 to-surface overflow-hidden ${isVisible ? 'is-visible' : ''}`}
     >
       {/* Pattern tribal subtil en arrière-plan */}
       <SubtleTribalPattern />
@@ -68,11 +63,17 @@ const PresentationSection = ({
           {/* Image ruines */}
           <div className="md:col-span-3 presentation-image-1">
             <ImageCard
-              src={images.ruins}
+              src="/images/presentation-ruine-xs.png"
+              sources={[
+                { media: '(min-width: 1536px)', srcSet: '/images/presentation-ruine-2xl.png' },
+                { media: '(min-width: 1280px)', srcSet: '/images/presentation-ruine-xl.png' },
+                { media: '(min-width: 1024px)', srcSet: '/images/presentation-ruine-lg.png' },
+                { media: '(min-width: 768px)', srcSet: '/images/presentation-ruine-md.png' },
+                { media: '(min-width: 640px)', srcSet: '/images/presentation-ruine-sm.png' },
+              ]}
               alt="Ruines d'un temple tribal ancien"
               ratio="16/9"
-              fx={['hover-zoom', 'overlay', 'vignette', 'sepia']}
-              overlayVariant="tribal"
+              preset="tribal"
               className="shadow-2xl"
             />
             {/* Coin tribal discret */}
@@ -91,13 +92,13 @@ const PresentationSection = ({
               <span className="absolute -left-4 top-2 w-2 h-2 rounded-full bg-secondary shadow-glow-sm ember-pulse" />
 
               <p className="font-body text-lg md:text-xl text-primary-700 leading-relaxed mb-6">
-                Dans un monde où les dieux ont brûlé et les civilisations se sont effondrées,
-                seules demeurent les pierres gravées et les cendres sacrées.
+                Dans un monde où les civilisations se sont effondrées et la nature a repris ses droits,
+                seule la survie subsiste à l'humanité.
               </p>
 
               <p className="font-body text-base md:text-lg text-primary-600 leading-relaxed">
-                Tu es l'un des derniers survivants, porteur d'une <strong className="text-secondary font-accent">âme érodée</strong> par
-                les cycles du temps.
+                Tu es l'un des derniers espoirs pour rétablir la supériorité de <span className="text-warning-light font-alert text-lg md:text-xl">l'humanité </span> 
+                face à l'hostilité d'une nature décadente.
               </p>
             </div>
           </div>
@@ -134,14 +135,20 @@ const PresentationSection = ({
             </p>
           </div>
 
-          {/* Image rituel */}
+          {/* Image rituel - responsive */}
           <div className="md:order-2 presentation-image-2">
             <ImageCard
-              src={images.ritual}
+              src="/images/presentation-ritual-xs.png"
+              sources={[
+                { media: '(min-width: 1536px)', srcSet: '/images/presentation-ritual-2xl.png' },
+                { media: '(min-width: 1280px)', srcSet: '/images/presentation-ritual-xl.png' },
+                { media: '(min-width: 1024px)', srcSet: '/images/presentation-ritual-lg.png' },
+                { media: '(min-width: 768px)', srcSet: '/images/presentation-ritual-md.png' },
+                { media: '(min-width: 640px)', srcSet: '/images/presentation-ritual-sm.png' },
+              ]}
               alt="Rituel du feu sacré"
               ratio="4/3"
-              fx={['hover-zoom', 'overlay', 'contrast']}
-              overlayVariant="fire"
+              preset="memory"
               className="shadow-xl"
             />
           </div>
@@ -152,11 +159,17 @@ const PresentationSection = ({
           {/* Image artefact */}
           <div className="md:col-span-1 presentation-image-3">
             <ImageCard
-              src={images.artifact}
-              alt="Artefact tribal mystérieux"
-              ratio="3/4"
-              fx={['hover-zoom', 'overlay', 'vignette']}
-              overlayVariant="dark"
+              src="/images/presentation-travel-xs.png"
+              sources={[
+                { media: '(min-width: 1536px)', srcSet: '/images/presentation-travel-2xl.png' },
+                { media: '(min-width: 1280px)', srcSet: '/images/presentation-travel-xl.png' },
+                { media: '(min-width: 1024px)', srcSet: '/images/presentation-travel-lg.png' },
+                { media: '(min-width: 768px)', srcSet: '/images/presentation-travel-md.png' },
+                { media: '(min-width: 640px)', srcSet: '/images/presentation-travel-sm.png' },
+              ]}
+              alt="Voyage à travers les terres désolées"
+              ratio="4/3"
+              preset="nostalgia"
               className="shadow-2xl"
             />
             {/* Coin tribal discret */}
