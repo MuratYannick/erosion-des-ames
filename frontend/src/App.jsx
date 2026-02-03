@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { MainLayout } from '@/layouts'
 import {
@@ -15,6 +14,9 @@ import {
   ScrollToTopOnNavigate,
 } from '@/components'
 import { Home, Foreword, Universe, Characters } from '@/pages'
+import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
+import { AuthProvider } from '@/contexts/AuthContext'
+import { ProtectedRoute } from '@/components'
 
 // Placeholder pages
 function AvantProposPage() {
@@ -184,59 +186,63 @@ function NotFoundPage() {
   )
 }
 
+// Pages protégées (placeholders)
+function ProfilPage() {
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <h1 className="font-display text-4xl text-primary-800 mb-4">Mon Profil</h1>
+      <p className="font-body text-skin-secondary">Page de profil utilisateur (à venir)...</p>
+    </div>
+  )
+}
+
+function MesPersonnagesPage() {
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <h1 className="font-display text-4xl text-primary-800 mb-4">Mes Personnages</h1>
+      <p className="font-body text-skin-secondary">Liste de vos personnages (à venir)...</p>
+    </div>
+  )
+}
+
 function App() {
-  // Demo user state - null means not logged in
-  const [user, setUser] = useState(null)
-
-  const handleLogin = () => {
-    // Demo: simulate login
-    setUser({
-      name: 'Voyageur',
-      email: 'voyageur@erosion.des.ames',
-      avatar: null,
-    })
-  }
-
-  const handleRegister = () => {
-    // Demo: same as login for now
-    handleLogin()
-  }
-
-  const handleLogout = () => {
-    setUser(null)
-  }
-
   return (
     <BrowserRouter>
-      <ScrollToTopOnNavigate />
-      <ToastProvider position="top-right">
-        <Routes>
-          <Route
-            element={
-              <MainLayout
-                user={user}
-                onLogin={handleLogin}
-                onRegister={handleRegister}
-                onLogout={handleLogout}
-              />
-            }
-          >
-            <Route path="/" element={<Home />} />
-            <Route path="/avant-propos" element={<Foreword />} />
-            <Route path="/univers" element={<Universe />} />
-            <Route path="/univers/explorer" element={<UniversLayout />}>
-              <Route index element={<UniversPage />} />
-              <Route path="lore" element={<UniversLorePage />} />
-              <Route path="factions" element={<UniversFactionsPage />} />
-              <Route path="regions/:region" element={<UniversPage />} />
-              <Route path="archives" element={<UniversPage />} />
+      <AuthProvider>
+        <ScrollToTopOnNavigate />
+        <ToastProvider position="top-right">
+          <Routes>
+            {/* Routes auth - sans MainLayout */}
+            <Route path="/connexion" element={<Login />} />
+            <Route path="/inscription" element={<Register />} />
+            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+            <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+            <Route path="/verifier-email" element={<VerifyEmail />} />
+
+            {/* Routes principales - avec MainLayout */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/avant-propos" element={<Foreword />} />
+              <Route path="/univers" element={<Universe />} />
+              <Route path="/univers/explorer" element={<UniversLayout />}>
+                <Route index element={<UniversPage />} />
+                <Route path="lore" element={<UniversLorePage />} />
+                <Route path="factions" element={<UniversFactionsPage />} />
+                <Route path="regions/:region" element={<UniversPage />} />
+                <Route path="archives" element={<UniversPage />} />
+              </Route>
+              <Route path="/personnages" element={<Characters />} />
+              <Route path="/forum" element={<ForumPage />} />
+
+              {/* Routes protégées - nécessitent une authentification */}
+              <Route path="/profil" element={<ProtectedRoute><ProfilPage /></ProtectedRoute>} />
+              <Route path="/mes-personnages" element={<ProtectedRoute><MesPersonnagesPage /></ProtectedRoute>} />
+
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
-            <Route path="/personnages" element={<Characters />} />
-            <Route path="/forum" element={<ForumPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      </ToastProvider>
+          </Routes>
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

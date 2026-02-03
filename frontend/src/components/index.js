@@ -86,3 +86,6 @@ export {
 
 // Utility components
 export { ScrollToTopOnNavigate } from './utils'
+
+// Route protection
+export { default as ProtectedRoute } from './ProtectedRoute'

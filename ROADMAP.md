@@ -71,35 +71,46 @@
 
 ---
 
-## Phase 3: Backend - Base utilisateurs et authentification -> validation email
+## Phase 3: Backend - Base utilisateurs et authentification ✅
 
 ### 3.1 Table User
-- [ ] Créer le modèle Sequelize `User`
-  - id, username, email, password (hashé), avatar, role, created_at, updated_at
-- [ ] Créer la migration correspondante
-- [ ] Créer les seeders pour données de test (admin, utilisateurs test)
+- [x] Créer le modèle Sequelize `User` (20 colonnes, hooks bcrypt, scopes, validations)
+- [x] Créer la migration correspondante
+- [x] Créer les seeders pour données de test (admin, modérateur, game master, 2 joueurs)
 
 ### 3.2 Configuration sécurité backend
-- [ ] Installer et configurer `bcrypt` pour le hashage des mots de passe
-- [ ] Installer et configurer `jsonwebtoken` (JWT) pour l'authentification
-- [ ] Créer les middlewares d'authentification
-- [ ] Configurer les variables d'environnement (JWT_SECRET, etc.)
+- [x] Installer et configurer `bcrypt` pour le hashage des mots de passe
+- [x] Installer et configurer `jsonwebtoken` (JWT) pour l'authentification
+- [x] Créer les middlewares d'authentification (authenticate, authorize, optionalAuth)
+- [x] Configurer les variables d'environnement (JWT_SECRET, SMTP, etc.)
+- [x] Configurer `nodemailer` pour l'envoi d'emails
 
 ### 3.3 Routes API authentification
-- [ ] `POST /api/auth/register` - Inscription
-- [ ] `POST /api/auth/login` - Connexion
-- [ ] `POST /api/auth/logout` - Déconnexion
-- [ ] `GET /api/auth/me` - Récupérer l'utilisateur connecté
-- [ ] `POST /api/auth/forgot-password` - Mot de passe oublié
-- [ ] `POST /api/auth/reset-password` - Réinitialisation mot de passe
+- [x] `POST /api/auth/register` - Inscription + email de vérification
+- [x] `POST /api/auth/login` - Connexion (email ou username)
+- [x] `POST /api/auth/logout` - Déconnexion
+- [x] `GET /api/auth/me` - Récupérer l'utilisateur connecté
+- [x] `POST /api/auth/verify-email` - Vérification email
+- [x] `POST /api/auth/resend-verification` - Renvoyer email de vérification
+- [x] `POST /api/auth/forgot-password` - Mot de passe oublié
+- [x] `POST /api/auth/reset-password` - Réinitialisation mot de passe
+- [x] `PUT /api/auth/change-password` - Changer mot de passe (connecté)
+- [x] `PUT /api/auth/update-profile` - Modifier profil
 
-### 3.4 Frontend - Login/Sign-up
-- [ ] Page de connexion
-- [ ] Page d'inscription
-- [ ] Page mot de passe oublié
-- [ ] Gestion du state d'authentification (Context API ou autre)
-- [ ] Protection des routes privées
-- [ ] Stockage du token (localStorage/cookies)
+### 3.4 Frontend - Authentification
+- [x] Page de connexion (email ou username)
+- [x] Page d'inscription (avec indicateur force mot de passe)
+- [x] Page mot de passe oublié
+- [x] Page réinitialisation mot de passe
+- [x] Page vérification email
+- [x] Gestion du state d'authentification (AuthContext + useAuth)
+- [x] Protection des routes privées (ProtectedRoute)
+- [x] Stockage du token (localStorage + vérification expiration)
+
+### 3.5 Tests
+- [x] Tests unitaires backend (utils, middlewares, validators)
+- [x] Tests d'intégration API (routes auth)
+- [x] Tests manuels complets validés
 
 ---
 
@@ -315,19 +326,19 @@
 
 ## Ordre de priorité suggéré
 
-| Priorité | Phase | Description |
-|----------|-------|-------------|
-| 1 | Phase 1 | Fondations UI - Indispensable pour tout le reste |
-| 2 | Phase 2 | Pages statiques - Donne vie au site |
-| 3 | Phase 3 | Auth - Nécessaire pour les fonctionnalités utilisateur |
-| 4 | Phase 4 | Formulaires - Base pour création de contenu |
-| 5 | Phase 5 | Pages d'erreur - UX professionnelle |
-| 6 | Phase 6 | Personnages - Coeur du RP |
-| 7 | Phase 7-8 | Forum fondations + BDD |
-| 8 | Phase 9 | Permissions - Sécurité du forum |
-| 9 | Phase 10-11 | Forum complet |
-| 10 | Phase 12 | Administration |
-| 11 | Phase 13 | Finitions |
+| Priorité | Phase | Description | Statut |
+|----------|-------|-------------|--------|
+| 1 | Phase 1 | Fondations UI - Indispensable pour tout le reste | ✅ |
+| 2 | Phase 2 | Pages statiques - Donne vie au site | ✅ |
+| 3 | Phase 3 | Auth - Nécessaire pour les fonctionnalités utilisateur | ✅ |
+| 4 | Phase 4 | Formulaires - Base pour création de contenu | ⏳ |
+| 5 | Phase 5 | Pages d'erreur - UX professionnelle | |
+| 6 | Phase 6 | Personnages - Coeur du RP | |
+| 7 | Phase 7-8 | Forum fondations + BDD | |
+| 8 | Phase 9 | Permissions - Sécurité du forum | |
+| 9 | Phase 10-11 | Forum complet | |
+| 10 | Phase 12 | Administration | |
+| 11 | Phase 13 | Finitions | |
 
 ---
 

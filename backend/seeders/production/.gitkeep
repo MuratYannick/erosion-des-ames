@@ -1,0 +1,3 @@
+# Ce dossier contient les seeders de production
+# Ces seeders sont exécutés automatiquement lors du seed de production
+# et avant les seeders de développement

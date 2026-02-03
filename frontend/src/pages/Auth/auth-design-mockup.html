@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Érosion des Âmes - Authentification - Maquettes de Design</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Rubik+Distressed&family=Rubik+Moonrocks&family=Permanent+Marker&family=Patrick+Hand&family=Architects+Daughter&family=Caveat+Brush&family=Indie+Flower&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========================================
+           RESET & BASE STYLES
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Primary - Terre et ruines */
+            --primary-50: #f5f3f0;
+            --primary-100: #ece7e1;
+            --primary-200: #d4c9ba;
+            --primary-300: #bba794;
+            --primary-400: #9d8570;
+            --primary-500: #7a6454;
+            --primary-600: #5e4d40;
+            --primary-700: #453930;
+            --primary-800: #2e2520;
+            --primary-900: #1c1714;
+
+            /* Secondary - Feu sacré */
+            --secondary-50: #fff8ed;
+            --secondary-100: #ffecd1;
+            --secondary-200: #ffd5a3;
+            --secondary-300: #ffb86a;
+            --secondary-400: #ff9635;
+            --secondary-500: #e67315;
+            --secondary-600: #c2580d;
+            --secondary-700: #944210;
+            --secondary-800: #6b3212;
+            --secondary-900: #4a2410;
+
+            /* États */
+            --success: #6b8e6f;
+            --error: #a63f38;
+            --warning: #b8753e;
+            --info: #6d8fa3;
+
+            /* Fonts */
+            --font-display: 'Metal Mania', cursive;
+            --font-heading: 'Rubik Distressed', system-ui;
+            --font-subheading: 'Rubik Moonrocks', system-ui;
+            --font-accent: 'Permanent Marker', cursive;
+            --font-body: 'Patrick Hand', cursive;
+            --font-button: 'Architects Daughter', cursive;
+            --font-alert: 'Caveat Brush', cursive;
+            --font-ui: 'Indie Flower', cursive;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--primary-900);
+            color: var(--primary-100);
+            line-height: 1.7;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Texture de fond organique */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.03"/></svg>');
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Lueur ambiante orangée */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%,
+                rgba(230, 115, 21, 0.08) 0%,
+                rgba(230, 115, 21, 0.02) 30%,
+                transparent 60%);
+            pointer-events: none;
+            z-index: 2;
+            animation: ambientGlow 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes ambientGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-5%, 5%) scale(1.1); }
+            100% { transform: translate(5%, -5%) scale(0.95); }
+        }
+
+        /* Container pour les maquettes */
+        .mockup-container {
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .mockup-section {
+            margin-bottom: 80px;
+            border: 2px solid var(--primary-700);
+            border-radius: 8px;
+            padding: 40px 20px;
+            background: rgba(28, 23, 20, 0.4);
+        }
+
+        .mockup-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--secondary-400);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(230, 115, 21, 0.3);
+        }
+
+        /* ========================================
+           AUTH LAYOUT - Wrapper commun
+           ======================================== */
+        .auth-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Logo du site */
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .auth-logo h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--secondary-500);
+            text-shadow:
+                0 0 20px rgba(230, 115, 21, 0.5),
+                0 0 40px rgba(230, 115, 21, 0.3),
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            animation: logoFlicker 6s ease-in-out infinite;
+        }
+
+        @keyframes logoFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+            51% { opacity: 1; }
+            52% { opacity: 0.98; }
+        }
+
+        .auth-logo p {
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            color: var(--primary-300);
+            letter-spacing: 1px;
+        }
+
+        /* Carte principale - effet parchemin brûlé */
+        .auth-card {
+            background: linear-gradient(135deg,
+                rgba(46, 37, 32, 0.95) 0%,
+                rgba(28, 23, 20, 0.98) 100%);
+            border-radius: 12px;
+            padding: 40px 32px;
+            position: relative;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(230, 115, 21, 0.1),
+                inset 0 1px 0 rgba(245, 243, 240, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Bordure décorative tribale */
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg,
+                var(--secondary-500) 0%,
+                var(--secondary-700) 50%,
+                var(--primary-700) 100%);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Coins brûlés (effet SVG simulé avec CSS) */
+        .auth-card::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at top right,
+                transparent 0%,
+                transparent 60%,
+                var(--primary-900) 60%);
+            border-top-right-radius: 12px;
+            opacity: 0.8;
+        }
+
+        /* Motif tribal décoratif en haut */
+        .tribal-accent {
+            height: 4px;
+            background: repeating-linear-gradient(90deg,
+                var(--secondary-500) 0px,
+                var(--secondary-500) 8px,
+                transparent 8px,
+                transparent 16px,
+                var(--secondary-600) 16px,
+                var(--secondary-600) 20px,
+                transparent 20px,
+                transparent 24px);
+            margin-bottom: 32px;
+            opacity: 0.6;
+            box-shadow: 0 2px 8px rgba(230, 115, 21, 0.3);
+        }
+
+        /* ========================================
+           TYPOGRAPHY
+           ======================================== */
+        .auth-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--secondary-400);
+            text-align: center;
+            margin-bottom: 24px;
+            text-shadow: 0 0 12px rgba(230, 115, 21, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .auth-subtitle {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--primary-300);
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           FORM ELEMENTS
+           ======================================== */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            color: var(--primary-200);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: var(--secondary-500);
+            margin-left: 4px;
+        }
+
+        /* Input fields */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--primary-100);
+            background: rgba(46, 37, 32, 0.5);
+            border: 1px solid var(--primary-600);
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--primary-400);
+            opacity: 0.8;
+        }
+
+        .form-input:focus {
+            border-color: var(--secondary-500);
+            background: rgba(46, 37, 32, 0.7);
+            box-shadow:
+                0 0 0 3px rgba(230, 115, 21, 0.1),
+                0 0 12px rgba(230, 115, 21, 0.2);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+            background: rgba(166, 63, 56, 0.05);
+        }
+
+        .form-input.error:focus {
+            box-shadow:
+                0 0 0 3px rgba(166, 63, 56, 0.1),
+                0 0 12px rgba(166, 63, 56, 0.2);
+        }
+
+        .form-error {
+            font-family: var(--font-alert);
+            font-size: 0.9rem;
+            color: var(--error);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-error::before {
+            content: '⚠';
+            font-size: 1rem;
+        }
+
+        /* Checkbox custom */
+        .form-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-600);
+            border-radius: 4px;
+            background: rgba(46, 37, 32, 0.5);
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .form-checkbox input[type="checkbox"]:hover {
+            border-color: var(--secondary-500);
+        }
+
+        .form-checkbox input[type="checkbox"]:checked {
+            background: var(--secondary-500);
+            border-color: var(--secondary-500);
+            box-shadow: 0 0 8px rgba(230, 115, 21, 0.3);
+        }
+
+        .form-checkbox input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-900);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-checkbox label {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--primary-200);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .form-checkbox a {
+            color: var(--secondary-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .form-checkbox a:hover {
+            color: var(--secondary-300);
+            text-decoration: underline;
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 12px;
+        }
+
+        .password-strength-label {
+            font-family: var(--font-ui);
+            font-size: 0.85rem;
+            color: var(--primary-300);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .password-strength-bars {
+            display: flex;
+            gap: 6px;
+            height: 6px;
+        }
+
+        .password-strength-bar {
+            flex: 1;
+            background: rgba(46, 37, 32, 0.8);
+            border-radius: 3px;
+            border: 1px solid var(--primary-700);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* États de force du mot de passe */
+        .password-strength.weak .password-strength-bar:nth-child(1) {
+            background: var(--error);
+            box-shadow: 0 0 8px rgba(166, 63, 56, 0.4);
+        }
+
+        .password-strength.medium .password-strength-bar:nth-child(1),
+        .password-strength.medium .password-strength-bar:nth-child(2) {
+            background: var(--warning);
+            box-shadow: 0 0 8px rgba(184, 117, 62, 0.4);
+        }
+
+        .password-strength.strong .password-strength-bar:nth-child(1),
+        .password-strength.strong .password-strength-bar:nth-child(2),
+        .password-strength.strong .password-strength-bar:nth-child(3) {
+            background: var(--info);
+            box-shadow: 0 0 8px rgba(109, 143, 163, 0.4);
+        }
+
+        .password-strength.very-strong .password-strength-bar {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(107, 142, 111, 0.4);
+        }
+
+        .password-strength-text {
+            font-family: var(--font-ui);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .password-strength.weak .password-strength-text {
+            color: var(--error);
+        }
+
+        .password-strength.medium .password-strength-text {
+            color: var(--warning);
+        }
+
+        .password-strength.strong .password-strength-text {
+            color: var(--info);
+        }
+
+        .password-strength.very-strong .password-strength-text {
+            color: var(--success);
+        }
+
+        /* ========================================
+           BUTTONS
+           ======================================== */
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            font-family: var(--font-button);
+            font-size: 1.1rem;
+            font-weight: normal;
+            color: var(--primary-900);
+            background: linear-gradient(135deg,
+                var(--secondary-500) 0%,
+                var(--secondary-600) 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow:
+                0 4px 12px rgba(230, 115, 21, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg,
+                var(--secondary-400) 0%,
+                var(--secondary-500) 100%);
+            box-shadow:
+                0 6px 20px rgba(230, 115, 21, 0.5),
+                0 0 30px rgba(230, 115, 21, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow:
+                0 2px 8px rgba(230, 115, 21, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 6px rgba(230, 115, 21, 0.2);
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            background: linear-gradient(135deg,
+                var(--secondary-500) 0%,
+                var(--secondary-600) 100%);
+        }
+
+        /* ========================================
+           LINKS & DIVIDERS
+           ======================================== */
+        .auth-link {
+            display: block;
+            text-align: center;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--secondary-400);
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .auth-link:hover {
+            color: var(--secondary-300);
+            text-decoration: underline;
+            text-shadow: 0 0 8px rgba(230, 115, 21, 0.3);
+        }
+
+        .auth-links {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--primary-700);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Divider tribal décoratif */
+        .tribal-divider {
+            position: relative;
+            margin: 32px 0;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tribal-divider::before,
+        .tribal-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--primary-600) 50%,
+                transparent 100%);
+        }
+
+        .tribal-divider-icon {
+            padding: 0 16px;
+            font-size: 1.2rem;
+            color: var(--secondary-500);
+            text-shadow: 0 0 10px rgba(230, 115, 21, 0.5);
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+        .auth-footer {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .auth-footer a {
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            color: var(--primary-400);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .auth-footer a:hover {
+            color: var(--secondary-400);
+        }
+
+        /* ========================================
+           ALERTS & MESSAGES
+           ======================================== */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .alert-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-family: var(--font-alert);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .alert.success {
+            background: rgba(107, 142, 111, 0.1);
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert.error {
+            background: rgba(166, 63, 56, 0.1);
+            border-left-color: var(--error);
+            color: var(--error);
+        }
+
+        .alert.info {
+            background: rgba(109, 143, 163, 0.1);
+            border-left-color: var(--info);
+            color: var(--info);
+        }
+
+        .alert.warning {
+            background: rgba(184, 117, 62, 0.1);
+            border-left-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* ========================================
+           LOADING STATES
+           ======================================== */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .tribal-loader {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .tribal-loader::before,
+        .tribal-loader::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--secondary-500);
+            animation: tribalSpin 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+        }
+
+        .tribal-loader::before {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .tribal-loader::after {
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border-top-color: var(--secondary-600);
+            animation-duration: 1.5s;
+            animation-direction: reverse;
+        }
+
+        @keyframes tribalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tribal-loader-flames {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            animation: flameFlicker 1.5s ease-in-out infinite;
+        }
+
+        @keyframes flameFlicker {
+            0%, 100% {
+                opacity: 1;
+                filter: drop-shadow(0 0 8px rgba(230, 115, 21, 0.6));
+            }
+            50% {
+                opacity: 0.8;
+                filter: drop-shadow(0 0 12px rgba(230, 115, 21, 0.8));
+            }
+        }
+
+        .loading-text {
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            color: var(--primary-300);
+        }
+
+        /* ========================================
+           SUCCESS/ERROR STATES
+           ======================================== */
+        .state-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            animation: stateAppear 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes stateAppear {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .state-icon.success {
+            background: rgba(107, 142, 111, 0.2);
+            border: 3px solid var(--success);
+            color: var(--success);
+            box-shadow: 0 0 20px rgba(107, 142, 111, 0.3);
+        }
+
+        .state-icon.error {
+            background: rgba(166, 63, 56, 0.2);
+            border: 3px solid var(--error);
+            color: var(--error);
+            box-shadow: 0 0 20px rgba(166, 63, 56, 0.3);
+        }
+
+        .state-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .state-title.success {
+            color: var(--success);
+        }
+
+        .state-title.error {
+            color: var(--error);
+        }
+
+        .state-message {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--primary-300);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @media (max-width: 640px) {
+            .auth-logo h1 {
+                font-size: 2.2rem;
+            }
+
+            .auth-card {
+                padding: 32px 24px;
+            }
+
+            .auth-title {
+                font-size: 1.6rem;
+            }
+
+            .mockup-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* ========================================
+           UTILITIES
+           ======================================== */
+        .mt-4 { margin-top: 16px; }
+        .mt-6 { margin-top: 24px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mb-6 { margin-bottom: 24px; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="mockup-container">
+
+        <!-- ========================================
+             SECTION 1: AUTH LAYOUT
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">1. Auth Layout (Wrapper Commun)</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <p style="text-align: center; color: var(--primary-300); font-style: italic;">
+                            Le contenu de la page apparaît ici...<br>
+                            (Logo + carte avec bordure tribale + footer)
+                        </p>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 2: LOGIN PAGE
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">2. Page Login (Connexion)</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <h2 class="auth-title">Entrez dans les Ruines</h2>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label required" for="login-email">Adresse Spirituelle</label>
+                                <input
+                                    type="email"
+                                    id="login-email"
+                                    class="form-input"
+                                    placeholder="ton.ame@ruines.com"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="login-password">Sceau Secret</label>
+                                <input
+                                    type="password"
+                                    id="login-password"
+                                    class="form-input"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="remember-me" />
+                                <label for="remember-me">Se souvenir de mon âme</label>
+                            </div>
+
+                            <button type="submit" class="btn">Se Connecter</button>
+                        </form>
+
+                        <div class="tribal-divider">
+                            <span class="tribal-divider-icon">◆</span>
+                        </div>
+
+                        <div class="auth-links">
+                            <a href="#" class="auth-link">Sceau oublié ? Réinitialiser</a>
+                            <a href="#" class="auth-link">Pas encore d'âme érodée ? Rejoins-nous</a>
+                        </div>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 3: REGISTER PAGE
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">3. Page Register (Inscription)</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <h2 class="auth-title">Forge ton Âme</h2>
+                        <p class="auth-subtitle">Rejoins les survivants dans les ruines du monde ancien</p>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label required" for="register-username">Nom de Guerrier</label>
+                                <input
+                                    type="text"
+                                    id="register-username"
+                                    class="form-input"
+                                    placeholder="Chasseur des Cendres"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="register-email">Adresse Spirituelle</label>
+                                <input
+                                    type="email"
+                                    id="register-email"
+                                    class="form-input"
+                                    placeholder="ton.ame@ruines.com"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="register-password">Sceau Secret</label>
+                                <input
+                                    type="password"
+                                    id="register-password"
+                                    class="form-input"
+                                    placeholder="••••••••"
+                                    required
+                                />
+
+                                <div class="password-strength strong">
+                                    <span class="password-strength-label">Force du sceau:</span>
+                                    <div class="password-strength-bars">
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                    </div>
+                                    <span class="password-strength-text">Forte</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="register-password-confirm">Confirme ton Sceau</label>
+                                <input
+                                    type="password"
+                                    id="register-password-confirm"
+                                    class="form-input"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="accept-terms" required />
+                                <label for="accept-terms">
+                                    J'accepte les <a href="#">Lois des Ruines</a> (CGU)
+                                </label>
+                            </div>
+
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="accept-rules" required />
+                                <label for="accept-rules">
+                                    J'accepte le <a href="#">Code des Survivants</a> (Règlement)
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn">Forger mon Âme</button>
+                        </form>
+
+                        <div class="tribal-divider">
+                            <span class="tribal-divider-icon">◆</span>
+                        </div>
+
+                        <a href="#" class="auth-link">Déjà une âme forgée ? Connecte-toi</a>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 4: FORGOT PASSWORD PAGE
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">4. Page Forgot Password (Mot de passe oublié)</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <h2 class="auth-title">Réinitialise les Cendres</h2>
+                        <p class="auth-subtitle">
+                            Les mémoires s'effacent dans les ruines. Nous t'enverrons un lien sacré pour forger un nouveau sceau.
+                        </p>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label required" for="forgot-email">Adresse Spirituelle</label>
+                                <input
+                                    type="email"
+                                    id="forgot-email"
+                                    class="form-input"
+                                    placeholder="ton.ame@ruines.com"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" class="btn">Envoyer le Lien Sacré</button>
+                        </form>
+
+                        <div class="tribal-divider">
+                            <span class="tribal-divider-icon">◆</span>
+                        </div>
+
+                        <a href="#" class="auth-link">← Retour à la connexion</a>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- État succès -->
+            <div class="auth-layout" style="margin-top: 40px;">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="alert success">
+                            <span class="alert-icon">✓</span>
+                            <div class="alert-content">
+                                <div class="alert-title">Lien Envoyé aux Ruines</div>
+                                Consulte ton messager spirituel. Le lien sacré arrive dans les brumes...
+                            </div>
+                        </div>
+
+                        <a href="#" class="auth-link">← Retour à la connexion</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 5: RESET PASSWORD PAGE
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">5. Page Reset Password (Réinitialisation)</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <h2 class="auth-title">Forge un Nouveau Sceau</h2>
+                        <p class="auth-subtitle">
+                            Les anciennes runes sont oubliées. Grave un nouveau sceau dans la pierre.
+                        </p>
+
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label required" for="reset-password">Nouveau Sceau Secret</label>
+                                <input
+                                    type="password"
+                                    id="reset-password"
+                                    class="form-input"
+                                    placeholder="••••••••"
+                                    required
+                                />
+
+                                <div class="password-strength very-strong">
+                                    <span class="password-strength-label">Force du sceau:</span>
+                                    <div class="password-strength-bars">
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                        <div class="password-strength-bar"></div>
+                                    </div>
+                                    <span class="password-strength-text">Très forte</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required" for="reset-password-confirm">Confirme ton Sceau</label>
+                                <input
+                                    type="password"
+                                    id="reset-password-confirm"
+                                    class="form-input"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <button type="submit" class="btn">Réinitialiser mon Sceau</button>
+                        </form>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- État succès -->
+            <div class="auth-layout" style="margin-top: 40px;">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="state-container">
+                            <div class="state-icon success">✓</div>
+                            <h3 class="state-title success">Sceau Forgé avec Succès</h3>
+                            <p class="state-message">
+                                Ton nouveau sceau est gravé dans la pierre. Tu peux maintenant entrer dans les ruines.
+                            </p>
+                            <a href="#" class="btn">Se Connecter</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- État erreur -->
+            <div class="auth-layout" style="margin-top: 40px;">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="alert error">
+                            <span class="alert-icon">✖</span>
+                            <div class="alert-content">
+                                <div class="alert-title">Lien Sacré Expiré</div>
+                                Les runes du lien se sont effacées dans le temps. Demande un nouveau lien sacré.
+                            </div>
+                        </div>
+
+                        <a href="#" class="btn">Demander un Nouveau Lien</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 6: VERIFY EMAIL PAGE
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">6. Page Verify Email (Vérification email)</h2>
+
+            <!-- État Loading -->
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="loading-container">
+                            <div class="tribal-loader">
+                                <div class="tribal-loader-flames">🔥</div>
+                            </div>
+                            <p class="loading-text">Vérification de ton âme dans les flammes...</p>
+                        </div>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- État Succès -->
+            <div class="auth-layout" style="margin-top: 40px;">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="state-container">
+                            <div class="state-icon success">✓</div>
+                            <h3 class="state-title success">Ton Âme est Vérifiée</h3>
+                            <p class="state-message">
+                                Les flammes sacrées ont reconnu ton essence. Bienvenue parmi les survivants des ruines.
+                            </p>
+                            <a href="#" class="btn">Entrer dans les Ruines</a>
+                        </div>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- État Erreur -->
+            <div class="auth-layout" style="margin-top: 40px;">
+                <div class="auth-container">
+                    <div class="auth-logo">
+                        <h1>Érosion des Âmes</h1>
+                        <p>Survie dans les Cendres du Monde</p>
+                    </div>
+
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <div class="state-container">
+                            <div class="state-icon error">✖</div>
+                            <h3 class="state-title error">Vérification Échouée</h3>
+                            <p class="state-message">
+                                Les flammes n'ont pas reconnu le sceau. Le lien est peut-être expiré ou invalide.
+                            </p>
+                            <button class="btn">Renvoyer l'Email de Vérification</button>
+
+                            <div class="tribal-divider">
+                                <span class="tribal-divider-icon">◆</span>
+                            </div>
+
+                            <a href="#" class="auth-link">← Retour à la connexion</a>
+                        </div>
+                    </div>
+
+                    <div class="auth-footer">
+                        <a href="#">← Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
+             SECTION 7: FORM STATES & VARIATIONS
+             ======================================== -->
+        <section class="mockup-section">
+            <h2 class="mockup-title">7. États des Formulaires & Variations</h2>
+
+            <div class="auth-layout">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="tribal-accent"></div>
+
+                        <h2 class="auth-title">Exemples d'États</h2>
+
+                        <!-- Input normal -->
+                        <div class="form-group">
+                            <label class="form-label" for="demo-normal">État Normal</label>
+                            <input
+                                type="text"
+                                id="demo-normal"
+                                class="form-input"
+                                placeholder="Placeholder normal"
+                            />
+                        </div>
+
+                        <!-- Input avec erreur -->
+                        <div class="form-group">
+                            <label class="form-label required" for="demo-error">État Erreur</label>
+                            <input
+                                type="text"
+                                id="demo-error"
+                                class="form-input error"
+                                value="valeur invalide"
+                            />
+                            <div class="form-error">Ce champ est requis et doit contenir au moins 3 caractères</div>
+                        </div>
+
+                        <!-- Password strength - Weak -->
+                        <div class="form-group">
+                            <label class="form-label" for="demo-weak">Mot de passe Faible</label>
+                            <input
+                                type="password"
+                                id="demo-weak"
+                                class="form-input"
+                                value="123"
+                            />
+                            <div class="password-strength weak">
+                                <span class="password-strength-label">Force du sceau:</span>
+                                <div class="password-strength-bars">
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                </div>
+                                <span class="password-strength-text">Faible</span>
+                            </div>
+                        </div>
+
+                        <!-- Password strength - Medium -->
+                        <div class="form-group">
+                            <label class="form-label" for="demo-medium">Mot de passe Moyen</label>
+                            <input
+                                type="password"
+                                id="demo-medium"
+                                class="form-input"
+                                value="password123"
+                            />
+                            <div class="password-strength medium">
+                                <span class="password-strength-label">Force du sceau:</span>
+                                <div class="password-strength-bars">
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                    <div class="password-strength-bar"></div>
+                                </div>
+                                <span class="password-strength-text">Moyenne</span>
+                            </div>
+                        </div>
+
+                        <!-- Alerts -->
+                        <div class="alert info">
+                            <span class="alert-icon">ℹ</span>
+                            <div class="alert-content">
+                                <div class="alert-title">Information</div>
+                                Ceci est une alerte d'information pour guider les survivants.
+                            </div>
+                        </div>
+
+                        <div class="alert warning">
+                            <span class="alert-icon">⚠</span>
+                            <div class="alert-content">
+                                <div class="alert-title">Attention</div>
+                                Les dangers rôdent dans les ruines. Reste vigilant.
+                            </div>
+                        </div>
+
+                        <!-- Bouton disabled -->
+                        <button class="btn" disabled>Bouton Désactivé</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
