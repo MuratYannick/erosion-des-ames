@@ -1,0 +1,130 @@
+/* ========================================
+   AUTH LAYOUT - Styles CSS
+   ======================================== */
+
+/* Texture de bruit organique en fond */
+.auth-layout::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.03"/></svg>');
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Lueur ambiante orangée animée */
+.auth-layout::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(230, 115, 21, 0.08) 0%,
+    rgba(230, 115, 21, 0.02) 30%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 2;
+  animation: ambientGlow 20s ease-in-out infinite alternate;
+}
+
+@keyframes ambientGlow {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 5%) scale(1.1);
+  }
+  100% {
+    transform: translate(5%, -5%) scale(0.95);
+  }
+}
+
+/* Logo avec animation de scintillement */
+.auth-logo h1 {
+  text-shadow:
+    0 0 20px rgba(230, 115, 21, 0.5),
+    0 0 40px rgba(230, 115, 21, 0.3),
+    2px 2px 4px rgba(0, 0, 0, 0.8);
+  animation: logoFlicker 6s ease-in-out infinite;
+}
+
+@keyframes logoFlicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  51% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.98;
+  }
+}
+
+/* Carte principale avec bordure dégradée tribale */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.75rem;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    #e67315 0%,
+    #944210 50%,
+    #453930 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Coin brûlé effet (optionnel, subtil) */
+.auth-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(
+    circle at top right,
+    transparent 0%,
+    transparent 60%,
+    #1c1714 60%
+  );
+  border-top-right-radius: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Barre d'accent tribale avec motif repeating */
+.tribal-accent {
+  background: repeating-linear-gradient(
+    90deg,
+    #e67315 0px,
+    #e67315 8px,
+    transparent 8px,
+    transparent 16px,
+    #c2580d 16px,
+    #c2580d 20px,
+    transparent 20px,
+    transparent 24px
+  );
+  box-shadow: 0 2px 8px rgba(230, 115, 21, 0.3);
+}

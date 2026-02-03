@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Avatar } from '@/components'
 import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from '@/components/ui/Dropdown/Dropdown'
+import { useAuth } from '@/hooks/useAuth'
 import './Header.css'
 
 /**
@@ -180,13 +181,10 @@ const userDropdownItems = [
  * Header Component
  */
 const Header = ({
-  user = null,
-  onLogin,
-  onRegister,
-  onLogout,
   className = '',
   ...props
 }) => {
+  const { user, isAuthenticated, logout, isAdmin } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
@@ -278,7 +276,7 @@ const Header = ({
 
           {/* Right side: User zone - HIDDEN on mobile (< sm), FLEX on small screens and up (>= sm) */}
           <div className="user-zone hidden sm:flex">
-            {user ? (
+            {isAuthenticated ? (
               <Dropdown
                 trigger={
                   <button
@@ -287,13 +285,13 @@ const Header = ({
                     aria-label="Menu utilisateur"
                   >
                     <Avatar
-                      src={user.avatar}
-                      name={user.name}
+                      src={user?.avatar}
+                      name={user?.username}
                       size="sm"
                       className="user-avatar-header"
                     />
                     <span className="hidden md:inline text-sm font-medium text-skin-base">
-                      {user.name}
+                      {user?.username}
                     </span>
                     <ChevronDownIcon className="user-dropdown-chevron" />
                   </button>
@@ -303,7 +301,7 @@ const Header = ({
                 {({ close }) => (
                   <>
                     <DropdownHeader>
-                      {user.name}
+                      {user?.username}
                     </DropdownHeader>
                     <DropdownDivider />
                     <Link to="/profil" onClick={close}>
@@ -316,11 +314,21 @@ const Header = ({
                         Mes personnages
                       </DropdownItem>
                     </Link>
+                    {isAdmin && (
+                      <>
+                        <DropdownDivider />
+                        <Link to="/admin" onClick={close}>
+                          <DropdownItem>
+                            Panel admin
+                          </DropdownItem>
+                        </Link>
+                      </>
+                    )}
                     <DropdownDivider />
                     <DropdownItem
                       onClick={() => {
                         close()
-                        onLogout?.()
+                        logout()
                       }}
                       className="dropdown-item-danger"
                     >
@@ -331,20 +339,18 @@ const Header = ({
               </Dropdown>
             ) : (
               <>
-                <button
-                  type="button"
+                <Link
+                  to="/connexion"
                   className="btn-auth btn-auth-secondary"
-                  onClick={onLogin}
                 >
                   Connexion
-                </button>
-                <button
-                  type="button"
+                </Link>
+                <Link
+                  to="/inscription"
                   className="btn-auth btn-auth-primary"
-                  onClick={onRegister}
                 >
                   Inscription
-                </button>
+                </Link>
               </>
             )}
           </div>
@@ -415,19 +421,19 @@ const Header = ({
 
           {/* Mobile auth zone - Login/Register buttons and user badge shown here on mobile */}
           <div className="mobile-auth-zone">
-            {user ? (
+            {isAuthenticated ? (
               <>
                 {/* User section - ONLY visible on screens < sm (where user-zone is hidden) */}
                 <div className="sm:hidden">
                   <div className="flex items-center gap-3 mb-4 px-1">
                     <Avatar
-                      src={user.avatar}
-                      name={user.name}
+                      src={user?.avatar}
+                      name={user?.username}
                       size="md"
                     />
                     <div>
-                      <p className="font-button text-skin-base">{user.name}</p>
-                      <p className="text-sm text-skin-muted">{user.email}</p>
+                      <p className="font-button text-skin-base">{user?.username}</p>
+                      <p className="text-sm text-skin-muted">{user?.email}</p>
                     </div>
                   </div>
                   <Link
@@ -444,11 +450,20 @@ const Header = ({
                   >
                     Mes personnages
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="mobile-nav-item"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Panel admin
+                    </Link>
+                  )}
                   <button
                     type="button"
                     className="btn-auth btn-auth-secondary"
                     onClick={() => {
-                      onLogout?.()
+                      logout()
                       setIsMobileMenuOpen(false)
                     }}
                   >
@@ -458,26 +473,20 @@ const Header = ({
               </>
             ) : (
               <>
-                <button
-                  type="button"
+                <Link
+                  to="/connexion"
                   className="btn-auth btn-auth-secondary"
-                  onClick={() => {
-                    onLogin?.()
-                    setIsMobileMenuOpen(false)
-                  }}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Connexion
-                </button>
-                <button
-                  type="button"
+                </Link>
+                <Link
+                  to="/inscription"
                   className="btn-auth btn-auth-primary"
-                  onClick={() => {
-                    onRegister?.()
-                    setIsMobileMenuOpen(false)
-                  }}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Inscription
-                </button>
+                </Link>
               </>
             )}
           </div>
