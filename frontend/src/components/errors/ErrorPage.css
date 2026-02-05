@@ -1,0 +1,452 @@
+/**
+ * Error Page Animations - Erosion des Âmes
+ * Animations tribales pour les pages d'erreur
+ */
+
+/* ============================================
+   ANIMATION: Code d'erreur - Pulsation
+   ============================================ */
+@keyframes pulse-error-code {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+}
+
+.error-code-pulse {
+  animation: pulse-error-code 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ANIMATION: Flottement doux (404 - Boussole)
+   ============================================ */
+@keyframes float-lost {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-12px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(-1deg);
+  }
+}
+
+.illustration-float-lost {
+  animation: float-lost 6s ease-in-out infinite;
+}
+
+/* Aiguille oscillante de la boussole */
+@keyframes compass-needle-drift {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}
+
+.compass-needle {
+  transform-origin: center;
+  animation: compass-needle-drift 4s ease-in-out infinite;
+}
+
+/* ============================================
+   ANIMATION: Yeux du gardien (403 - Totem)
+   ============================================ */
+@keyframes guardian-watch {
+  0%, 90%, 100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  93%, 97% {
+    opacity: 0;
+    transform: scaleY(0.1);
+  }
+  95% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.guardian-eyes {
+  animation: guardian-watch 6s ease-in-out infinite;
+}
+
+/* Lueur mystique autour du totem */
+@keyframes sacred-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.totem-glow {
+  animation: sacred-glow 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ANIMATION: Flammes sacrées (403 - Totem)
+   ============================================ */
+@keyframes sacred-flame {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateY(-4px) scaleY(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-2px) scaleY(0.95);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translateY(-6px) scaleY(1.05);
+    opacity: 0.85;
+  }
+}
+
+.flame-sacred {
+  animation: sacred-flame 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Délais pour créer un effet naturel */
+.flame-sacred:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.flame-sacred:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.flame-sacred:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+/* ============================================
+   ANIMATION: Vortex chaotique (500 - Erreur)
+   ============================================ */
+@keyframes vortex-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.8;
+  }
+}
+
+.vortex-outer {
+  animation: vortex-spin 8s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes vortex-spin-reverse {
+  0% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: rotate(180deg) scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.9;
+  }
+}
+
+.vortex-inner {
+  animation: vortex-spin-reverse 6s linear infinite;
+  transform-origin: center;
+}
+
+/* Particules énergétiques */
+@keyframes energy-particle {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+.energy-particle {
+  animation: energy-particle 3s ease-out infinite;
+}
+
+.energy-particle:nth-child(1) {
+  --tx: 40px;
+  --ty: -60px;
+  animation-delay: 0s;
+}
+
+.energy-particle:nth-child(2) {
+  --tx: -50px;
+  --ty: -40px;
+  animation-delay: 0.6s;
+}
+
+.energy-particle:nth-child(3) {
+  --tx: 60px;
+  --ty: 30px;
+  animation-delay: 1.2s;
+}
+
+.energy-particle:nth-child(4) {
+  --tx: -40px;
+  --ty: 50px;
+  animation-delay: 1.8s;
+}
+
+/* ============================================
+   ANIMATION: Autel rituel (Maintenance)
+   ============================================ */
+@keyframes ritual-flame {
+  0%, 100% {
+    transform: translateY(0) scaleX(1);
+    opacity: 0.9;
+  }
+  20% {
+    transform: translateY(-5px) scaleX(1.1);
+    opacity: 1;
+  }
+  40% {
+    transform: translateY(-2px) scaleX(0.95);
+    opacity: 0.85;
+  }
+  60% {
+    transform: translateY(-7px) scaleX(1.05);
+    opacity: 0.95;
+  }
+  80% {
+    transform: translateY(-3px) scaleX(0.98);
+    opacity: 0.9;
+  }
+}
+
+.ritual-flame {
+  animation: ritual-flame 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.ritual-flame:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.ritual-flame:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.ritual-flame:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+.ritual-flame:nth-child(4) {
+  animation-delay: 1.2s;
+}
+
+/* Fumée mystique */
+@keyframes smoke-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-80px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.ritual-smoke {
+  animation: smoke-rise 4s ease-out infinite;
+}
+
+.ritual-smoke:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.ritual-smoke:nth-child(2) {
+  animation-delay: 1.3s;
+}
+
+.ritual-smoke:nth-child(3) {
+  animation-delay: 2.6s;
+}
+
+/* Lueur pulsante de l'autel */
+@keyframes altar-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.altar-glow {
+  animation: altar-pulse 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ANIMATION: Apparition progressive du contenu
+   ============================================ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-content-enter {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+/* Délais en cascade pour les éléments */
+.error-content-enter:nth-child(1) {
+  animation-delay: 0.1s;
+  opacity: 0;
+}
+
+.error-content-enter:nth-child(2) {
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+.error-content-enter:nth-child(3) {
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+.error-content-enter:nth-child(4) {
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+/* ============================================
+   EFFETS HOVER POUR LES BOUTONS
+   ============================================ */
+.error-action-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.error-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease-out, height 0.6s ease-out;
+}
+
+.error-action-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 640px) {
+  /* Réduction des amplitudes d'animation sur mobile */
+  @keyframes float-lost {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(1deg);
+    }
+  }
+
+  @keyframes ritual-flame {
+    0%, 100% {
+      transform: translateY(0) scaleX(1);
+    }
+    50% {
+      transform: translateY(-3px) scaleX(1.05);
+    }
+  }
+}
+
+/* ============================================
+   DARK MODE ADJUSTMENTS
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .totem-glow,
+  .altar-glow {
+    opacity: 0.8;
+  }
+
+  .energy-particle {
+    opacity: 0.9;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY - Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .error-code-pulse,
+  .illustration-float-lost,
+  .compass-needle,
+  .guardian-eyes,
+  .totem-glow,
+  .flame-sacred,
+  .vortex-outer,
+  .vortex-inner,
+  .energy-particle,
+  .ritual-flame,
+  .ritual-smoke,
+  .altar-glow {
+    animation: none;
+  }
+
+  .error-content-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
