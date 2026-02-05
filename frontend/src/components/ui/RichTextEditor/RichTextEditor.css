@@ -1,0 +1,1276 @@
+/* ===========================================
+   RichTextEditor Component - Tribal Theme
+   Erosion des Ames - "Carved Tablet" Style
+   =========================================== */
+
+/* -------------------------------------------
+   CONTAINER: Tablette gravée
+   ------------------------------------------- */
+.rich-text-editor-wrapper {
+  width: 100%;
+}
+
+.rich-text-editor-container {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50) 0%,
+    var(--color-neutral-50) 100%
+  );
+  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition-base);
+}
+
+/* Stone texture overlay */
+.rich-text-editor-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Focus state - Ember ignition */
+.rich-text-editor-container:focus-within {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-50) 0%,
+    var(--color-primary-50) 100%
+  );
+  border-color: var(--color-secondary-400);
+  box-shadow:
+    inset 0 2px 4px rgba(28, 23, 20, 0.08),
+    0 0 0 3px rgba(230, 115, 21, 0.12),
+    0 0 16px rgba(230, 115, 21, 0.2);
+}
+
+/* Error state */
+.rich-text-editor-container--error {
+  background: linear-gradient(
+    135deg,
+    rgba(201, 89, 81, 0.03) 0%,
+    var(--color-primary-50) 100%
+  );
+  border-color: var(--color-error);
+  box-shadow:
+    inset 0 2px 4px rgba(166, 63, 56, 0.12),
+    0 0 0 3px rgba(166, 63, 56, 0.08);
+}
+
+/* Disabled state */
+.rich-text-editor-container--disabled {
+  filter: saturate(0.5) brightness(0.95);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------
+   TOOLBAR: Barre d'outils tribale
+   ------------------------------------------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 243, 240, 0.8) 0%,
+    rgba(245, 243, 240, 0.4) 100%
+  );
+  border-bottom: 2px solid var(--color-neutral-200);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+/* Groupe de boutons */
+.toolbar-group {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Séparateur tribal */
+.toolbar-separator {
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--color-primary-300) 20%,
+    var(--color-primary-300) 80%,
+    transparent 100%
+  );
+  opacity: 0.3;
+  margin: 0 0.25rem;
+}
+
+/* -------------------------------------------
+   TOOLBAR BUTTON: Glyphe gravé
+   ------------------------------------------- */
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-neutral-50) 0%,
+    var(--color-primary-50) 100%
+  );
+  border: 1.5px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  color: var(--color-neutral-700);
+  cursor: pointer;
+  transition: var(--transition-base);
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(28, 23, 20, 0.05);
+}
+
+.toolbar-button svg {
+  width: 18px;
+  height: 18px;
+  transition: var(--transition-transform);
+}
+
+/* Hover - Glow subtil */
+.toolbar-button:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-50) 0%,
+    var(--color-neutral-50) 100%
+  );
+  border-color: var(--color-secondary-300);
+  box-shadow:
+    inset 0 1px 2px rgba(28, 23, 20, 0.05),
+    0 0 8px rgba(230, 115, 21, 0.15);
+  transform: translateY(-1px);
+}
+
+.toolbar-button:hover:not(:disabled) svg {
+  transform: scale(1.1);
+}
+
+/* Active - Ember glow */
+.toolbar-button--active {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-100) 0%,
+    var(--color-secondary-50) 100%
+  );
+  border-color: var(--color-secondary-500);
+  color: var(--color-secondary-700);
+  box-shadow:
+    inset 0 1px 3px rgba(230, 115, 21, 0.2),
+    0 0 0 2px rgba(230, 115, 21, 0.1);
+}
+
+.toolbar-button--active svg {
+  transform: scale(1.05);
+}
+
+/* Focus visible */
+.toolbar-button:focus-visible {
+  outline: 2px solid var(--color-secondary-500);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.toolbar-button--disabled,
+.toolbar-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* -------------------------------------------
+   EDITOR CONTENT: Zone d'écriture
+   ------------------------------------------- */
+.rich-text-editor-content {
+  position: relative;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+/* Scrollbar tribal */
+.rich-text-editor-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rich-text-editor-content::-webkit-scrollbar-track {
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-base);
+  margin: 8px;
+}
+
+.rich-text-editor-content::-webkit-scrollbar-thumb {
+  background: var(--color-primary-400);
+  border-radius: var(--radius-base);
+  border: 2px solid var(--color-neutral-200);
+}
+
+.rich-text-editor-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-500);
+}
+
+/* -------------------------------------------
+   PROSEMIRROR: Contenu TipTap
+   ------------------------------------------- */
+.ProseMirror {
+  outline: none;
+  padding: 1rem;
+  min-height: inherit;
+  font-family: var(--font-body);
+  color: var(--color-neutral-800);
+  line-height: 1.6;
+}
+
+/* Paragraphes */
+.ProseMirror p {
+  margin: 0 0 0.75rem 0;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Titres */
+.ProseMirror h2 {
+  font-family: var(--font-subheading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-primary-800);
+  margin: 1.5rem 0 0.75rem 0;
+  line-height: 1.3;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.ProseMirror h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-secondary-400) 0%,
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
+.ProseMirror h3 {
+  font-family: var(--font-subheading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary-700);
+  margin: 1.25rem 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+/* Listes */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.75rem;
+  margin: 0.75rem 0;
+}
+
+.ProseMirror ul {
+  list-style-type: none;
+}
+
+.ProseMirror ul li {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.ProseMirror ul li::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  background: var(--color-secondary-500);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(230, 115, 21, 0.3);
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+}
+
+.ProseMirror ol li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.ProseMirror ol li::marker {
+  color: var(--color-secondary-600);
+  font-weight: 600;
+}
+
+/* Listes imbriquées */
+.ProseMirror li > ul,
+.ProseMirror li > ol {
+  margin: 0.5rem 0;
+}
+
+/* Citations - Paroles ancestrales */
+.ProseMirror blockquote {
+  position: relative;
+  margin: 1rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--color-secondary-400);
+  background: linear-gradient(
+    90deg,
+    rgba(230, 115, 21, 0.04) 0%,
+    transparent 100%
+  );
+  font-style: italic;
+  color: var(--color-neutral-700);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.ProseMirror blockquote::before {
+  content: '"';
+  position: absolute;
+  top: -0.25rem;
+  left: 0.5rem;
+  font-size: 3rem;
+  font-family: var(--font-subheading);
+  color: var(--color-secondary-300);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.ProseMirror blockquote p {
+  margin: 0;
+}
+
+/* Liens */
+.ProseMirror a,
+.ProseMirror .editor-link {
+  color: var(--color-secondary-600);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: var(--transition-color);
+}
+
+.ProseMirror a:hover,
+.ProseMirror .editor-link:hover {
+  color: var(--color-secondary-700);
+  text-decoration-thickness: 2px;
+  text-shadow: 0 0 8px rgba(230, 115, 21, 0.3);
+}
+
+/* Code inline - Glyphe gravé */
+.ProseMirror code {
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 0.9em;
+  padding: 0.2em 0.5em;
+  background: linear-gradient(
+    135deg,
+    var(--color-neutral-200) 0%,
+    var(--color-primary-100) 100%
+  );
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  color: var(--color-secondary-700);
+  font-weight: 500;
+  box-shadow: inset 0 1px 2px rgba(28, 23, 20, 0.06);
+}
+
+/* Bloc de code - Tablette sombre */
+.ProseMirror pre {
+  background: linear-gradient(
+    135deg,
+    #2a2520 0%,
+    #1c1714 100%
+  );
+  border: 2px solid var(--color-primary-700);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  position: relative;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(230, 115, 21, 0.1);
+}
+
+/* Texture tribale pour les blocs de code */
+.ProseMirror pre::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ProseMirror pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-secondary-100);
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  display: block;
+  box-shadow: none;
+}
+
+/* Coloration syntaxique lowlight */
+.ProseMirror .hljs-comment,
+.ProseMirror .hljs-quote {
+  color: #8b7d6b;
+  font-style: italic;
+}
+
+.ProseMirror .hljs-keyword,
+.ProseMirror .hljs-selector-tag,
+.ProseMirror .hljs-type {
+  color: #e67315;
+}
+
+.ProseMirror .hljs-string,
+.ProseMirror .hljs-attr {
+  color: #c9a870;
+}
+
+.ProseMirror .hljs-function,
+.ProseMirror .hljs-title {
+  color: #d4b896;
+}
+
+.ProseMirror .hljs-number,
+.ProseMirror .hljs-literal {
+  color: #e89b5a;
+}
+
+.ProseMirror .hljs-variable,
+.ProseMirror .hljs-params {
+  color: #b8a589;
+}
+
+/* Images - Reliques intégrées */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-neutral-300);
+  margin: 1rem 0;
+  display: block;
+  box-shadow:
+    0 2px 8px rgba(28, 23, 20, 0.1),
+    0 0 0 4px rgba(230, 115, 21, 0.05);
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.ProseMirror img:hover {
+  border-color: var(--color-secondary-400);
+  box-shadow:
+    0 4px 12px rgba(28, 23, 20, 0.15),
+    0 0 0 4px rgba(230, 115, 21, 0.15),
+    0 0 20px rgba(230, 115, 21, 0.2);
+  transform: scale(1.01);
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  border-color: var(--color-secondary-500);
+  box-shadow:
+    0 4px 12px rgba(28, 23, 20, 0.15),
+    0 0 0 4px rgba(230, 115, 21, 0.25);
+}
+
+/* Tableaux - Grilles tribales */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-400);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(28, 23, 20, 0.1);
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid var(--color-neutral-300);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  position: relative;
+}
+
+.ProseMirror th {
+  background: linear-gradient(
+    180deg,
+    var(--color-secondary-100) 0%,
+    var(--color-secondary-50) 100%
+  );
+  color: var(--color-primary-800);
+  font-family: var(--font-subheading);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-secondary-400);
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+}
+
+/* Effet tribal sur les cellules */
+.ProseMirror th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-secondary-500) 50%,
+    transparent 100%
+  );
+  opacity: 0.3;
+}
+
+.ProseMirror td {
+  background: var(--color-surface);
+}
+
+.ProseMirror tr:nth-child(even) td {
+  background: rgba(230, 115, 21, 0.02);
+}
+
+.ProseMirror tr:hover td {
+  background: rgba(230, 115, 21, 0.04);
+}
+
+/* Cellule sélectionnée */
+.ProseMirror .selectedCell {
+  background: rgba(230, 115, 21, 0.15) !important;
+  border-color: var(--color-secondary-500);
+}
+
+/* Mentions - Tags tribaux */
+.ProseMirror .mention {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-100) 0%,
+    var(--color-secondary-50) 100%
+  );
+  color: var(--color-secondary-700);
+  border: 1px solid var(--color-secondary-400);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.5em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-base);
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(230, 115, 21, 0.15);
+}
+
+.ProseMirror .mention:hover {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-200) 0%,
+    var(--color-secondary-100) 100%
+  );
+  border-color: var(--color-secondary-500);
+  box-shadow:
+    0 2px 4px rgba(230, 115, 21, 0.2),
+    0 0 8px rgba(230, 115, 21, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Popup de suggestions de mentions */
+.mention-suggestions {
+  position: fixed;
+  background: var(--color-surface);
+  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  box-shadow: var(--shadow-elevated-lg);
+  z-index: var(--z-dropdown);
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  animation: mention-appear 200ms var(--ease-organic);
+}
+
+@keyframes mention-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mention-empty {
+  padding: 0.75rem;
+  color: var(--color-neutral-500);
+  font-size: 0.875rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Items de suggestions de mentions personnalisées */
+.mention-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  text-align: left;
+}
+
+.mention-item:hover,
+.mention-item--selected {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-50) 0%,
+    var(--color-neutral-50) 100%
+  );
+  border: 1px solid var(--color-secondary-200);
+}
+
+.mention-item-name {
+  font-weight: 600;
+  color: var(--color-primary-800);
+  font-family: var(--font-subheading);
+  font-size: 0.9375rem;
+}
+
+.mention-item-label {
+  font-size: 0.75rem;
+  color: var(--color-neutral-600);
+  margin-top: 0.125rem;
+  font-family: var(--font-ui);
+}
+
+/* Ligne horizontale */
+.ProseMirror hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary-300) 50%,
+    transparent 100%
+  );
+  margin: 1.5rem 0;
+  opacity: 0.3;
+}
+
+/* Alignement texte */
+.ProseMirror [style*="text-align: left"] {
+  text-align: left;
+}
+
+.ProseMirror [style*="text-align: center"] {
+  text-align: center;
+}
+
+.ProseMirror [style*="text-align: right"] {
+  text-align: right;
+}
+
+/* -------------------------------------------
+   PLACEHOLDER: Inscription fanée
+   ------------------------------------------- */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--color-neutral-400);
+  font-style: italic;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* -------------------------------------------
+   LINK MODAL: Popup tribal
+   ------------------------------------------- */
+.link-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 23, 20, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-modal-backdrop);
+  animation: backdrop-fade-in 200ms ease-out;
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.link-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  z-index: var(--z-modal);
+  animation: modal-slide-in 300ms var(--ease-organic);
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.link-modal-content {
+  background: var(--color-surface);
+  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated-lg);
+  overflow: hidden;
+}
+
+.link-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--color-neutral-200);
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-50) 0%,
+    var(--color-surface) 100%
+  );
+}
+
+.link-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-neutral-600);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+}
+
+.link-modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.link-modal-close:hover {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-800);
+}
+
+.link-modal-body {
+  padding: 1.5rem;
+}
+
+.link-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* -------------------------------------------
+   ERROR MESSAGE: Sang rouillé
+   ------------------------------------------- */
+.rich-text-editor-error {
+  animation: helper-appear 200ms ease-out;
+}
+
+@keyframes helper-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------
+   RESPONSIVE: Mobile-first approach
+   Base styles are mobile, progressively enhanced
+   ------------------------------------------- */
+
+/* Base (mobile): Compact toolbar */
+.toolbar {
+  padding: 0.5rem;
+  gap: 0.25rem;
+}
+
+.toolbar-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px; /* Prevent shrinking */
+}
+
+.toolbar-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Hide separators on mobile to save space */
+.toolbar-separator {
+  display: none;
+}
+
+.ProseMirror {
+  padding: 0.75rem;
+  font-size: 0.9375rem; /* 15px - optimized for mobile reading */
+}
+
+/* Link modal - mobile first */
+.link-modal {
+  width: 95%;
+  max-width: 500px;
+}
+
+.link-modal-header,
+.link-modal-body {
+  padding: 1rem;
+}
+
+.link-modal-actions {
+  flex-direction: column;
+  width: 100%;
+}
+
+.link-modal-actions > * {
+  width: 100%;
+}
+
+.link-modal-actions .flex.gap-2 {
+  width: 100%;
+}
+
+/* Tables - mobile first (scroll horizontal) */
+.ProseMirror table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  min-width: 100px;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Images - mobile optimized */
+.ProseMirror img {
+  margin: 0.75rem 0;
+}
+
+/* Emoji picker - mobile optimized */
+.emoji-picker {
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 260px;
+  max-width: 90vw;
+}
+
+.emoji-picker-grid {
+  grid-template-columns: repeat(5, 1fr);
+  max-height: 180px;
+}
+
+.emoji-picker-item {
+  font-size: 1.25rem;
+  padding: 0.4rem;
+}
+
+/* Code blocks - mobile */
+.ProseMirror pre {
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ProseMirror pre code {
+  font-size: 0.8125rem;
+}
+
+/* Tablet and up (sm: 640px+) */
+@media (min-width: 640px) {
+  .toolbar {
+    padding: 0.625rem 0.75rem;
+    gap: 0.375rem;
+  }
+
+  .toolbar-separator {
+    display: block; /* Show separators on larger screens */
+  }
+
+  .ProseMirror {
+    padding: 0.875rem;
+    font-size: 1rem; /* 16px - standard body */
+  }
+
+  .link-modal-header,
+  .link-modal-body {
+    padding: 1.25rem;
+  }
+
+  .link-modal-actions {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .link-modal-actions > * {
+    width: auto;
+  }
+
+  .link-modal-actions .flex.gap-2 {
+    width: auto;
+  }
+
+  /* Tables - better spacing on tablet */
+  .ProseMirror th,
+  .ProseMirror td {
+    min-width: 120px;
+    font-size: 0.9375rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  /* Images - larger on tablet */
+  .ProseMirror img {
+    margin: 0.875rem 0;
+  }
+
+  /* Emoji picker - optimized for tablet */
+  .emoji-picker {
+    left: 0;
+    transform: none;
+    min-width: 280px;
+  }
+
+  .emoji-picker-grid {
+    max-height: 200px;
+  }
+
+  .emoji-picker-item {
+    font-size: 1.375rem;
+  }
+
+  /* Code blocks */
+  .ProseMirror pre {
+    padding: 0.875rem;
+  }
+
+  .ProseMirror pre code {
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop (md: 768px+) */
+@media (min-width: 768px) {
+  .toolbar {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .toolbar-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .toolbar-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ProseMirror {
+    padding: 1rem;
+  }
+
+  .link-modal-header,
+  .link-modal-body {
+    padding: 1.5rem;
+  }
+
+  /* Better hover states on desktop */
+  .toolbar-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  /* Tables - desktop spacing */
+  .ProseMirror table {
+    display: table;
+  }
+
+  .ProseMirror th,
+  .ProseMirror td {
+    min-width: auto;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Images - full size on desktop */
+  .ProseMirror img {
+    margin: 1rem 0;
+  }
+
+  /* Emoji picker - full size */
+  .emoji-picker-item {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+  }
+
+  /* Code blocks */
+  .ProseMirror pre {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+}
+
+/* Large desktop (lg: 1024px+) */
+@media (min-width: 1024px) {
+  .ProseMirror {
+    padding: 1.25rem;
+  }
+
+  /* Smooth scrolling on desktop */
+  .rich-text-editor-content {
+    scroll-behavior: smooth;
+  }
+
+  /* Enhanced hover effects for images on large screens */
+  .ProseMirror img:hover {
+    transform: scale(1.02);
+  }
+
+  /* Wider emoji picker on large screens */
+  .emoji-picker {
+    min-width: 320px;
+  }
+
+  .emoji-picker-grid {
+    grid-template-columns: repeat(6, 1fr);
+    max-height: 240px;
+  }
+}
+
+/* -------------------------------------------
+   EMOJI PICKER: Sélecteur d'emojis tribal
+   ------------------------------------------- */
+.toolbar-emoji-wrapper {
+  position: relative;
+}
+
+.emoji-picker {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--color-surface);
+  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated-lg);
+  z-index: var(--z-dropdown);
+  min-width: 280px;
+  overflow: hidden;
+  animation: emoji-picker-appear 200ms var(--ease-organic);
+}
+
+@keyframes emoji-picker-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* En-tête avec onglets */
+.emoji-picker-header {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-50) 0%,
+    var(--color-surface) 100%
+  );
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.emoji-picker-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+  opacity: 0.5;
+}
+
+.emoji-picker-tab:hover {
+  background: var(--color-neutral-100);
+  opacity: 0.8;
+}
+
+.emoji-picker-tab--active {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-100) 0%,
+    var(--color-secondary-50) 100%
+  );
+  border: 1px solid var(--color-secondary-300);
+  opacity: 1;
+  box-shadow: 0 2px 4px rgba(230, 115, 21, 0.15);
+}
+
+/* Grille d'emojis */
+.emoji-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+  padding: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Scrollbar tribal pour la grille */
+.emoji-picker-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.emoji-picker-grid::-webkit-scrollbar-track {
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-base);
+}
+
+.emoji-picker-grid::-webkit-scrollbar-thumb {
+  background: var(--color-primary-400);
+  border-radius: var(--radius-base);
+}
+
+.emoji-picker-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-500);
+}
+
+.emoji-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+  aspect-ratio: 1;
+}
+
+.emoji-picker-item:hover {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-50) 0%,
+    var(--color-neutral-50) 100%
+  );
+  border-color: var(--color-secondary-300);
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(230, 115, 21, 0.2);
+}
+
+.emoji-picker-item:active {
+  transform: scale(1.05);
+}
+
+/* Footer avec label */
+.emoji-picker-footer {
+  padding: 0.5rem 0.75rem;
+  border-top: 2px solid var(--color-neutral-200);
+  background: linear-gradient(
+    180deg,
+    var(--color-surface) 0%,
+    var(--color-primary-50) 100%
+  );
+  text-align: center;
+  font-size: 0.75rem;
+  font-family: var(--font-ui);
+  color: var(--color-neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* -------------------------------------------
+   PRINT: Mode impression
+   ------------------------------------------- */
+@media print {
+  .toolbar {
+    display: none;
+  }
+
+  .rich-text-editor-container {
+    border: none;
+    box-shadow: none;
+    background: white;
+  }
+
+  .ProseMirror {
+    padding: 0;
+  }
+
+  .emoji-picker {
+    display: none;
+  }
+}
