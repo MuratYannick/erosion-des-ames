@@ -239,11 +239,13 @@ class ErrorBoundary extends React.Component {
   ```jsx
   <Route path="*" element={<NotFound />} />
   ```
-- [ ] Créer hook `useNavigateToError` (optionnel) :
+- [x] Créer hook `useNavigateToError` :
   - `navigateTo404()` - redirige vers 404
   - `navigateTo403()` - redirige vers 403
   - `navigateTo500()` - redirige vers 500
   - `navigateToMaintenance()` - redirige vers maintenance
+  - `navigateToError(code)` - fonction générique
+  - `ERROR_ROUTES` - routes exposées
 
 ### Gestion dans ProtectedRoute
 - [x] Modifier `ProtectedRoute.jsx` :
@@ -343,7 +345,7 @@ class ErrorBoundary extends React.Component {
 
 5. **Intégration Router**
    - [x] Route catch-all 404
-   - [ ] Hook useNavigateToError (optionnel)
+   - [x] Hook useNavigateToError
    - [x] Gestion dans ProtectedRoute (affiche Forbidden 403)
 
 6. **Backend**
