@@ -171,6 +171,12 @@
 - [ ] Page édition de personnage
 - [ ] Validation du personnage par un admin (si nécessaire)
 
+### 6.4 Composants de formulaire spécialisés (cf. Phase 4.6)
+- [ ] **CharacterForm** - Formulaire multi-étapes pour création de personnage
+  - Étapes : Identité > Apparence > Histoire > Validation
+  - Sauvegarde brouillon
+  - Preview du personnage
+
 ---
 
 ## Phase 7: Forum - Fondations
@@ -190,6 +196,12 @@
 - [ ] **Footer forum** - Si différent du footer principal
 - [ ] **Layout forum** - Structure globale des pages forum
 - [ ] **Sidebar forum** - Informations latérales (stats, qui est en ligne, etc.)
+
+### 7.3 Composants de formulaire spécialisés (cf. Phase 4.6)
+- [ ] **TopicForm** - Formulaire de création de sujet forum
+  - Sélection catégorie, titre + contenu riche, options modération
+- [ ] **PostForm** - Formulaire de réponse à un sujet
+  - Citation de message, éditeur riche, sélection de personnage (si RP)
 
 ---
 
