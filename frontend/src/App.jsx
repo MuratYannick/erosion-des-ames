@@ -15,6 +15,8 @@ import {
 } from '@/components'
 import { Home, Foreword, Universe, Characters } from '@/pages'
 import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
+import { NotFound, Forbidden, ServerError, Maintenance } from '@/pages/errors'
+import { ErrorBoundary } from '@/components/errors'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components'
 
@@ -177,14 +179,6 @@ function ForumPage() {
   )
 }
 
-function NotFoundPage() {
-  return (
-    <div className="container mx-auto px-4 py-12 text-center">
-      <h1 className="font-display text-6xl text-primary-800 mb-4">404</h1>
-      <p className="font-body text-xl text-skin-secondary">Cette page n'existe pas...</p>
-    </div>
-  )
-}
 
 // Pages protégées (placeholders)
 function ProfilPage() {
@@ -207,11 +201,12 @@ function MesPersonnagesPage() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ScrollToTopOnNavigate />
-        <ToastProvider position="top-right">
-          <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <ScrollToTopOnNavigate />
+          <ToastProvider position="top-right">
+            <Routes>
             {/* Routes auth - sans MainLayout */}
             <Route path="/connexion" element={<Login />} />
             <Route path="/inscription" element={<Register />} />
@@ -238,12 +233,19 @@ function App() {
               <Route path="/profil" element={<ProtectedRoute><ProfilPage /></ProtectedRoute>} />
               <Route path="/mes-personnages" element={<ProtectedRoute><MesPersonnagesPage /></ProtectedRoute>} />
 
-              <Route path="*" element={<NotFoundPage />} />
+              {/* Routes d'erreur */}
+              <Route path="/interdit" element={<Forbidden />} />
+              <Route path="/erreur" element={<ServerError />} />
+              <Route path="/maintenance" element={<Maintenance />} />
+
+              {/* Route 404 - catch-all */}
+              <Route path="*" element={<NotFound />} />
             </Route>
-          </Routes>
-        </ToastProvider>
-      </AuthProvider>
-    </BrowserRouter>
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

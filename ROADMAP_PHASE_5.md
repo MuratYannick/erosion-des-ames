@@ -235,23 +235,23 @@ class ErrorBoundary extends React.Component {
 ## 5.8 Intégration avec React Router
 
 ### Configuration des routes
-- [ ] Ajouter route catch-all pour 404 :
+- [x] Ajouter route catch-all pour 404 :
   ```jsx
   <Route path="*" element={<NotFound />} />
   ```
-- [ ] Créer hook `useNavigateToError` :
+- [ ] Créer hook `useNavigateToError` (optionnel) :
   - `navigateTo404()` - redirige vers 404
   - `navigateTo403()` - redirige vers 403
   - `navigateTo500()` - redirige vers 500
   - `navigateToMaintenance()` - redirige vers maintenance
 
 ### Gestion dans ProtectedRoute
-- [ ] Modifier `ProtectedRoute.jsx` :
+- [x] Modifier `ProtectedRoute.jsx` :
   - Si non authentifié : redirect vers login (existant)
-  - Si authentifié mais droits insuffisants : afficher/redirect 403
+  - Si authentifié mais droits insuffisants : afficher Forbidden (403)
 
 ### Gestion des erreurs API
-- [ ] Créer/modifier `useApi` ou intercepteur axios :
+- [ ] Créer/modifier `useApi` ou intercepteur axios (optionnel) :
   - 401 : redirect vers login
   - 403 : afficher page 403 ou message
   - 404 : afficher page 404 (si route API)
@@ -262,24 +262,16 @@ class ErrorBoundary extends React.Component {
 ## 5.9 Gestion des erreurs Backend
 
 ### Middleware Express
-- [ ] Vérifier/créer middleware de gestion d'erreurs :
-  ```javascript
-  // backend/src/middleware/errorHandler.js
-  const errorHandler = (err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    res.status(statusCode).json({
-      success: false,
-      error: {
-        code: statusCode,
-        message: err.message || 'Internal Server Error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-      }
-    });
-  };
-  ```
+- [x] Créer middleware de gestion d'erreurs (`backend/middlewares/errorHandler.js`) :
+  - `ApiError` : classe d'erreur personnalisée avec helpers statiques
+  - `errorHandler` : middleware principal de formatage des erreurs
+  - `notFoundHandler` : middleware 404 pour les routes API
+  - `asyncHandler` : wrapper pour fonctions async
+  - Gestion des erreurs Sequelize (validation, unicité, FK)
+  - Gestion des erreurs JWT
 
 ### Format de réponse d'erreur standardisé
-- [ ] Toutes les erreurs API suivent le format :
+- [x] Toutes les erreurs API suivent le format :
   ```json
   {
     "success": false,
@@ -347,16 +339,16 @@ class ErrorBoundary extends React.Component {
 4. **ErrorBoundary**
    - [x] Créer ErrorBoundary.jsx
    - [x] Créer ErrorFallback.jsx (intégré)
-   - [ ] Intégrer dans App.jsx
+   - [x] Intégrer dans App.jsx
 
 5. **Intégration Router**
-   - [ ] Route catch-all 404
-   - [ ] Hook useNavigateToError
-   - [ ] Gestion dans ProtectedRoute
+   - [x] Route catch-all 404
+   - [ ] Hook useNavigateToError (optionnel)
+   - [x] Gestion dans ProtectedRoute (affiche Forbidden 403)
 
-6. **Backend (si nécessaire)**
-   - [ ] Vérifier middleware errorHandler
-   - [ ] Standardiser les réponses d'erreur
+6. **Backend**
+   - [x] Créer middleware errorHandler.js (ApiError, errorHandler, notFoundHandler, asyncHandler)
+   - [x] Standardiser les réponses d'erreur
 
 ---
 
@@ -366,7 +358,7 @@ class ErrorBoundary extends React.Component {
 - [x] Le style est cohérent avec le design system tribal existant
 - [x] Les illustrations SVG sont légères et animées
 - [x] ErrorBoundary capture les erreurs React sans crash
-- [ ] La route 404 catch-all fonctionne
+- [x] La route 404 catch-all fonctionne
 - [x] Les pages sont responsive (mobile, tablet, desktop)
 - [x] Les messages sont en français et thématiques
 - [x] Navigation de retour fonctionne (accueil, page précédente)

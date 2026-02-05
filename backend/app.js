@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
+const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -35,10 +36,10 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api', routes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+// 404 handler for API routes
+app.use('/api', notFoundHandler);
+
+// Global error handling middleware
+app.use(errorHandler);
 
 module.exports = app;

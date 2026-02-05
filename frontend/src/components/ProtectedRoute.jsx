@@ -2,6 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader } from '@/components/ui/Loader';
+import { Forbidden } from '@/pages/errors';
 
 /**
  * Composant qui protège les routes nécessitant une authentification
@@ -41,9 +42,9 @@ const ProtectedRoute = ({ roles = null, redirectTo = '/connexion', children }) =
   if (roles && roles.length > 0) {
     const hasRequiredRole = roles.includes(user.role);
 
-    // Si l'utilisateur n'a pas le bon rôle, rediriger vers l'accueil
+    // Si l'utilisateur n'a pas le bon rôle, afficher la page 403
     if (!hasRequiredRole) {
-      return <Navigate to="/" replace />;
+      return <Forbidden userAuthenticated={true} />;
     }
   }
 
