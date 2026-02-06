@@ -253,11 +253,14 @@ class ErrorBoundary extends React.Component {
   - Si authentifié mais droits insuffisants : afficher Forbidden (403)
 
 ### Gestion des erreurs API
-- [ ] Créer/modifier `useApi` ou intercepteur axios (optionnel) :
-  - 401 : redirect vers login
-  - 403 : afficher page 403 ou message
-  - 404 : afficher page 404 (si route API)
-  - 500+ : afficher page 500
+- [x] Intercepteur Axios (`frontend/src/services/api.js`) :
+  - 401 : supprime token + événement auth:logout + redirect vers /connexion
+  - 403 : redirect vers /interdit
+  - 404 : optionnel avec `redirectOn404: true`
+  - 500+ : redirect vers /erreur
+  - 503 : redirect vers /maintenance
+  - Retry automatique 3x pour erreurs réseau
+  - Option `skipErrorRedirect` pour désactiver les redirections
 
 ---
 
