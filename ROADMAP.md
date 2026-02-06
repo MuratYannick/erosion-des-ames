@@ -114,35 +114,37 @@
 
 ---
 
-## Phase 4: Formulaires
+## Phase 4: Formulaires ✅
 
 ### 4.1 Composants de formulaire avancés
-- [ ] **Form** - Wrapper avec gestion de validation
-- [ ] **Select** - Liste déroulante stylisée
-- [ ] **Checkbox/Radio** - Cases à cocher et boutons radio
-- [ ] **FileUpload** - Upload d'images/fichiers
-- [ ] **DatePicker** - Sélecteur de date (si nécessaire)
-- [ ] **RichTextEditor** - Éditeur de texte riche pour les posts
+- [x] **Form** - Wrapper avec gestion de validation (Form, FormField, FormGroup)
+- [x] **Select** - Liste déroulante stylisée (Select, SelectMultiple)
+- [x] **Checkbox/Radio** - Cases à cocher et boutons radio (Checkbox, CheckboxGroup, Radio, RadioGroup)
+- [x] **FileUpload** - Upload d'images/fichiers (FileUpload, ImageUpload, AvatarUpload)
+- [x] **DatePicker** - Sélecteur de date (vanilla JS)
+- [x] **RichTextEditor** - Éditeur de texte riche avec TipTap
 
 ### 4.2 Validation et gestion d'erreurs
-- [ ] Système de validation côté client
-- [ ] Affichage des erreurs inline
-- [ ] Messages d'erreur standardisés
+- [x] Système de validation côté client (utils/validation.js)
+- [x] Affichage des erreurs inline
+- [x] Messages d'erreur standardisés (utils/validationMessages.js)
 
 ---
 
-## Phase 5: Pages d'erreur HTTP personnalisées
+## Phase 5: Pages d'erreur HTTP personnalisées ✅
 
 ### 5.1 Pages d'erreur
-- [ ] **Page 404** - Page non trouvée
-- [ ] **Page 403** - Accès interdit
-- [ ] **Page 500** - Erreur serveur
-- [ ] **Page de maintenance** (optionnel)
+- [x] **Page 404** - "Chemin Perdu" avec boussole tribale brisée
+- [x] **Page 403** - "Territoire Interdit" avec totem gardien
+- [x] **Page 500** - "Perturbation Spirituelle" avec vortex chaotique
+- [x] **Page de maintenance** - "Rituel en Cours" avec autel rituel
 
 ### 5.2 Gestion des erreurs
-- [ ] Composant ErrorBoundary React
-- [ ] Redirection automatique vers les pages d'erreur
-- [ ] Style cohérent avec le reste du site
+- [x] Composant ErrorBoundary React
+- [x] Redirection automatique vers les pages d'erreur (Axios interceptor)
+- [x] Style cohérent avec le reste du site (design tribal)
+- [x] Hook useNavigateToError pour navigation programmatique
+- [x] Middleware backend errorHandler.js (ApiError, format standardisé)
 
 ---
 
@@ -343,9 +345,9 @@
 | 1 | Phase 1 | Fondations UI - Indispensable pour tout le reste | ✅ |
 | 2 | Phase 2 | Pages statiques - Donne vie au site | ✅ |
 | 3 | Phase 3 | Auth - Nécessaire pour les fonctionnalités utilisateur | ✅ |
-| 4 | Phase 4 | Formulaires - Base pour création de contenu | ⏳ |
-| 5 | Phase 5 | Pages d'erreur - UX professionnelle | |
-| 6 | Phase 6 | Personnages - Coeur du RP | |
+| 4 | Phase 4 | Formulaires - Base pour création de contenu | ✅ |
+| 5 | Phase 5 | Pages d'erreur - UX professionnelle | ✅ |
+| 6 | Phase 6 | Personnages - Coeur du RP | ⏳ |
 | 7 | Phase 7-8 | Forum fondations + BDD | |
 | 8 | Phase 9 | Permissions - Sécurité du forum | |
 | 9 | Phase 10-11 | Forum complet | |
