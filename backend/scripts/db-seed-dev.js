@@ -3,7 +3,7 @@
 
 /**
  * Script de seed développement
- * Exécute d'abord les seeders de production, puis les seeders de développement
+ * Exécute les seeders du dossier seeders/ (données de test)
  * Ne fonctionne qu'en environnement de développement (NODE_ENV !== 'production')
  */
 
@@ -11,7 +11,6 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const PRODUCTION_SEEDERS_PATH = path.join(__dirname, '..', 'seeders', 'production');
 const DEV_SEEDERS_PATH = path.join(__dirname, '..', 'seeders');
 
 async function seedDevelopment() {
@@ -30,42 +29,6 @@ async function seedDevelopment() {
     console.log(`Environnement: ${nodeEnv}`);
     console.log('==============================================\n');
 
-    // ÉTAPE 1: Seeders de production
-    console.log('📦 ÉTAPE 1/2: Seeders de production\n');
-
-    if (fs.existsSync(PRODUCTION_SEEDERS_PATH)) {
-      const productionSeeders = fs.readdirSync(PRODUCTION_SEEDERS_PATH)
-        .filter(file => file.endsWith('.js'))
-        .sort();
-
-      if (productionSeeders.length > 0) {
-        console.log(`   ${productionSeeders.length} seeder(s) de production trouvé(s)\n`);
-
-        for (const seeder of productionSeeders) {
-          const seederPath = path.join(PRODUCTION_SEEDERS_PATH, seeder);
-          console.log(`   🔄 ${seeder}...`);
-
-          try {
-            execSync(`npx sequelize-cli db:seed --seed ${seederPath}`, {
-              stdio: 'inherit',
-              cwd: path.join(__dirname, '..')
-            });
-            console.log(`   ✅ ${seeder} exécuté\n`);
-          } catch (error) {
-            console.error(`   ❌ Erreur lors de l'exécution de ${seeder}`);
-            throw error;
-          }
-        }
-      } else {
-        console.log('   ⚠️  Aucun seeder de production trouvé\n');
-      }
-    } else {
-      console.log('   ⚠️  Dossier seeders/production/ absent\n');
-    }
-
-    // ÉTAPE 2: Seeders de développement
-    console.log('🧪 ÉTAPE 2/2: Seeders de développement\n');
-
     const devSeeders = fs.readdirSync(DEV_SEEDERS_PATH)
       .filter(file => {
         return file.endsWith('.js') &&
@@ -75,7 +38,7 @@ async function seedDevelopment() {
       .sort();
 
     if (devSeeders.length > 0) {
-      console.log(`   ${devSeeders.length} seeder(s) de développement trouvé(s)\n`);
+      console.log(`📦 ${devSeeders.length} seeder(s) de développement trouvé(s)\n`);
 
       for (const seeder of devSeeders) {
         const seederPath = path.join(DEV_SEEDERS_PATH, seeder);
