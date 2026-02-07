@@ -40,34 +40,47 @@
 
 ---
 
-## Phase 2: Pages de contenu statique
+## Phase 2: Pages de contenu statique ✅
+
+> Détails complets : voir `ROADMAP_PHASE_2.md` et `ROADMAP_PHASE_2BIS.md`
 
 ### 2.1 Page Home (Accueil)
-- [ ] Section hero avec bannière/image d'accroche
-- [ ] Section présentation du jeu (texte d'immersion)
-- [ ] Section actualités/annonces récentes
-- [ ] Section liens rapides (inscription, règlement, etc.)
-- [ ] Intégration des assets visuels (ImageCard)
-- [ ] Style de mise en page pour texte long
+- [x] Section hero avec bannière/image d'accroche (images responsives, effet parallax)
+- [x] Section présentation du jeu (texte d'immersion avec ImageCard)
+- [x] Section actualités/annonces (cards tribales avec badges)
+- [x] Section liens rapides (5 liens avec icônes SVG tribales, glow hover)
+- [x] Responsive design complet + scroll fluide (Intersection Observer)
 
 ### 2.2 Page Foreword (Avant-propos/Règlement)
-- [ ] Structure de la page
-- [ ] Contenu des règles du forum
-- [ ] Navigation interne (ancres)
-- [ ] Intégration des assets visuels (ImageCard)
-- [ ] Style de mise en page pour texte long
+- [x] TableOfContents sticky avec scroll spy (Intersection Observer)
+- [x] 7 sections de règles complètes (conduite, RP, personnages, système, modération, mentions légales)
+- [x] Composants TribalCorner, TribalDivider, TribalMarker, TribalBullet
+- [x] Layout sidebar + contenu, collapse sur mobile
 
 ### 2.3 Page Univers
-- [ ] Présentation du monde/lore
-- [ ] Sections thématiques (histoire, géographie, factions, etc.)
-- [ ] Intégration des assets visuels (ImageCard)
-- [ ] Style de mise en page pour texte long
-- [ ] Navigation dans le contenu + aside
+- [x] UniverseHero avec overlay mystique et particules de cendre
+- [x] LoreSection - 5 chapitres style "Codex des Anciens" (tablettes de pierre)
+- [x] FactionSection - 5 factions avec emblèmes SVG et couleurs propres
+- [x] GeographySection + WorldMap SVG interactif (6 marqueurs, rose des vents, routes tribales)
+- [x] LocationSection - Cards de lieux avec type, niveau de danger, filtres
+- [x] TimelineSection - "Le Fleuve des Âges" (4 ères, strates géologiques, runes de navigation)
+- [x] DawnTransition entre sections, ScrollToTop
 
-### 2.4 Page Character (Personnages prédéfinis/exemples) -> à remanier
-- [ ] Liste des personnages types ou prédéfinis
-- [ ] Fiches de présentation
-- [ ] Filtres par catégorie si nécessaire
+### 2.4 Page Characters (Personnages prédéfinis) - "Les Âmes Marquées"
+- [x] CharacterGrid responsive avec cards hexagonales cristallines (Soul Shard)
+- [x] CharacterFilters - "Autel de Sélection" (race, classe, faction, difficulté RP)
+- [x] CharacterModal - "Codex de l'Âme" (fiche complète avec traits, capacités, équipement)
+- [x] 8 personnages exemples variés (presetCharacters.js)
+- [x] Éléments SVG tribaux (SoulShardBorder, DifficultyRunes, RaceSymbol, etc.)
+
+### Composants partagés
+- [x] PageHeader, SectionTitle, TextBlock, ImageGallery, Breadcrumb, ScrollToTop
+- [x] ScrollToTopOnNavigate pour changements de route
+- [x] Routes configurées : `/`, `/avant-propos`, `/univers`, `/personnages`
+
+### Phase 2bis - Correctifs
+- [x] Double scroll page Home, images hero responsives, alignement header mobile
+- [x] Navbar aux bords de la fenêtre, tremblement marqueurs carte, nettoyage code
 
 ---
 
@@ -179,13 +192,6 @@
 - [x] Page édition (`/mes-personnages/:id/modifier`) - pré-remplie, draft/rejected uniquement
 - [x] Composants : CharacterCard, CharacterSheet, CharacterStatusBadge, CharacterAvatar
 - [x] Routes protégées dans App.jsx
-
-### 6.4 Composants de formulaire spécialisés
-- [x] **MyCharacterCreate** - Formulaire multi-sections pour création de personnage
-  - Sections : Identité > Apparence > Personnalité > Histoire > Objectifs
-  - Barre de progression dynamique
-  - Sauvegarde brouillon
-  - Soumission directe pour validation
 
 ---
 
