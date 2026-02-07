@@ -21,13 +21,56 @@ Cette phase consiste à créer le système complet de gestion des personnages jo
 
 ## 6.1 Tables de référence (pré-requis) - DONE
 
-### Tables créées
+### Schema de la table `ethnicities`
 
-| Table | Description |
-|-------|-------------|
-| `ethnicities` | Ethnies des personnages (Les Inaltérés, Les Éveillés) |
-| `factions` | Factions rattachées à une ethnie (Veilleurs, Éclaireurs) |
-| `clans` | Clans rattachés à une faction et/ou ethnie (9 clans) |
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id | INTEGER | PK, AUTO_INCREMENT | Identifiant unique |
+| name | VARCHAR(50) | NOT NULL, UNIQUE | Nom de l'ethnie |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de modification |
+| deleted_at | DATETIME | NULL | Soft delete (paranoid) |
+
+### Schema de la table `factions`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id | INTEGER | PK, AUTO_INCREMENT | Identifiant unique |
+| ethnicity_id | INTEGER | FK (ethnicities), NOT NULL, ON DELETE RESTRICT | Ethnie de la faction |
+| name | VARCHAR(50) | NOT NULL, UNIQUE | Nom de la faction |
+| emblem | VARCHAR(255) | NULL | Chemin vers l'emblème |
+| is_playable | BOOLEAN | NOT NULL, DEFAULT false | Faction jouable |
+| background | TEXT | NULL | Histoire de la faction |
+| goals | TEXT | NULL | Objectifs de la faction |
+| status | ENUM | NOT NULL, DEFAULT 'draft' | draft, pending, approved, rejected |
+| rejection_reason | TEXT | NULL | Raison du rejet |
+| is_active | BOOLEAN | NOT NULL, DEFAULT true | Faction active/archivée |
+| approved_at | DATETIME | NULL | Date d'approbation |
+| approved_by | UUID | FK (users), NULL, ON DELETE SET NULL | Staff qui a approuvé |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de modification |
+| deleted_at | DATETIME | NULL | Soft delete (paranoid) |
+
+### Schema de la table `clans`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id | INTEGER | PK, AUTO_INCREMENT | Identifiant unique |
+| ethnicity_id | INTEGER | FK (ethnicities), NULL, ON DELETE SET NULL | Ethnie du clan, NULL si mixte |
+| faction_id | INTEGER | FK (factions), NULL, ON DELETE SET NULL | Faction du clan, NULL si neutre |
+| name | VARCHAR(50) | NOT NULL, UNIQUE | Nom du clan |
+| emblem | VARCHAR(255) | NULL | Chemin vers l'emblème |
+| is_playable | BOOLEAN | NOT NULL, DEFAULT false | Clan jouable |
+| background | TEXT | NULL | Histoire du clan |
+| goals | TEXT | NULL | Objectifs du clan |
+| status | ENUM | NOT NULL, DEFAULT 'draft' | draft, pending, approved, rejected |
+| rejection_reason | TEXT | NULL | Raison du rejet |
+| is_active | BOOLEAN | NOT NULL, DEFAULT true | Clan actif/archivé |
+| approved_at | DATETIME | NULL | Date d'approbation |
+| approved_by | UUID | FK (users), NULL, ON DELETE SET NULL | Staff qui a approuvé |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de modification |
+| deleted_at | DATETIME | NULL | Soft delete (paranoid) |
 
 ### Fichiers Backend
 
@@ -135,27 +178,37 @@ Cette phase consiste à créer le système complet de gestion des personnages jo
 
 ---
 
-## 6.3 Frontend - TODO
+## 6.3 Frontend - DONE
 
 ### Services et Hooks
-- [ ] `services/characterService.js` - Appels API
-- [ ] `hooks/useCharacters.js` - Hook React
+- [x] `services/characterService.js` - Appels API (CRUD + workflow)
+- [x] `services/referenceService.js` - Données de référence (ethnies, factions, clans)
+- [x] `hooks/useCharacters.js` - 10 hooks React (useCharacters, useCharacter, useMyCharacters, useCreateCharacter, useUpdateCharacter, useSubmitCharacter, useApproveCharacter, useRejectCharacter, useDeleteCharacter, useReferenceData)
 
-### Pages
-- [ ] `pages/characters/CharacterList.jsx` - Liste de mes personnages
-- [ ] `pages/characters/CharacterDetail.jsx` - Fiche détaillée
-- [ ] `pages/characters/CharacterCreate.jsx` - Page création
-- [ ] `pages/characters/CharacterEdit.jsx` - Page édition
+### Pages (`pages/MyCharacters/`)
+- [x] `MyCharactersList.jsx` - Liste des personnages avec filtres, stats, CTA, modal de suppression
+- [x] `MyCharacterDetail.jsx` - Fiche détaillée avec bannière de statut, actions, CharacterSheet
+- [x] `MyCharacterCreate.jsx` - Formulaire multi-sections avec barre de progression
+- [x] `MyCharacterEdit.jsx` - Édition pré-remplie (draft/rejected uniquement)
 
-### Composants
-- [ ] `components/characters/CharacterCard.jsx` - Card preview
-- [ ] `components/characters/CharacterSheet.jsx` - Fiche complète
-- [ ] `components/characters/CharacterStatus.jsx` - Badge de statut
-- [ ] `components/characters/CharacterAvatar.jsx` - Composant avatar
+### Composants (`components/characters/`)
+- [x] `CharacterCard.jsx` - Card avec avatar, statut, actions contextuelles
+- [x] `CharacterSheet.jsx` - Fiche complète style parchemin (4 sections)
+- [x] `CharacterStatusBadge.jsx` - Badge de statut (draft/pending/approved/rejected)
+- [x] `CharacterAvatar.jsx` - Avatar hexagonal avec glow de faction
 
 ### Intégration Router
-- [ ] Routes dans App.jsx
-- [ ] Liens dans la navigation
+- [x] Routes dans App.jsx (`/mes-personnages`, `/mes-personnages/creer`, `/mes-personnages/:id`, `/mes-personnages/:id/modifier`)
+- [x] Liens dans la navigation (déjà existants dans Header.jsx)
+
+### Routes Frontend
+
+| Route | Composant | Auth |
+|-------|-----------|------|
+| `/mes-personnages` | MyCharactersList | ProtectedRoute |
+| `/mes-personnages/creer` | MyCharacterCreate | ProtectedRoute |
+| `/mes-personnages/:id` | MyCharacterDetail | ProtectedRoute |
+| `/mes-personnages/:id/modifier` | MyCharacterEdit | ProtectedRoute |
 
 ---
 

@@ -14,6 +14,7 @@ import {
   ScrollToTopOnNavigate,
 } from '@/components'
 import { Home, Foreword, Universe, Characters } from '@/pages'
+import { MyCharactersList, MyCharacterDetail, MyCharacterCreate, MyCharacterEdit } from '@/pages/MyCharacters'
 import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
 import { NotFound, Forbidden, ServerError, Maintenance } from '@/pages/errors'
 import { ErrorBoundary } from '@/components/errors'
@@ -190,14 +191,6 @@ function ProfilPage() {
   )
 }
 
-function MesPersonnagesPage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="font-display text-4xl text-primary-800 mb-4">Mes Personnages</h1>
-      <p className="font-body text-skin-secondary">Liste de vos personnages (à venir)...</p>
-    </div>
-  )
-}
 
 function App() {
   return (
@@ -231,7 +224,10 @@ function App() {
 
               {/* Routes protégées - nécessitent une authentification */}
               <Route path="/profil" element={<ProtectedRoute><ProfilPage /></ProtectedRoute>} />
-              <Route path="/mes-personnages" element={<ProtectedRoute><MesPersonnagesPage /></ProtectedRoute>} />
+              <Route path="/mes-personnages" element={<ProtectedRoute><MyCharactersList /></ProtectedRoute>} />
+              <Route path="/mes-personnages/creer" element={<ProtectedRoute><MyCharacterCreate /></ProtectedRoute>} />
+              <Route path="/mes-personnages/:id" element={<ProtectedRoute><MyCharacterDetail /></ProtectedRoute>} />
+              <Route path="/mes-personnages/:id/modifier" element={<ProtectedRoute><MyCharacterEdit /></ProtectedRoute>} />
 
               {/* Routes d'erreur */}
               <Route path="/interdit" element={<Forbidden />} />
