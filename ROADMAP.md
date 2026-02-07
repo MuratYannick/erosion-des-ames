@@ -148,36 +148,44 @@
 
 ---
 
-## Phase 6: Système de personnages joueurs  -> à remanier
+## Phase 6: Système de personnages joueurs ✅
 
-### 6.1 Tables pour les personnages
-- [ ] Modèle `Character`
-  - id, user_id, name, avatar, age, race, class, background, description, status, created_at, updated_at
-- [ ] Modèle `CharacterStats` (si système de stats)
-- [ ] Modèle `CharacterInventory` (si système d'inventaire)
-- [ ] Migrations correspondantes
-- [ ] Relations avec User (un user peut avoir plusieurs personnages)
+> Détails complets : voir `ROADMAP_PHASE_6.md`
 
-### 6.2 Routes API personnages
-- [ ] `GET /api/characters` - Liste des personnages (avec pagination)
-- [ ] `GET /api/characters/:id` - Détail d'un personnage
-- [ ] `POST /api/characters` - Créer un personnage
-- [ ] `PUT /api/characters/:id` - Modifier un personnage
-- [ ] `DELETE /api/characters/:id` - Supprimer un personnage
-- [ ] `GET /api/users/:id/characters` - Personnages d'un utilisateur
+### 6.1 Tables de référence (pré-requis)
+- [x] Table `ethnicities` - 2 ethnies (Les Inaltérés, Les Éveillés)
+- [x] Table `factions` - 2 factions avec workflow d'approbation
+- [x] Table `clans` - 9 clans avec FK vers ethnies/factions
+- [x] Modèles Sequelize, controllers, validators, routes, seeders (dev + prod)
+
+### 6.2 Table et API personnages
+- [x] Table `characters` - FK vers users (UUID), ethnicities, factions, clans
+- [x] Workflow d'approbation : draft → pending → approved/rejected
+- [x] `GET /api/characters` - Liste (public: active+approved, staff: tous+filtres)
+- [x] `GET /api/characters/:id` - Détail d'un personnage
+- [x] `POST /api/characters` - Créer un personnage (staff)
+- [x] `PUT /api/characters/:id` - Modifier un personnage (staff)
+- [x] `PATCH /api/characters/:id/submit` - Soumettre pour approbation
+- [x] `PATCH /api/characters/:id/approve` - Approuver (ADMIN, MODERATOR)
+- [x] `PATCH /api/characters/:id/reject` - Rejeter avec raison
+- [x] `DELETE /api/characters/:id` - Supprimer (ADMIN)
 
 ### 6.3 Frontend - Gestion des personnages
-- [ ] Page liste des personnages de l'utilisateur
-- [ ] Page création de personnage (formulaire multi-étapes?)
-- [ ] Page détail/fiche de personnage
-- [ ] Page édition de personnage
-- [ ] Validation du personnage par un admin (si nécessaire)
+- [x] Services API (`characterService.js`, `referenceService.js`)
+- [x] 10 hooks React (`useCharacters`, `useMyCharacters`, `useCreateCharacter`, etc.)
+- [x] Page liste des personnages (`/mes-personnages`) avec filtres et stats
+- [x] Page création (`/mes-personnages/creer`) - formulaire multi-sections avec progression
+- [x] Page détail (`/mes-personnages/:id`) - fiche complète avec bannière de statut
+- [x] Page édition (`/mes-personnages/:id/modifier`) - pré-remplie, draft/rejected uniquement
+- [x] Composants : CharacterCard, CharacterSheet, CharacterStatusBadge, CharacterAvatar
+- [x] Routes protégées dans App.jsx
 
-### 6.4 Composants de formulaire spécialisés (cf. Phase 4.6)
-- [ ] **CharacterForm** - Formulaire multi-étapes pour création de personnage
-  - Étapes : Identité > Apparence > Histoire > Validation
+### 6.4 Composants de formulaire spécialisés
+- [x] **MyCharacterCreate** - Formulaire multi-sections pour création de personnage
+  - Sections : Identité > Apparence > Personnalité > Histoire > Objectifs
+  - Barre de progression dynamique
   - Sauvegarde brouillon
-  - Preview du personnage
+  - Soumission directe pour validation
 
 ---
 
@@ -347,7 +355,7 @@
 | 3 | Phase 3 | Auth - Nécessaire pour les fonctionnalités utilisateur | ✅ |
 | 4 | Phase 4 | Formulaires - Base pour création de contenu | ✅ |
 | 5 | Phase 5 | Pages d'erreur - UX professionnelle | ✅ |
-| 6 | Phase 6 | Personnages - Coeur du RP | ⏳ |
+| 6 | Phase 6 | Personnages - Coeur du RP | ✅ |
 | 7 | Phase 7-8 | Forum fondations + BDD | |
 | 8 | Phase 9 | Permissions - Sécurité du forum | |
 | 9 | Phase 10-11 | Forum complet | |

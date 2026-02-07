@@ -286,11 +286,11 @@ npm install @tiptap/extension-link @tiptap/extension-image @tiptap/extension-tex
 
 ## 4.6 Composants de formulaire spécialisés (optionnel)
 
-### CharacterForm (préparation Phase 6)
-- [ ] Formulaire multi-étapes pour création de personnage
-- [ ] Étapes : Identité > Apparence > Histoire > Validation
-- [ ] Sauvegarde brouillon
-- [ ] Preview du personnage
+### CharacterForm (préparation Phase 6) - DONE (implémenté en Phase 6.3)
+- [x] Formulaire multi-sections pour création de personnage (`MyCharacterCreate.jsx`)
+- [x] Sections : Identité > Apparence > Personnalité > Histoire > Objectifs (avec barre de progression)
+- [x] Sauvegarde brouillon
+- [x] Édition pré-remplie draft/rejected (`MyCharacterEdit.jsx`)
 
 ### TopicForm (préparation Phase 7)
 - [ ] Formulaire de création de sujet forum

@@ -49,7 +49,7 @@ async function seedProduction() {
       console.log(`🔄 Exécution: ${seeder}...`);
 
       try {
-        execSync(`npx sequelize-cli db:seed --seed ${seederPath}`, {
+        execSync(`npx sequelize-cli db:seed --seeders-path "${PRODUCTION_SEEDERS_PATH}" --seed ${seeder}`, {
           stdio: 'inherit',
           cwd: path.join(__dirname, '..')
         });
