@@ -26,7 +26,10 @@ const decodeToken = (token) => {
 export const isTokenExpired = (token) => {
   if (!token) return true;
   const payload = decodeToken(token);
-  if (!payload || !payload.exp) return true;
+  if (!payload || !payload.exp) {
+    console.warn('[Auth] Token sans champ exp ou payload invalide:', { hasPayload: !!payload, exp: payload?.exp });
+    return true;
+  }
   // exp est en secondes, Date.now() en millisecondes
   return payload.exp * 1000 < Date.now();
 };

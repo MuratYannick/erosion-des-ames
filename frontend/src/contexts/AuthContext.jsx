@@ -78,8 +78,12 @@ export const AuthProvider = ({ children }) => {
 
     const checkTokenExpiration = () => {
       const token = authService.getToken();
+      if (!token) return;
       if (isTokenExpired(token)) {
-        console.log('Token expiré, déconnexion automatique');
+        console.warn('[Auth] Token expiré, déconnexion automatique', {
+          path: window.location.pathname,
+          tokenPrefix: token.substring(0, 20) + '...',
+        });
         authService.removeToken();
         setUser(null);
       }

@@ -1,0 +1,8 @@
+export { default as ForumIndex } from './ForumIndex'
+export { default as ForumCategory } from './ForumCategory'
+export { default as ForumTopic } from './ForumTopic'
+export { default as ForumCreateTopic } from './ForumCreateTopic'
+export { default as ForumEditTopic } from './ForumEditTopic'
+export { default as ForumEditPost } from './ForumEditPost'
+export { default as ForumSearch } from './ForumSearch'
+export { default as ForumModeration } from './ForumModeration'

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import api from '@/services/api';
 
 /**
@@ -150,11 +150,11 @@ export const useGet = (url, config = {}, options = {}) => {
   }, [url, enabled, config, onSuccess, onError]);
 
   // Exécuter automatiquement au montage et quand les dépendances changent
-  useState(() => {
+  useEffect(() => {
     if (enabled) {
       refetch();
     }
-  });
+  }, [refetch, enabled]);
 
   return {
     data,

@@ -14,6 +14,7 @@ import {
   ScrollToTopOnNavigate,
 } from '@/components'
 import { Home, Foreword, Universe, Characters } from '@/pages'
+import { ForumIndex, ForumCategory, ForumTopic, ForumCreateTopic, ForumEditTopic, ForumEditPost, ForumSearch, ForumModeration } from '@/pages/Forum'
 import { MyCharactersList, MyCharacterDetail, MyCharacterCreate, MyCharacterEdit } from '@/pages/MyCharacters'
 import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
 import { NotFound, Forbidden, ServerError, Maintenance } from '@/pages/errors'
@@ -171,14 +172,6 @@ function PersonnagesPage() {
   )
 }
 
-function ForumPage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="font-display text-4xl text-primary-800 mb-4">Forum</h1>
-      <p className="font-body text-skin-secondary">Discussions de la communaute...</p>
-    </div>
-  )
-}
 
 
 // Pages protégées (placeholders)
@@ -220,7 +213,14 @@ function App() {
                 <Route path="archives" element={<UniversPage />} />
               </Route>
               <Route path="/personnages" element={<Characters />} />
-              <Route path="/forum" element={<ForumPage />} />
+              <Route path="/forum" element={<ForumIndex />} />
+              <Route path="/forum/recherche" element={<ForumSearch />} />
+              <Route path="/forum/moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><ForumModeration /></ProtectedRoute>} />
+              <Route path="/forum/:categorySlug" element={<ForumCategory />} />
+              <Route path="/forum/:categorySlug/nouveau-sujet" element={<ProtectedRoute><ForumCreateTopic /></ProtectedRoute>} />
+              <Route path="/forum/:categorySlug/:topicId" element={<ForumTopic />} />
+              <Route path="/forum/:categorySlug/:topicId/modifier" element={<ProtectedRoute><ForumEditTopic /></ProtectedRoute>} />
+              <Route path="/forum/:categorySlug/:topicId/modifier-post/:postId" element={<ProtectedRoute><ForumEditPost /></ProtectedRoute>} />
 
               {/* Routes protégées - nécessitent une authentification */}
               <Route path="/profil" element={<ProtectedRoute><ProfilPage /></ProtectedRoute>} />

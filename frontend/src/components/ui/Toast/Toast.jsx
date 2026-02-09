@@ -190,6 +190,7 @@ const ToastProvider = ({ children, position = 'top-right' }) => {
   }, [])
 
   const toast = {
+    addToast,
     success: (message, options = {}) => addToast({ variant: 'success', message, ...options }),
     error: (message, options = {}) => addToast({ variant: 'error', message, ...options }),
     warning: (message, options = {}) => addToast({ variant: 'warning', message, ...options }),

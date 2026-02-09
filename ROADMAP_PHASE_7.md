@@ -127,47 +127,47 @@ Cette phase consiste à créer le système complet de forum, incluant :
 ## 7.3 Fichiers Backend
 
 ### Migrations
-- [ ] `migrations/20260207200000-create-forum-categories.js`
-- [ ] `migrations/20260207200001-create-forum-topics.js`
-- [ ] `migrations/20260207200002-create-forum-posts.js`
-- [ ] `migrations/20260207200003-create-topic-reads.js`
-- [ ] `migrations/20260207200004-create-topic-subscriptions.js`
-- [ ] `migrations/20260207200005-create-post-reports.js`
+- [x] `migrations/20260207200000-create-forum-categories.js`
+- [x] `migrations/20260207200001-create-forum-topics.js`
+- [x] `migrations/20260207200002-create-forum-posts.js`
+- [x] `migrations/20260207200003-create-topic-reads.js`
+- [x] `migrations/20260207200004-create-topic-subscriptions.js`
+- [x] `migrations/20260207200005-create-post-reports.js`
 
 ### Modèles
-- [ ] `models/ForumCategory.js`
-  - Scopes : `active`, `root` (parent_id NULL), `rp`, `withCounts`
+- [x] `models/ForumCategory.js`
+  - Scopes : `active`, `root` (parent_id NULL), `rp`
   - `associate()` : `belongsTo(ForumCategory, { as: 'parent' })`, `hasMany(ForumCategory, { as: 'children' })`, `hasMany(ForumTopic)`, `belongsTo(ForumPost, { as: 'lastPost' })`
   - Instance methods : `generateSlug()`, `incrementCounts()`, `decrementCounts()`
-- [ ] `models/ForumTopic.js`
+- [x] `models/ForumTopic.js`
   - Scopes : `pinned`, `locked`, `withLastPost`, `withAuthor`
   - `associate()` : `belongsTo(ForumCategory)`, `belongsTo(User, { as: 'author' })`, `belongsTo(Character)`, `hasMany(ForumPost)`, `belongsTo(ForumPost, { as: 'lastPost' })`, `hasMany(TopicRead)`, `hasMany(TopicSubscription)`
-  - Instance methods : `pin()`, `unpin()`, `lock()`, `unlock()`, `incrementViews()`
-- [ ] `models/ForumPost.js`
+  - Instance methods : `generateSlug()`, `pin()`, `unpin()`, `lock()`, `unlock()`, `incrementViews()`
+- [x] `models/ForumPost.js`
   - Scopes : `withAuthor`, `withCharacter`, `withQuotedPost`
   - `associate()` : `belongsTo(ForumTopic)`, `belongsTo(User, { as: 'author' })`, `belongsTo(Character)`, `belongsTo(ForumPost, { as: 'quotedPost' })`, `belongsTo(User, { as: 'editor' })`, `hasMany(PostReport)`
-- [ ] `models/TopicRead.js`
+- [x] `models/TopicRead.js`
   - `associate()` : `belongsTo(ForumTopic)`, `belongsTo(User)`
-- [ ] `models/TopicSubscription.js`
+- [x] `models/TopicSubscription.js`
   - `associate()` : `belongsTo(ForumTopic)`, `belongsTo(User)`
-- [ ] `models/PostReport.js`
+- [x] `models/PostReport.js`
   - Scopes : `pending`, `reviewed`
   - `associate()` : `belongsTo(ForumPost)`, `belongsTo(User, { as: 'reporter' })`, `belongsTo(User, { as: 'reviewer' })`
 
 ### Validators
-- [ ] `validators/forumCategoryValidators.js` - create/update/reorder
-- [ ] `validators/forumTopicValidators.js` - create/update
-- [ ] `validators/forumPostValidators.js` - create/update/report
+- [x] `validators/forumCategoryValidators.js` - create/update/reorder
+- [x] `validators/forumTopicValidators.js` - create/update
+- [x] `validators/forumPostValidators.js` - create/update/report/reviewReport
 
 ### Controllers
-- [ ] `controllers/forumCategoryController.js`
+- [x] `controllers/forumCategoryController.js`
   - `getAll` : arbre de catégories (parent → children), filtrage is_active pour public
   - `getById` : avec sujets paginés, compteurs
   - `create` : vérification parent existe si fourni, génération slug
   - `update` : mise à jour partielle, re-génération slug si name change
   - `reorder` : mise à jour display_order en batch
   - `remove` : soft delete (vérification pas de sujets actifs)
-- [ ] `controllers/forumTopicController.js`
+- [x] `controllers/forumTopicController.js`
   - `getByCategory` : liste paginée, tri (récent, populaire, dernière réponse), épinglés en premier
   - `getRecent` : sujets récents tous catégories confondues
   - `getById` : avec posts paginés, incrémente view_count, marque lu si authentifié
@@ -178,22 +178,22 @@ Cette phase consiste à créer le système complet de forum, incluant :
   - `remove` : auteur ou staff, mise à jour compteurs catégorie
   - `markAsRead` : upsert TopicRead
   - `toggleSubscription` : toggle TopicSubscription
-- [ ] `controllers/forumPostController.js`
+- [x] `controllers/forumPostController.js`
   - `getByTopic` : liste paginée avec auteur, personnage, post cité
   - `create` : vérification sujet non verrouillé, mise à jour compteurs (topic + catégorie), mise à jour last_post_id/last_post_at
-  - `update` : auteur (dans un délai configurable) ou staff, set edited_at/edited_by
+  - `update` : auteur ou staff, set edited_at/edited_by
   - `remove` : auteur ou staff, mise à jour compteurs
   - `report` : vérification pas déjà signalé par le même user
-- [ ] `controllers/forumReportController.js`
+- [x] `controllers/forumReportController.js`
   - `getPending` : liste des signalements en attente, avec post + reporter
   - `review` : marquer reviewed/dismissed, set reviewed_by/reviewed_at
 
 ### Routes
-- [ ] `routes/forum/categories.js`
-- [ ] `routes/forum/topics.js`
-- [ ] `routes/forum/posts.js`
-- [ ] `routes/forum/reports.js`
-- [ ] `routes/forum/index.js` - Combine les sous-routes
+- [x] `routes/forum/categories.js`
+- [x] `routes/forum/topics.js`
+- [x] `routes/forum/posts.js`
+- [x] `routes/forum/reports.js`
+- [x] `routes/forum/index.js` - Combine les sous-routes
 
 ### Routes API
 
@@ -241,20 +241,20 @@ Cette phase consiste à créer le système complet de forum, incluant :
 | PATCH | `/:id/review` | Requis | ADMIN, MODERATOR | Traiter un signalement |
 
 ### Seeders
-- [ ] `seeders/seed-test-x5-forum-categories.js` - 4-6 catégories (dont 2 RP, 1 avec sous-catégorie)
-- [ ] `seeders/seed-test-x6-forum-topics.js` - 6-8 sujets (épinglé, verrouillé, normal)
-- [ ] `seeders/seed-test-x7-forum-posts.js` - 15-20 posts (citations, édités, avec personnages)
-- [ ] `seeders/production/seed-prod-05-forum-categories.js` - Catégories de base
+- [x] `seeders/seed-test-x5-forum-categories.js` - 3 catégories de base + 3 sous-catégories
+- [x] `seeders/seed-test-x6-forum-topics.js` - 7 sujets (épinglés, verrouillé, RP avec personnages)
+- [x] `seeders/seed-test-x7-forum-posts.js` - 14 posts + mise à jour compteurs
+- [x] `seeders/production/seed-prod-05-forum-categories.js` - 3 catégories de base (Général, HRP, RP)
 
 ### Montage routes
-- [ ] `routes/index.js` - Ajouter mount `/forum` -> `routes/forum/index.js`
+- [x] `routes/index.js` - Mount `/forum` -> `routes/forum/index.js`
 
 ---
 
 ## 7.4 Frontend - Services et Hooks
 
 ### Services
-- [ ] `services/forumService.js`
+- [x] `services/forumService.js`
   - `getCategories()` - Liste des catégories (arbre)
   - `getCategory(id)` - Détail catégorie avec sujets
   - `createCategory(data)` - Créer catégorie (admin)
@@ -280,20 +280,21 @@ Cette phase consiste à créer le système complet de forum, incluant :
   - `reviewReport(id, data)` - Traiter un signalement (staff)
 
 ### Hooks (`hooks/useForum.js`)
-- [ ] `useForumCategories()` - Liste des catégories
-- [ ] `useForumCategory(id)` - Détail catégorie + sujets
-- [ ] `useRecentTopics(params)` - Sujets récents
-- [ ] `useTopicsByCategory(categoryId, params)` - Sujets d'une catégorie
-- [ ] `useTopic(id)` - Détail sujet + posts
-- [ ] `useCreateTopic()` - Mutation création sujet
-- [ ] `useUpdateTopic()` - Mutation modification sujet
-- [ ] `useDeleteTopic()` - Mutation suppression sujet
-- [ ] `useCreatePost()` - Mutation création post
-- [ ] `useUpdatePost()` - Mutation modification post
-- [ ] `useDeletePost()` - Mutation suppression post
-- [ ] `useReportPost()` - Mutation signalement
-- [ ] `useToggleSubscription()` - Mutation abonnement
-- [ ] `usePendingReports()` - Liste signalements (staff)
+- [x] `useForumCategories()` - Liste des catégories
+- [x] `useForumCategory(id)` - Détail catégorie + sujets
+- [x] `useRecentTopics(params)` - Sujets récents
+- [x] `useTopicsByCategory(categoryId, params)` - Sujets d'une catégorie
+- [x] `useTopic(id)` - Détail sujet + posts
+- [x] `useCreateTopic()` - Mutation création sujet
+- [x] `useUpdateTopic()` - Mutation modification sujet
+- [x] `useDeleteTopic()` - Mutation suppression sujet
+- [x] `useCreatePost()` - Mutation création post
+- [x] `useUpdatePost()` - Mutation modification post
+- [x] `useDeletePost()` - Mutation suppression post
+- [x] `useReportPost()` - Mutation signalement
+- [x] `useToggleSubscription()` - Mutation abonnement
+- [x] `usePendingReports()` - Liste signalements (staff)
+- [x] `useReviewReport()` - Mutation traitement signalement (staff)
 
 ---
 
@@ -301,30 +302,30 @@ Cette phase consiste à créer le système complet de forum, incluant :
 
 ### Composants forum (`components/forum/`)
 
-- [ ] `ForumCategoryCard.jsx` - Card de catégorie avec icône, description, compteurs (sujets, posts), dernier post
-- [ ] `TopicRow.jsx` - Ligne de sujet dans la liste : titre, auteur, réponses, vues, dernier post, badges (épinglé/verrouillé/non-lu)
-- [ ] `PostCard.jsx` - Affichage d'un post : carte auteur (avatar, pseudo, rôle, nb posts), contenu HTML, date, actions
-- [ ] `AuthorSidebar.jsx` - Sidebar auteur dans un post : avatar, username, rôle badge, personnage si RP, date d'inscription, nombre de posts
-- [ ] `QuoteBlock.jsx` - Citation d'un message avec attribution
-- [ ] `PostActions.jsx` - Boutons d'action : répondre, citer, éditer, supprimer, signaler (contextuel selon rôle/auteur)
-- [ ] `TopicStatusBadge.jsx` - Badges : épinglé, verrouillé, non-lu
-- [ ] `ForumBreadcrumb.jsx` - Fil d'Ariane : Forum > Catégorie > Sujet
-- [ ] `ForumPagination.jsx` - Pagination spécifique au forum (ou réutilisation du composant existant)
-- [ ] `ForumStats.jsx` - Statistiques globales : nombre de sujets, posts, membres, dernier inscrit
+- [x] `ForumCategoryCard.jsx` - Card de catégorie avec icône, description, compteurs (sujets, posts), dernier post
+- [x] `TopicRow.jsx` - Ligne de sujet dans la liste : titre, auteur, réponses, vues, dernier post, badges (épinglé/verrouillé/non-lu)
+- [x] `PostCard.jsx` - Affichage d'un post : carte auteur (avatar, pseudo, rôle, nb posts), contenu HTML, date, actions
+- [x] `AuthorSidebar.jsx` - Sidebar auteur dans un post : avatar, username, rôle badge, personnage si RP, date d'inscription, nombre de posts
+- [x] `QuoteBlock.jsx` - Citation d'un message avec attribution
+- [x] `PostActions.jsx` - Boutons d'action : répondre, citer, éditer, supprimer, signaler (contextuel selon rôle/auteur)
+- [x] `TopicStatusBadge.jsx` - Badges : épinglé, verrouillé, non-lu
+- [x] `ForumBreadcrumb.jsx` - Fil d'Ariane : Forum > Catégorie > Sujet
+- [x] `ForumPagination.jsx` - Pagination spécifique au forum (réutilisation du composant Pagination existant)
+- [x] `ForumStats.jsx` - Statistiques globales : nombre de sujets, posts, membres, dernier inscrit
 
 ### Composants de formulaire (`components/forum/`)
 
-- [ ] `TopicForm.jsx` - Formulaire de création/édition de sujet
+- [x] `TopicForm.jsx` - Formulaire de création/édition de sujet
   - Sélection de catégorie
   - Titre du sujet
   - Contenu riche (RichTextEditor)
   - Sélection de personnage (si catégorie RP)
   - Options modération (épinglé, verrouillé) si staff
-- [ ] `PostForm.jsx` - Formulaire de réponse/édition de post
+- [x] `PostForm.jsx` - Formulaire de réponse/édition de post
   - Contenu riche (RichTextEditor)
   - Sélection de personnage (si catégorie RP)
   - Affichage citation si citation en cours
-- [ ] `ReportModal.jsx` - Modal de signalement
+- [x] `ReportModal.jsx` - Modal de signalement
   - Sélection raison (spam, offensant, hors-sujet, autre)
   - Description optionnelle
 
@@ -334,13 +335,13 @@ Cette phase consiste à créer le système complet de forum, incluant :
 
 ### Pages forum (`pages/Forum/`)
 
-- [ ] `ForumIndex.jsx` - Page d'accueil du forum
+- [x] `ForumIndex.jsx` - Page d'accueil du forum
   - Liste des catégories avec sous-catégories
   - Statistiques globales
   - Derniers sujets actifs
   - Route : `/forum`
 
-- [ ] `ForumCategory.jsx` - Page d'une catégorie
+- [x] `ForumCategory.jsx` - Page d'une catégorie
   - En-tête catégorie (nom, description)
   - Sous-catégories si existantes
   - Liste des sujets paginée (épinglés en premier)
@@ -348,7 +349,7 @@ Cette phase consiste à créer le système complet de forum, incluant :
   - Bouton "Nouveau sujet"
   - Route : `/forum/:categorySlug`
 
-- [ ] `ForumTopic.jsx` - Page d'un sujet
+- [x] `ForumTopic.jsx` - Page d'un sujet
   - En-tête sujet (titre, catégorie, auteur, date, vues)
   - Badges (épinglé, verrouillé)
   - Liste des posts paginée
@@ -357,52 +358,52 @@ Cette phase consiste à créer le système complet de forum, incluant :
   - Bouton s'abonner/se désabonner
   - Route : `/forum/:categorySlug/:topicId`
 
-- [ ] `ForumCreateTopic.jsx` - Page de création de sujet
+- [x] `ForumCreateTopic.jsx` - Page de création de sujet
   - TopicForm complet
   - Preview avant publication (optionnel)
   - Route : `/forum/:categorySlug/nouveau-sujet`
 
-- [ ] `ForumEditTopic.jsx` - Page d'édition de sujet
+- [x] `ForumEditTopic.jsx` - Page d'édition de sujet
   - TopicForm pré-rempli
   - Route : `/forum/:categorySlug/:topicId/modifier`
 
-- [ ] `ForumEditPost.jsx` - Page d'édition de post
+- [x] `ForumEditPost.jsx` - Page d'édition de post
   - PostForm pré-rempli
   - Route : `/forum/:categorySlug/:topicId/modifier-post/:postId`
 
 ### Intégration Router (`App.jsx`)
-- [ ] Route `/forum` -> `ForumIndex`
-- [ ] Route `/forum/:categorySlug` -> `ForumCategory`
-- [ ] Route `/forum/:categorySlug/nouveau-sujet` -> `ForumCreateTopic` (ProtectedRoute)
-- [ ] Route `/forum/:categorySlug/:topicId` -> `ForumTopic`
-- [ ] Route `/forum/:categorySlug/:topicId/modifier` -> `ForumEditTopic` (ProtectedRoute)
-- [ ] Route `/forum/:categorySlug/:topicId/modifier-post/:postId` -> `ForumEditPost` (ProtectedRoute)
+- [x] Route `/forum` -> `ForumIndex`
+- [x] Route `/forum/:categorySlug` -> `ForumCategory`
+- [x] Route `/forum/:categorySlug/nouveau-sujet` -> `ForumCreateTopic` (ProtectedRoute)
+- [x] Route `/forum/:categorySlug/:topicId` -> `ForumTopic`
+- [x] Route `/forum/:categorySlug/:topicId/modifier` -> `ForumEditTopic` (ProtectedRoute)
+- [x] Route `/forum/:categorySlug/:topicId/modifier-post/:postId` -> `ForumEditPost` (ProtectedRoute)
 
 ---
 
 ## 7.7 Fonctionnalités avancées
 
 ### Système lu/non-lu
-- [ ] Marquer automatiquement un sujet comme lu quand on le visite
-- [ ] Indicateur visuel "non-lu" dans la liste des sujets
-- [ ] Compteur de sujets non-lus par catégorie
-- [ ] Bouton "Tout marquer comme lu"
+- [x] Marquer automatiquement un sujet comme lu quand on le visite
+- [x] Indicateur visuel "non-lu" dans la liste des sujets
+- [x] Compteur de sujets non-lus par catégorie
+- [x] Bouton "Tout marquer comme lu"
 
 ### Abonnements
-- [ ] S'abonner automatiquement à un sujet quand on y répond (configurable)
+- [x] S'abonner automatiquement à un sujet quand on y répond (configurable)
 - [ ] Liste "Mes abonnements" dans le profil utilisateur (Phase future)
 
 ### Recherche forum
-- [ ] Recherche full-text dans les titres de sujets et contenus de posts
-- [ ] Filtres : catégorie, auteur, date, personnage
-- [ ] Route : `/forum/recherche`
-- [ ] Page : `ForumSearch.jsx`
+- [x] Recherche full-text dans les titres de sujets et contenus de posts
+- [x] Filtres : catégorie, auteur, date, personnage
+- [x] Route : `/forum/recherche`
+- [x] Page : `ForumSearch.jsx`
 
 ### Panel de modération (staff)
-- [ ] Vue des signalements en attente
-- [ ] Actions rapides : supprimer post, verrouiller sujet, avertir utilisateur
-- [ ] Route : `/forum/moderation`
-- [ ] Page : `ForumModeration.jsx`
+- [x] Vue des signalements en attente
+- [x] Actions rapides : supprimer post, verrouiller sujet, avertir utilisateur
+- [x] Route : `/forum/moderation`
+- [x] Page : `ForumModeration.jsx`
 
 ---
 
@@ -436,47 +437,47 @@ Cette phase consiste à créer le système complet de forum, incluant :
 ## Ordre de réalisation suggéré
 
 1. **Backend - Base de données**
-   - [ ] Migrations (6 tables)
-   - [ ] Modèles avec associations
-   - [ ] Seeders dev + prod
+   - [x] Migrations (6 tables)
+   - [x] Modèles avec associations
+   - [x] Seeders dev + prod
 
 2. **Backend - API**
-   - [ ] Validators
-   - [ ] Controllers catégories + sujets + posts
-   - [ ] Controller signalements
-   - [ ] Routes + montage dans index.js
+   - [x] Validators
+   - [x] Controllers catégories + sujets + posts
+   - [x] Controller signalements
+   - [x] Routes + montage dans index.js
 
 3. **Frontend - Services**
-   - [ ] forumService.js
-   - [ ] useForum.js hooks
+   - [x] forumService.js
+   - [x] useForum.js hooks
 
 4. **Frontend - Composants**
-   - [ ] Composants de base (ForumCategoryCard, TopicRow, PostCard, etc.)
-   - [ ] Composants de formulaire (TopicForm, PostForm, ReportModal)
+   - [x] Composants de base (ForumCategoryCard, TopicRow, PostCard, etc.)
+   - [x] Composants de formulaire (TopicForm, PostForm, ReportModal)
 
 5. **Frontend - Pages**
-   - [ ] ForumIndex + ForumCategory
-   - [ ] ForumTopic + formulaire de réponse
-   - [ ] ForumCreateTopic + ForumEditTopic + ForumEditPost
-   - [ ] Intégration Router
+   - [x] ForumIndex + ForumCategory
+   - [x] ForumTopic + formulaire de réponse
+   - [x] ForumCreateTopic + ForumEditTopic + ForumEditPost
+   - [x] Intégration Router
 
 6. **Fonctionnalités avancées**
-   - [ ] Système lu/non-lu
-   - [ ] Abonnements
-   - [ ] Recherche forum
-   - [ ] Panel modération
+   - [x] Système lu/non-lu
+   - [x] Abonnements
+   - [x] Recherche forum
+   - [x] Panel modération
 
 ---
 
 ## Critères de validation
 
-- [ ] Les catégories s'affichent en arbre (parent/enfants)
-- [ ] Les sujets épinglés apparaissent en premier
-- [ ] La création de sujet crée automatiquement le first post
-- [ ] Les compteurs (sujets, posts, vues) se mettent à jour correctement
-- [ ] Le contenu riche (TipTap) s'affiche correctement dans les posts
-- [ ] Les catégories RP demandent la sélection d'un personnage approuvé
-- [ ] Les sujets verrouillés empêchent les nouvelles réponses
-- [ ] Les signalements sont visibles uniquement par le staff
-- [ ] La pagination fonctionne sur les sujets et les posts
-- [ ] Le système lu/non-lu fonctionne pour les utilisateurs connectés
+- [x] Les catégories s'affichent en arbre (parent/enfants)
+- [x] Les sujets épinglés apparaissent en premier
+- [x] La création de sujet crée automatiquement le first post
+- [x] Les compteurs (sujets, posts, vues) se mettent à jour correctement
+- [x] Le contenu riche (TipTap) s'affiche correctement dans les posts
+- [x] Les catégories RP demandent la sélection d'un personnage approuvé
+- [x] Les sujets verrouillés empêchent les nouvelles réponses
+- [x] Les signalements sont visibles uniquement par le staff
+- [x] La pagination fonctionne sur les sujets et les posts
+- [x] Le système lu/non-lu fonctionne pour les utilisateurs connectés

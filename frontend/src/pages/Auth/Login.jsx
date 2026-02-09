@@ -65,15 +65,15 @@ function Login() {
     try {
       await login(formData.identifier, formData.password);
 
-      // Redirection vers la page d'origine ou la page d'accueil
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
-
       addToast({
         variant: 'success',
         title: 'Bienvenue dans les Ruines',
         message: 'Connexion réussie',
       });
+
+      // Redirection vers la page d'origine ou la page d'accueil
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (error) {
       console.error('Erreur de connexion:', error);
 

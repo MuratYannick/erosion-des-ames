@@ -8,6 +8,7 @@ const ethnicitiesRoutes = require('./ethnicities');
 const factionsRoutes = require('./factions');
 const clansRoutes = require('./clans');
 const charactersRoutes = require('./characters');
+const forumRoutes = require('./forum');
 
 /**
  * Montage des routes
@@ -17,6 +18,7 @@ router.use('/ethnicities', ethnicitiesRoutes);
 router.use('/factions', factionsRoutes);
 router.use('/clans', clansRoutes);
 router.use('/characters', charactersRoutes);
+router.use('/forum', forumRoutes);
 
 /**
  * Route de santé de l'API (alternative à /api/health)

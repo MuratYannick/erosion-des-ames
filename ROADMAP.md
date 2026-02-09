@@ -195,128 +195,56 @@
 
 ---
 
-## Phase 7: Forum - Fondations
+## Phase 7: Système de forum complet ✅
 
-### 7.1 Composants forum réutilisables
-- [ ] **ForumCategory** - Affichage d'une catégorie
-- [ ] **ForumTopic** - Affichage d'un sujet dans une liste
-- [ ] **ForumPost** - Affichage d'un message
-- [ ] **ForumBreadcrumb** - Fil d'Ariane
-- [ ] **ForumStats** - Statistiques (messages, membres, etc.)
-- [ ] **UserCard** - Carte utilisateur dans les posts (avatar, pseudo, rang, etc.)
-- [ ] **QuoteBlock** - Citation d'un message
-- [ ] **PostActions** - Boutons d'action (répondre, éditer, signaler, etc.)
+> Détails complets : voir `ROADMAP_PHASE_7.md`
 
-### 7.2 Layout forum
-- [ ] **Header forum** - Navigation spécifique au forum
-- [ ] **Footer forum** - Si différent du footer principal
-- [ ] **Layout forum** - Structure globale des pages forum
-- [ ] **Sidebar forum** - Informations latérales (stats, qui est en ligne, etc.)
+### 7.1 Backend - Base de données
+- [x] 6 migrations (forum_categories, forum_topics, forum_posts, topic_reads, topic_subscriptions, post_reports)
+- [x] 6 modèles Sequelize avec associations complètes
+- [x] Seeders dev (catégories, sujets, posts) + prod (catégories de base)
 
-### 7.3 Composants de formulaire spécialisés (cf. Phase 4.6)
-- [ ] **TopicForm** - Formulaire de création de sujet forum
-  - Sélection catégorie, titre + contenu riche, options modération
-- [ ] **PostForm** - Formulaire de réponse à un sujet
-  - Citation de message, éditeur riche, sélection de personnage (si RP)
+### 7.2 Backend - API REST
+- [x] Controllers : catégories (CRUD + reorder), sujets (CRUD + pin/lock/read/subscribe), posts (CRUD + report), signalements (list + review)
+- [x] Validators express-validator pour toutes les routes
+- [x] Routes montées dans `/api/forum/*` avec auth/authorize middlewares
+- [x] Recherche full-text dans titres et contenus (`/api/forum/search`)
+- [x] Support slug ou ID numérique pour les catégories
 
----
+### 7.3 Frontend - Services et Hooks
+- [x] `forumService.js` - 22 méthodes API (catégories, sujets, posts, signalements, recherche)
+- [x] `useForum.js` - 15 hooks React (queries + mutations) avec extraction correcte des données backend
 
-## Phase 8: Forum - Base de données -> à remanier
+### 7.4 Frontend - Composants
+- [x] Composants d'affichage : ForumCategoryCard, TopicRow, PostCard, AuthorSidebar, QuoteBlock, PostActions, TopicStatusBadge, ForumBreadcrumb, ForumPagination, ForumStats
+- [x] Composants de formulaire : TopicForm, PostForm, ReportModal
 
-### 8.1 Tables principales du forum
-- [ ] Modèle `ForumCategory`
-  - id, name, description, order, parent_id, icon, created_at, updated_at
-- [ ] Modèle `ForumTopic`
-  - id, category_id, user_id, character_id, title, is_pinned, is_locked, views, created_at, updated_at
-- [ ] Modèle `ForumPost`
-  - id, topic_id, user_id, character_id, content, is_first_post, edited_at, created_at, updated_at
-- [ ] Migrations correspondantes
-- [ ] Seeders pour catégories et données de test
+### 7.5 Frontend - Pages
+- [x] ForumIndex (`/forum`) - catégories en arbre + sujets récents + stats
+- [x] ForumCategory (`/forum/:categorySlug`) - sous-catégories + sujets paginés avec tri
+- [x] ForumTopic (`/forum/:categorySlug/:topicId`) - posts paginés + réponse + modération
+- [x] ForumCreateTopic, ForumEditTopic, ForumEditPost - formulaires CRUD
+- [x] ForumSearch (`/forum/recherche`) - recherche dans sujets et posts
+- [x] ForumModeration (`/forum/moderation`) - signalements staff
 
-### 8.2 Tables complémentaires
-- [ ] Modèle `TopicRead` - Suivi des sujets lus par utilisateur
-- [ ] Modèle `TopicSubscription` - Abonnements aux sujets
-- [ ] Modèle `PostLike` - Système de likes (optionnel)
-- [ ] Modèle `PostReport` - Signalements
+### 7.6 Fonctionnalités avancées
+- [x] Système lu/non-lu avec compteur par catégorie + "Tout marquer comme lu"
+- [x] Abonnements aux sujets
+- [x] Recherche full-text avec filtres
+- [x] Panel de modération (signalements)
 
 ---
 
-## Phase 9: Forum - Permissions -> à remanier
+## Phase 8: Administration et modération
 
-### 9.1 Tables de permissions
-- [ ] Modèle `Role`
-  - id, name, color, is_staff, order, created_at, updated_at
-- [ ] Modèle `Permission`
-  - id, name, description
-- [ ] Modèle `RolePermission`
-  - role_id, permission_id
-- [ ] Modèle `CategoryPermission`
-  - category_id, role_id, can_view, can_post, can_create_topic, can_moderate
-- [ ] Migrations correspondantes
-- [ ] Seeders pour rôles par défaut (Admin, Modérateur, Membre, Invité)
-
-### 9.2 Middleware de permissions backend
-- [ ] Middleware vérification des permissions
-- [ ] Helpers pour vérifier les droits
-- [ ] Intégration dans les routes existantes
-
----
-
-## Phase 10: Forum - Routes API -> à remanier
-
-### 10.1 Routes catégories
-- [ ] `GET /api/forum/categories` - Liste des catégories
-- [ ] `GET /api/forum/categories/:id` - Détail catégorie avec sujets
-- [ ] `POST /api/forum/categories` - Créer catégorie (admin)
-- [ ] `PUT /api/forum/categories/:id` - Modifier catégorie (admin)
-- [ ] `DELETE /api/forum/categories/:id` - Supprimer catégorie (admin)
-
-### 10.2 Routes sujets
-- [ ] `GET /api/forum/topics` - Liste des sujets récents
-- [ ] `GET /api/forum/topics/:id` - Détail sujet avec posts
-- [ ] `POST /api/forum/topics` - Créer un sujet
-- [ ] `PUT /api/forum/topics/:id` - Modifier un sujet
-- [ ] `DELETE /api/forum/topics/:id` - Supprimer un sujet
-- [ ] `POST /api/forum/topics/:id/lock` - Verrouiller (modération)
-- [ ] `POST /api/forum/topics/:id/pin` - Épingler (modération)
-
-### 10.3 Routes posts
-- [ ] `GET /api/forum/posts/:id` - Détail d'un post
-- [ ] `POST /api/forum/topics/:id/posts` - Répondre à un sujet
-- [ ] `PUT /api/forum/posts/:id` - Modifier un post
-- [ ] `DELETE /api/forum/posts/:id` - Supprimer un post
-- [ ] `POST /api/forum/posts/:id/report` - Signaler un post
-
----
-
-## Phase 11: Forum - Pages Frontend
-
-### 11.1 Pages principales
-- [ ] Page index forum (liste des catégories)
-- [ ] Page catégorie (liste des sujets)
-- [ ] Page sujet (liste des posts avec pagination)
-- [ ] Page création de sujet
-- [ ] Page édition de post
-
-### 11.2 Fonctionnalités avancées
-- [ ] Recherche dans le forum
-- [ ] Filtres et tri des sujets
-- [ ] Marquage lu/non-lu
-- [ ] Notifications de nouvelles réponses
-- [ ] Preview avant publication
-
----
-
-## Phase 12: Administration et modération
-
-### 12.1 Panel d'administration
+### 8.1 Panel d'administration
 - [ ] Dashboard admin (statistiques générales)
 - [ ] Gestion des utilisateurs (liste, ban, édition)
 - [ ] Gestion des rôles et permissions
 - [ ] Gestion des catégories forum
 - [ ] Gestion des personnages (validation, suppression)
 
-### 12.2 Outils de modération
+### 8.2 Outils de modération
 - [ ] File des signalements
 - [ ] Historique des actions de modération
 - [ ] Outils de ban/mute utilisateur
@@ -324,27 +252,27 @@
 
 ---
 
-## Phase 13: Finitions et optimisations
+## Phase 9: Finitions et optimisations
 
-### 13.1 Profil utilisateur
+### 9.1 Profil utilisateur
 - [ ] Page profil public
 - [ ] Page paramètres du compte
 - [ ] Historique des posts
 - [ ] Liste des personnages
 
-### 13.2 Optimisations
+### 9.2 Optimisations
 - [ ] Lazy loading des composants
 - [ ] Optimisation des images
 - [ ] Mise en cache des requêtes fréquentes
 - [ ] SEO (meta tags, sitemap)
 
-### 13.3 Tests et qualité
+### 9.3 Tests et qualité
 - [ ] Tests unitaires backend
 - [ ] Tests d'intégration API
 - [ ] Tests composants React
 - [ ] Tests end-to-end (optionnel)
 
-### 13.4 Déploiement
+### 9.4 Déploiement
 - [ ] Configuration environnement production
 - [ ] CI/CD pipeline
 - [ ] Documentation déploiement
@@ -362,11 +290,9 @@
 | 4 | Phase 4 | Formulaires - Base pour création de contenu | ✅ |
 | 5 | Phase 5 | Pages d'erreur - UX professionnelle | ✅ |
 | 6 | Phase 6 | Personnages - Coeur du RP | ✅ |
-| 7 | Phase 7-8 | Forum fondations + BDD | |
-| 8 | Phase 9 | Permissions - Sécurité du forum | |
-| 9 | Phase 10-11 | Forum complet | |
-| 10 | Phase 12 | Administration | |
-| 11 | Phase 13 | Finitions | |
+| 7 | Phase 7 | Forum complet (BDD + API + Frontend + Recherche + Modération) | ✅ |
+| 8 | Phase 8 | Administration et modération | |
+| 9 | Phase 9 | Finitions et optimisations | |
 
 ---
 
