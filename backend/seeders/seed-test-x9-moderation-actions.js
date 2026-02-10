@@ -52,7 +52,7 @@ module.exports = {
 
     // Retrieve the post report (if any) to reference in review_report
     const [reports] = await queryInterface.sequelize.query(
-      'SELECT id FROM post_reports WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1'
+      'SELECT id FROM post_reports ORDER BY id ASC LIMIT 1'
     );
     const firstReport = reports[0] || null;
 
