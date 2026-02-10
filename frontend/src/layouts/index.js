@@ -12,3 +12,5 @@ export {
   FooterBorder,
   NavDivider,
 } from './MainLayout'
+
+export { AdminLayout } from './AdminLayout'

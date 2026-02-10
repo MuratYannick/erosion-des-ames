@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
-import { MainLayout } from '@/layouts'
+import { MainLayout, AdminLayout } from '@/layouts'
 import {
   ToastProvider,
   Sidebar,
@@ -17,6 +17,13 @@ import { Home, Foreword, Universe, Characters } from '@/pages'
 import { ForumIndex, ForumCategory, ForumTopic, ForumCreateTopic, ForumEditTopic, ForumEditPost, ForumSearch, ForumModeration } from '@/pages/Forum'
 import { MyCharactersList, MyCharacterDetail, MyCharacterCreate, MyCharacterEdit } from '@/pages/MyCharacters'
 import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
+import { AdminDashboard } from '@/pages/Admin/AdminDashboard'
+import { AdminUsers } from '@/pages/Admin/AdminUsers'
+import { AdminUserDetail } from '@/pages/Admin/AdminUserDetail'
+import { AdminCharacters } from '@/pages/Admin/AdminCharacters'
+import { AdminForum } from '@/pages/Admin/AdminForum'
+import { AdminModeration } from '@/pages/Admin/AdminModeration'
+import { AdminLogs } from '@/pages/Admin/AdminLogs'
 import { NotFound, Forbidden, ServerError, Maintenance } from '@/pages/errors'
 import { ErrorBoundary } from '@/components/errors'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -199,6 +206,17 @@ function App() {
             <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
             <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
             <Route path="/verifier-email" element={<VerifyEmail />} />
+
+            {/* Routes admin - avec AdminLayout (ProtectedRoute ADMIN/MODERATOR intégré) */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="utilisateurs" element={<ProtectedRoute roles={['ADMIN']}><AdminUsers /></ProtectedRoute>} />
+              <Route path="utilisateurs/:id" element={<ProtectedRoute roles={['ADMIN']}><AdminUserDetail /></ProtectedRoute>} />
+              <Route path="personnages" element={<AdminCharacters />} />
+              <Route path="forum" element={<ProtectedRoute roles={['ADMIN']}><AdminForum /></ProtectedRoute>} />
+              <Route path="moderation" element={<AdminModeration />} />
+              <Route path="journal" element={<AdminLogs />} />
+            </Route>
 
             {/* Routes principales - avec MainLayout */}
             <Route element={<MainLayout />}>
