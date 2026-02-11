@@ -146,7 +146,7 @@ const getById = asyncHandler(async (req, res) => {
 
   const topic = await ForumTopic.findByPk(req.params.id, {
     include: [
-      { model: ForumCategory, as: 'category', attributes: ['id', 'name', 'slug', 'isRp'] },
+      { model: ForumCategory, as: 'category', attributes: ['id', 'name', 'slug', 'isRp', 'isActive'] },
       { model: User, as: 'author', attributes: ['id', 'username', 'avatar'] },
       { model: Character, as: 'character', attributes: ['id', 'name'] },
     ],

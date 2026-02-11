@@ -1,6 +1,6 @@
 'use strict';
 
-const { User } = require('../models');
+const { User, UserSanction } = require('../models');
 const { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } = require('../utils/email');
 const { Op } = require('sequelize');
 
@@ -139,6 +139,25 @@ const login = async (req, res) => {
         error: {
           message: 'Identifiant ou mot de passe incorrect',
           code: 'INVALID_CREDENTIALS',
+        },
+      });
+    }
+
+    // Vérifier qu'il n'y a pas de bannissement actif (défense en profondeur)
+    const activeBan = await UserSanction.scope(['active', 'bans']).findOne({
+      where: { userId: user.id },
+    });
+    if (activeBan) {
+      // S'assurer que isActive est bien à false
+      if (user.isActive) {
+        user.isActive = false;
+        await user.save();
+      }
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Votre compte a été banni. Veuillez contacter l\'administration.',
+          code: 'ACCOUNT_BANNED',
         },
       });
     }

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '@/components/ui/Modal/Modal'
-import { Select } from '@/components/ui/Select/Select'
 import Button from '@/components/ui/Button/Button'
 
 // ============================================
@@ -13,6 +12,43 @@ const IconFolder = () => (
     <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
   </svg>
 )
+
+// ============================================
+// TREE UTILITIES
+// ============================================
+
+const buildTree = (flatCategories) => {
+  const map = {}
+  const roots = []
+  flatCategories.forEach(cat => {
+    map[cat.id] = { ...cat, children: [] }
+  })
+  flatCategories.forEach(cat => {
+    if (cat.parentId && map[cat.parentId]) {
+      map[cat.parentId].children.push(map[cat.id])
+    } else {
+      roots.push(map[cat.id])
+    }
+  })
+  const sortChildren = (nodes) => {
+    nodes.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    nodes.forEach(node => sortChildren(node.children))
+  }
+  sortChildren(roots)
+  return roots
+}
+
+const flattenTreeForSelect = (tree, depth = 0) => {
+  const result = []
+  tree.forEach(node => {
+    const prefix = depth > 0 ? '\u00A0\u00A0'.repeat(depth) + '\u2514 ' : ''
+    result.push({ value: String(node.id), label: prefix + node.name })
+    if (node.children?.length > 0) {
+      result.push(...flattenTreeForSelect(node.children, depth + 1))
+    }
+  })
+  return result
+}
 
 // ============================================
 // MOVE TOPIC MODAL
@@ -28,29 +64,30 @@ const MoveTopicModal = ({
 }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState('')
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedCategoryId('')
-    }
-  }, [isOpen])
+  const handleClose = useCallback(() => {
+    setSelectedCategoryId('')
+    onClose?.()
+  }, [onClose])
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     const catId = Number(selectedCategoryId)
     if (catId && catId !== topic?.category?.id) {
       onConfirm?.(catId)
     }
-  }
+  }, [selectedCategoryId, topic?.category?.id, onConfirm])
 
-  // Filter out current category from destination options
-  const availableCategories = categories
-    .filter((cat) => cat.id !== topic?.category?.id)
-    .map((cat) => ({ value: String(cat.id), label: cat.name }))
+  // Build indented tree options, filtering out current category
+  const availableCategories = useMemo(() => {
+    const filtered = categories.filter((cat) => cat.id !== topic?.category?.id)
+    const tree = buildTree(filtered)
+    return flattenTreeForSelect(tree)
+  }, [categories, topic?.category?.id])
 
   const isValid = selectedCategoryId && Number(selectedCategoryId) !== topic?.category?.id
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="sm">
-      <ModalHeader onClose={onClose}>Déplacer le sujet</ModalHeader>
+    <Modal isOpen={isOpen} onClose={handleClose} size="sm" className="!bg-[#1a2027] !border-[#6b3212]/60">
+      <ModalHeader onClose={handleClose} className="!bg-[#1a2027] !border-b-[#6b3212]/40 [&_.modal-title]:!text-[#d4c9ba] [&_.modal-close]:!text-[#64707e] [&_.modal-close:hover]:!text-[#d4c9ba] [&_.modal-close:hover]:!bg-[#232930]">Déplacer le sujet</ModalHeader>
 
       <ModalBody>
         <div className="space-y-5">
@@ -71,7 +108,7 @@ const MoveTopicModal = ({
           {/* Current category */}
           {topic?.category && (
             <div>
-              <p className="text-[#64707e] text-xs uppercase tracking-wide mb-2">
+              <p className="text-[#8f99a5] text-xs uppercase tracking-wide mb-2">
                 Catégorie actuelle
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#232930] border border-[#6b3212]/60 text-[#bba794] text-sm font-medium">
@@ -82,19 +119,35 @@ const MoveTopicModal = ({
           )}
 
           {/* Destination category */}
-          <Select
-            label="Nouvelle catégorie"
-            placeholder="Sélectionner une catégorie..."
-            options={availableCategories}
-            value={selectedCategoryId}
-            onChange={setSelectedCategoryId}
-          />
+          <div>
+            <label
+              htmlFor="move-category-select"
+              className="block text-[#8f99a5] text-xs uppercase tracking-wide mb-1.5"
+            >
+              Nouvelle catégorie
+            </label>
+            <select
+              id="move-category-select"
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+              className="w-full bg-[#232930] border border-[#6b3212]/50 text-[#d4c9ba] rounded-md px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff9635] focus:ring-2 focus:ring-[#ff9635]/20 cursor-pointer"
+            >
+              <option value="" disabled className="text-[#64707e]">
+                Sélectionner une catégorie...
+              </option>
+              {availableCategories.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </ModalBody>
 
-      <ModalFooter>
+      <ModalFooter className="!bg-[#1a2027] !border-t-[#6b3212]/40">
         <div className="flex items-center justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={handleClose}>
             Annuler
           </Button>
           <Button

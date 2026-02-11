@@ -366,7 +366,7 @@ export const usePendingCharacters = (params = {}, options = {}) => {
  * const { data: categories, loading, error, refetch } = useAdminForumCategories();
  */
 export const useAdminForumCategories = (options = {}) => {
-  const { enabled = true, onSuccess, onError } = options;
+  const { enabled = true, includeTopics = false, onSuccess, onError } = options;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -378,7 +378,7 @@ export const useAdminForumCategories = (options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getAdminCategories();
+      const response = await adminService.getAdminCategories({ includeTopics });
       const responseData = response.data;
       setData(responseData);
 
@@ -398,7 +398,7 @@ export const useAdminForumCategories = (options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [enabled, onSuccess, onError]);
+  }, [enabled, includeTopics, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {

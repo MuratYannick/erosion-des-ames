@@ -115,6 +115,7 @@ const approve = asyncHandler(async (req, res) => {
       targetType: 'character',
       reason: null,
       details: null,
+      transaction: t,
     });
   });
 
@@ -155,6 +156,7 @@ const reject = asyncHandler(async (req, res) => {
       targetType: 'character',
       reason: rejectionReason || null,
       details: null,
+      transaction: t,
     });
   });
 
@@ -187,6 +189,7 @@ const remove = asyncHandler(async (req, res) => {
       targetType: 'character',
       reason: req.body.reason || null,
       details: { characterName: character.name },
+      transaction: t,
     });
   });
 

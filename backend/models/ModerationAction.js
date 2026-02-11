@@ -92,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
   // Static method: convenience wrapper to create an audit log entry.
   // All callers should go through this method instead of ModerationAction.create()
   // directly so that the call site stays clean and consistent.
-  ModerationAction.log = function ({ actionType, moderatorId, targetUserId, targetId, targetType, reason, details }) {
+  ModerationAction.log = function ({ actionType, moderatorId, targetUserId, targetId, targetType, reason, details, transaction }) {
     return ModerationAction.create({
       actionType,
       moderatorId,
@@ -101,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
       targetType,
       reason,
       details,
-    });
+    }, transaction ? { transaction } : undefined);
   };
 
   ModerationAction.associate = (models) => {

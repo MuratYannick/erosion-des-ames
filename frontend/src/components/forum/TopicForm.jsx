@@ -6,9 +6,10 @@ import Button from '@/components/ui/Button/Button'
 
 const TopicForm = ({
   initialValues = {},
-  categories = [],
-  characters = [],
+  categoryId,
+  categoryName,
   isRpCategory = false,
+  characters = [],
   isStaff = false,
   isEditing = false,
   loading = false,
@@ -18,7 +19,6 @@ const TopicForm = ({
   className = '',
 }) => {
   const [title, setTitle] = useState(initialValues.title || '')
-  const [categoryId, setCategoryId] = useState(initialValues.categoryId || '')
   const [content, setContent] = useState(initialValues.content || '')
   const [characterId, setCharacterId] = useState(initialValues.characterId || '')
   const [isPinned, setIsPinned] = useState(initialValues.isPinned || false)
@@ -27,15 +27,12 @@ const TopicForm = ({
   const [showCharacterSelect, setShowCharacterSelect] = useState(isRpCategory)
 
   useEffect(() => {
-    if (categoryId && categories.length > 0) {
-      const selectedCat = categories.find((c) => String(c.id) === String(categoryId))
-      setShowCharacterSelect(selectedCat?.isRp || false)
-    }
-  }, [categoryId, categories])
+    setShowCharacterSelect(isRpCategory)
+  }, [isRpCategory])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const data = { title, categoryId, content }
+    const data = { title, content }
     if (showCharacterSelect && characterId) {
       data.characterId = characterId
     }
@@ -46,11 +43,6 @@ const TopicForm = ({
     onSubmit?.(data)
   }
 
-  const categoryOptions = categories.map((c) => ({
-    value: String(c.id),
-    label: c.name,
-  }))
-
   const characterOptions = characters.map((c) => ({
     value: String(c.id),
     label: c.name,
@@ -58,17 +50,16 @@ const TopicForm = ({
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-4 ${className}`}>
-      {/* Category selector (only for creation) */}
-      {!isEditing && (
-        <Select
-          label="Catégorie"
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          options={categoryOptions}
-          placeholder="Choisir une catégorie"
-          error={errors.categoryId}
-          required
-        />
+      {/* Category (read-only, only for creation) */}
+      {!isEditing && categoryName && (
+        <div>
+          <label className="block font-ui text-sm text-primary-700 mb-1.5">
+            Catégorie
+          </label>
+          <div className="px-3 py-2 bg-primary-50/50 border border-neutral-200 rounded-stone font-body text-sm text-skin-base">
+            {categoryName}
+          </div>
+        </div>
       )}
 
       {/* Title */}

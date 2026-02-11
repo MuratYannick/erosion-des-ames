@@ -17,12 +17,12 @@ const {
 /**
  * @route   GET /api/admin/forum/categories
  * @desc    Lister toutes les catégories (y compris inactives)
- * @access  ADMIN
+ * @access  ADMIN, MODERATOR
  */
 router.get(
   '/categories',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminForumController.getCategories
 );
 
@@ -87,7 +87,7 @@ router.patch(
 router.patch(
   '/topics/:id/move',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   moveTopicValidation,
   validate,
   adminForumController.moveTopic
@@ -96,12 +96,12 @@ router.patch(
 /**
  * @route   PATCH /api/admin/forum/topics/merge
  * @desc    Fusionner deux sujets (sourceTopicId + targetTopicId dans le body)
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/topics/merge',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   mergeTopicsValidation,
   validate,
   adminForumController.mergeTopics

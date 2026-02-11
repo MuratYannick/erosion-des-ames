@@ -504,20 +504,20 @@ Cette phase consiste à créer le système complet d'administration et de modér
 
 ## Critères de validation
 
-- [ ] Le dashboard affiche les statistiques correctes (utilisateurs, personnages, forum, signalements)
-- [ ] La liste des utilisateurs est filtrable par rôle, statut et recherche textuelle
-- [ ] Le bannissement désactive le compte et empêche la connexion
+- [x] Le dashboard affiche les statistiques correctes (utilisateurs, personnages, forum, signalements)
+- [x] La liste des utilisateurs est filtrable par rôle, statut et recherche textuelle
+- [x] Le bannissement désactive le compte et empêche la connexion
 - [ ] Le mute empêche la création de posts/sujets sans désactiver le compte
 - [ ] Les sanctions avec durée expirent automatiquement
-- [ ] La révocation d'une sanction réactive le compte (unban) ou le droit de poster (unmute)
+- [x] La révocation d'une sanction réactive le compte (unban) ou le droit de poster (unmute)
 - [ ] Le changement de rôle est immédiatement effectif
-- [ ] Les personnages en attente peuvent être approuvés ou rejetés avec raison depuis le panel
+- [x] Les personnages en attente peuvent être approuvés ou rejetés avec raison depuis le panel
 - [ ] Les catégories du forum sont gérées (CRUD + réordonnancement) depuis le panel
 - [ ] Le déplacement de sujet met à jour les compteurs des catégories source et destination
 - [ ] La fusion de sujets transfère tous les posts et supprime le sujet source
-- [ ] Toutes les actions d'administration sont enregistrées dans moderation_actions
-- [ ] Le journal de modération affiche l'historique complet avec filtres fonctionnels
+- [x] Toutes les actions d'administration sont enregistrées dans moderation_actions
+- [x] Le journal de modération affiche l'historique complet avec filtres fonctionnels
 - [ ] Les MODERATOR ne peuvent pas modifier les ADMIN
-- [ ] Un utilisateur ne peut pas se bannir ou se muter lui-même
+- [x] Un utilisateur ne peut pas se bannir ou se muter lui-même
 - [ ] Les routes admin ne sont accessibles qu'aux rôles ADMIN et/ou MODERATOR
 - [ ] Le panel est responsive et utilisable sur mobile

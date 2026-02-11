@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   useAdminForumCategories,
   useCreateCategory,
@@ -8,6 +9,7 @@ import {
   useMoveTopic,
   useMergeTopics,
 } from '@/hooks/useAdmin';
+import { useAuth } from '@/hooks/useAuth';
 import { MoveTopicModal } from '@/components/admin';
 
 // ============================================
@@ -88,6 +90,81 @@ const IconCheck = () => (
   </svg>
 );
 
+const IconChevronRight = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+    <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+// ============================================
+// TREE UTILITIES
+// ============================================
+
+/**
+ * Construit un arbre à partir de la liste plate de catégories.
+ * Retourne les racines (parentId === null) avec children imbriqués.
+ */
+const buildTree = (flatCategories) => {
+  const map = {};
+  const roots = [];
+
+  // Créer une copie avec children vide pour chaque catégorie
+  flatCategories.forEach(cat => {
+    map[cat.id] = { ...cat, children: [] };
+  });
+
+  // Rattacher chaque catégorie à son parent
+  flatCategories.forEach(cat => {
+    if (cat.parentId && map[cat.parentId]) {
+      map[cat.parentId].children.push(map[cat.id]);
+    } else {
+      roots.push(map[cat.id]);
+    }
+  });
+
+  // Trier par displayOrder à chaque niveau
+  const sortChildren = (nodes) => {
+    nodes.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    nodes.forEach(node => sortChildren(node.children));
+  };
+  sortChildren(roots);
+
+  return roots;
+};
+
+/**
+ * Aplatit l'arbre pour le dropdown parent avec indentation textuelle.
+ */
+const flattenTreeForSelect = (tree, depth = 0) => {
+  const result = [];
+  tree.forEach(node => {
+    const prefix = depth > 0 ? '\u00A0\u00A0'.repeat(depth) + '└ ' : '';
+    result.push({ id: node.id, label: prefix + node.name, depth });
+    if (node.children?.length > 0) {
+      result.push(...flattenTreeForSelect(node.children, depth + 1));
+    }
+  });
+  return result;
+};
+
+/**
+ * Retourne tous les IDs descendants d'une catégorie (pour exclure du select parent).
+ */
+const getDescendantIds = (categoryId, flatCategories) => {
+  const ids = new Set();
+  const collect = (parentId) => {
+    flatCategories.forEach(cat => {
+      if (cat.parentId === parentId && !ids.has(cat.id)) {
+        ids.add(cat.id);
+        collect(cat.id);
+      }
+    });
+  };
+  collect(categoryId);
+  return ids;
+};
+
 // ============================================
 // CATEGORY FORM (used inline for create/edit)
 // ============================================
@@ -133,11 +210,15 @@ const CategoryForm = ({ initialData, onSubmit, onCancel, loading, categories = [
     });
   };
 
-  // Exclude self and own children from parent options
-  const parentOptions = categories.filter(c => {
-    if (!isEdit) return true;
-    return c.id !== initialData?.id;
-  });
+  // Build tree for select and exclude self + descendants in edit mode
+  const parentSelectOptions = useMemo(() => {
+    const tree = buildTree(categories);
+    const flatOptions = flattenTreeForSelect(tree);
+    if (!isEdit) return flatOptions;
+    const excludeIds = getDescendantIds(initialData?.id, categories);
+    excludeIds.add(initialData?.id);
+    return flatOptions.filter(opt => !excludeIds.has(opt.id));
+  }, [categories, isEdit, initialData?.id]);
 
   return (
     <form onSubmit={handleSubmit} className="bg-[#1a2027] border border-[#6b3212]/40 rounded-lg p-5 space-y-4">
@@ -172,8 +253,8 @@ const CategoryForm = ({ initialData, onSubmit, onCancel, loading, categories = [
             className="w-full px-3 py-2 bg-[#232930] border border-[#6b3212]/40 text-[#bba794] text-sm rounded-md focus:outline-none focus:border-[#ff9635]/60 transition-colors cursor-pointer"
           >
             <option value="">Aucune (racine)</option>
-            {parentOptions.map(cat => (
-              <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
+            {parentSelectOptions.map(opt => (
+              <option key={opt.id} value={String(opt.id)}>{opt.label}</option>
             ))}
           </select>
         </div>
@@ -258,120 +339,271 @@ const CategoryForm = ({ initialData, onSubmit, onCancel, loading, categories = [
 };
 
 // ============================================
-// CATEGORY ROW
+// TOPIC ICONS
 // ============================================
 
-const CategoryRow = ({ category, index, total, onEdit, onDelete, onMoveUp, onMoveDown, reorderLoading }) => {
+const IconMessageSquare = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"
+    strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+  </svg>
+);
+
+const IconPin = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3" aria-hidden="true">
+    <path d="M12 17v5" /><path d="M9 10.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V16h14v-.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v5.76z" />
+  </svg>
+);
+
+const IconLock = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3" aria-hidden="true">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+);
+
+// ============================================
+// TOPIC ROW (leaf node in tree)
+// ============================================
+
+const formatDate = (dateString) => {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleDateString('fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+};
+
+const TopicRow = ({ topic, depth }) => (
+  <div
+    className="flex items-center gap-3 py-2 px-3 text-sm border-b border-[#6b3212]/10 last:border-b-0 hover:bg-[#232930]/40 transition-colors"
+    style={{ marginLeft: depth * 24 }}
+  >
+    <span className="text-[#64707e]"><IconMessageSquare /></span>
+    <span className="text-[#bba794] truncate flex-1 min-w-0">
+      {topic.title}
+    </span>
+
+    {/* Indicators */}
+    <div className="flex items-center gap-1.5 shrink-0">
+      {topic.isPinned && (
+        <span className="text-[#ff9635]" title="Épinglé"><IconPin /></span>
+      )}
+      {topic.isLocked && (
+        <span className="text-[#c95951]" title="Verrouillé"><IconLock /></span>
+      )}
+    </div>
+
+    {/* Author */}
+    <span className="hidden md:inline text-[#64707e] text-xs shrink-0">
+      {topic.author?.username || '—'}
+    </span>
+
+    {/* Stats */}
+    <div className="hidden sm:flex items-center gap-3 text-xs text-[#64707e] shrink-0 tabular-nums">
+      <span>{topic.postCount ?? 0} msg</span>
+      <span>{topic.viewCount ?? 0} vues</span>
+    </div>
+
+    {/* Date */}
+    <span className="hidden lg:inline text-[#64707e] text-xs shrink-0 tabular-nums">
+      {formatDate(topic.createdAt)}
+    </span>
+
+    {/* ID badge */}
+    <span className="text-[#64707e] text-xs font-mono shrink-0" title="ID du sujet">
+      #{topic.id}
+    </span>
+  </div>
+);
+
+// ============================================
+// CATEGORY TREE NODE (recursive)
+// ============================================
+
+const CategoryTreeNode = ({
+  category,
+  depth = 0,
+  siblings,
+  index,
+  onEdit,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  reorderLoading,
+  showActions = true,
+  showTopics = false,
+  expandedIds,
+  onToggleExpand,
+}) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const hasChildren = category.children?.length > 0;
+  const hasTopics = showTopics && category.topics?.length > 0;
+  const hasExpandableContent = hasChildren || hasTopics;
+  const isExpanded = expandedIds.has(category.id);
 
   return (
-    <div className="group flex items-center gap-4 p-3 bg-[#232930]/60 hover:bg-[#232930] border border-[#6b3212]/20 hover:border-[#6b3212]/40 border-l-2 border-l-transparent hover:border-l-[#ff9635]/50 rounded-lg transition-colors">
-      {/* Order arrows */}
-      <div className="flex flex-col gap-0.5">
+    <>
+      <div
+        className="group flex items-center gap-3 p-3 bg-[#232930]/60 hover:bg-[#232930] border border-[#6b3212]/20 hover:border-[#6b3212]/40 border-l-2 border-l-transparent hover:border-l-[#ff9635]/50 rounded-lg transition-colors"
+        style={{ marginLeft: depth * 24 }}
+      >
+        {/* Expand / collapse toggle */}
         <button
           type="button"
-          onClick={() => onMoveUp(index)}
-          disabled={index === 0 || reorderLoading}
-          className="p-0.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          title="Monter"
+          onClick={() => hasExpandableContent && onToggleExpand(category.id)}
+          disabled={!hasExpandableContent}
+          className={`p-0.5 rounded transition-transform duration-150 ${
+            hasExpandableContent
+              ? 'text-[#bba794] hover:text-[#ff9635] cursor-pointer'
+              : 'text-transparent cursor-default'
+          } ${isExpanded ? 'rotate-90' : ''}`}
+          aria-label={isExpanded ? 'Replier' : 'Déplier'}
         >
-          <IconChevronUp />
+          <IconChevronRight />
         </button>
-        <button
-          type="button"
-          onClick={() => onMoveDown(index)}
-          disabled={index === total - 1 || reorderLoading}
-          className="p-0.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          title="Descendre"
-        >
-          <IconChevronDown />
-        </button>
-      </div>
 
-      {/* Order number */}
-      <span className="text-[#64707e] text-xs font-mono w-6 text-center shrink-0">
-        {index + 1}
-      </span>
+        {/* Order arrows */}
+        {showActions && (
+          <div className="flex flex-col gap-0.5">
+            <button
+              type="button"
+              onClick={() => onMoveUp(category, siblings)}
+              disabled={index === 0 || reorderLoading}
+              className="p-0.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Monter"
+            >
+              <IconChevronUp />
+            </button>
+            <button
+              type="button"
+              onClick={() => onMoveDown(category, siblings)}
+              disabled={index === siblings.length - 1 || reorderLoading}
+              className="p-0.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Descendre"
+            >
+              <IconChevronDown />
+            </button>
+          </div>
+        )}
 
-      {/* Icon + Name */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-[#ff9635]/70"><IconFolder /></span>
-          <span className="text-[#d4c9ba] font-medium text-sm truncate">{category.name}</span>
+        {/* Icon + Name */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className={depth === 0 ? 'text-[#ff9635]/70' : 'text-[#ff9635]/40'}><IconFolder /></span>
+            <span className="text-[#d4c9ba] font-medium text-sm truncate">{category.name}</span>
+          </div>
+          {category.description && (
+            <p className="text-[#8f99a5] text-xs mt-0.5 truncate pl-7">{category.description}</p>
+          )}
+        </div>
 
-          {category.parent && (
-            <span className="text-[#64707e] text-xs shrink-0">
-              dans {category.parent.name}
+        {/* Badges */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          {!category.isActive && (
+            <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#c95951]/15 text-[#c95951] border border-[#c95951]/30">
+              Inactive
+            </span>
+          )}
+          {category.isRp && (
+            <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#a890c0]/15 text-[#a890c0] border border-[#a890c0]/30">
+              RP
             </span>
           )}
         </div>
-        {category.description && (
-          <p className="text-[#8f99a5] text-xs mt-0.5 truncate pl-7">{category.description}</p>
-        )}
-      </div>
 
-      {/* Badges */}
-      <div className="hidden md:flex items-center gap-2 shrink-0">
-        {!category.isActive && (
-          <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#c95951]/15 text-[#c95951] border border-[#c95951]/30">
-            Inactive
+        {/* Counts */}
+        <div className="hidden sm:flex items-center gap-3 text-xs text-[#8f99a5] shrink-0">
+          <span title="Sujets">{category.topicCount ?? 0} sujets</span>
+          <span title="Posts">{category.postCount ?? 0} posts</span>
+        </div>
+
+        {/* Children count indicator */}
+        {hasChildren && (
+          <span className="text-[#64707e] text-xs shrink-0" title="Sous-catégories">
+            {category.children.length} sous-cat.
           </span>
         )}
-        {category.isRp && (
-          <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#a890c0]/15 text-[#a890c0] border border-[#a890c0]/30">
-            RP
-          </span>
-        )}
-      </div>
 
-      {/* Counts */}
-      <div className="hidden sm:flex items-center gap-3 text-xs text-[#8f99a5] shrink-0">
-        <span title="Sujets">{category.topicCount ?? 0} sujets</span>
-        <span title="Posts">{category.postCount ?? 0} posts</span>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-1 shrink-0">
-        <button
-          type="button"
-          onClick={() => onEdit(category)}
-          className="p-1.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 transition-colors"
-          title="Modifier"
-        >
-          <IconEdit />
-        </button>
-
-        {confirmDelete ? (
-          <div className="flex items-center gap-1">
+        {/* Actions */}
+        {showActions && (
+          <div className="flex items-center gap-1 shrink-0">
             <button
               type="button"
-              onClick={() => onDelete(category.id)}
-              className="p-1.5 rounded text-[#c95951] hover:bg-[#c95951]/10 transition-colors text-xs font-medium"
-              title="Confirmer la suppression"
+              onClick={() => onEdit(category)}
+              className="p-1.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 transition-colors"
+              title="Modifier"
             >
-              <IconCheck />
+              <IconEdit />
             </button>
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(false)}
-              className="p-1.5 rounded text-[#64707e] hover:text-[#d4c9ba] transition-colors"
-              title="Annuler"
-            >
-              <IconX />
-            </button>
+
+            {confirmDelete ? (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => onDelete(category.id)}
+                  className="p-1.5 rounded text-[#c95951] hover:bg-[#c95951]/10 transition-colors text-xs font-medium"
+                  title="Confirmer la suppression"
+                >
+                  <IconCheck />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  className="p-1.5 rounded text-[#64707e] hover:text-[#d4c9ba] transition-colors"
+                  title="Annuler"
+                >
+                  <IconX />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(true)}
+                className="p-1.5 rounded text-[#64707e] hover:text-[#c95951] hover:bg-[#c95951]/10 transition-colors"
+                title="Supprimer"
+              >
+                <IconTrash />
+              </button>
+            )}
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmDelete(true)}
-            className="p-1.5 rounded text-[#64707e] hover:text-[#c95951] hover:bg-[#c95951]/10 transition-colors"
-            title="Supprimer"
-          >
-            <IconTrash />
-          </button>
         )}
       </div>
-    </div>
+
+      {/* Recursive children + topics */}
+      {hasExpandableContent && isExpanded && (
+        <div className="relative">
+          {/* Vertical connector line */}
+          <div
+            className="absolute top-0 bottom-0 border-l border-[#6b3212]/30"
+            style={{ left: depth * 24 + 20 }}
+          />
+          {/* Sub-categories */}
+          {category.children?.map((child, childIndex) => (
+            <CategoryTreeNode
+              key={child.id}
+              category={child}
+              depth={depth + 1}
+              siblings={category.children}
+              index={childIndex}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              reorderLoading={reorderLoading}
+              showActions={showActions}
+              showTopics={showTopics}
+              expandedIds={expandedIds}
+              onToggleExpand={onToggleExpand}
+            />
+          ))}
+          {/* Topics */}
+          {hasTopics && category.topics.map(topic => (
+            <TopicRow key={`t-${topic.id}`} topic={topic} depth={depth + 1} />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -418,10 +650,16 @@ const CategoriesSkeleton = () => (
 // ============================================
 
 const AdminForum = () => {
+  const { isAdmin } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // --- Category state ---
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [defaultParentId, setDefaultParentId] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
+  const [expandedIds, setExpandedIds] = useState(new Set());
+  const [showTopics, setShowTopics] = useState(false);
 
   // --- Topic tools state ---
   const [moveTopicId, setMoveTopicId] = useState('');
@@ -430,12 +668,52 @@ const AdminForum = () => {
   const [mergeTargetId, setMergeTargetId] = useState('');
   const [topicMessage, setTopicMessage] = useState(null);
 
+  // --- Auto-open create form from URL ?parentId=X ---
+  useEffect(() => {
+    const parentIdParam = searchParams.get('parentId');
+    if (parentIdParam && isAdmin) {
+      setDefaultParentId(Number(parentIdParam));
+      setShowCreateForm(true);
+      // Clean up the URL
+      searchParams.delete('parentId');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // --- Queries ---
-  const { data: categoriesData, loading, error, refetch } = useAdminForumCategories();
+  const { data: categoriesData, loading, error, refetch } = useAdminForumCategories({ includeTopics: showTopics });
 
   const categories = useMemo(() => {
     return categoriesData?.categories || [];
   }, [categoriesData]);
+
+  // --- Tree structure ---
+  const categoryTree = useMemo(() => {
+    const tree = buildTree(categories);
+    // Auto-expand: parent categories + categories with topics when showTopics is on
+    if (categories.length > 0) {
+      setExpandedIds(prev => {
+        const next = new Set(prev);
+        categories.forEach(c => {
+          // Always expand parent nodes
+          if (categories.some(ch => ch.parentId === c.id)) next.add(c.id);
+          // Expand categories with topics when showTopics is on
+          if (showTopics && c.topics?.length > 0) next.add(c.id);
+        });
+        return next.size !== prev.size ? next : prev;
+      });
+    }
+    return tree;
+  }, [categories, showTopics]);
+
+  const handleToggleExpand = useCallback((id) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
   // --- Category mutations ---
   const { mutate: createMutate, loading: createLoading } = useCreateCategory({
@@ -509,21 +787,23 @@ const AdminForum = () => {
     deleteMutate(id);
   }, [deleteMutate]);
 
-  const handleMoveUp = useCallback((index) => {
-    if (index <= 0) return;
-    const reordered = [...categories];
-    [reordered[index - 1], reordered[index]] = [reordered[index], reordered[index - 1]];
+  const handleMoveUp = useCallback((category, siblings) => {
+    const idx = siblings.findIndex(s => s.id === category.id);
+    if (idx <= 0) return;
+    const reordered = [...siblings];
+    [reordered[idx - 1], reordered[idx]] = [reordered[idx], reordered[idx - 1]];
     const updates = reordered.map((cat, i) => ({ id: cat.id, displayOrder: i }));
     reorderMutate(updates);
-  }, [categories, reorderMutate]);
+  }, [reorderMutate]);
 
-  const handleMoveDown = useCallback((index) => {
-    if (index >= categories.length - 1) return;
-    const reordered = [...categories];
-    [reordered[index], reordered[index + 1]] = [reordered[index + 1], reordered[index]];
+  const handleMoveDown = useCallback((category, siblings) => {
+    const idx = siblings.findIndex(s => s.id === category.id);
+    if (idx >= siblings.length - 1) return;
+    const reordered = [...siblings];
+    [reordered[idx], reordered[idx + 1]] = [reordered[idx + 1], reordered[idx]];
     const updates = reordered.map((cat, i) => ({ id: cat.id, displayOrder: i }));
     reorderMutate(updates);
-  }, [categories, reorderMutate]);
+  }, [reorderMutate]);
 
   const handleStartEdit = useCallback((category) => {
     setEditingCategory(category);
@@ -620,24 +900,39 @@ const AdminForum = () => {
           </div>
         )}
 
-        {/* Create button */}
-        {!showCreateForm && !editingCategory && (
+        {/* Toolbar: create button + topic toggle */}
+        <div className="flex items-center gap-3 mb-4">
+          {isAdmin && !showCreateForm && !editingCategory && (
+            <button
+              type="button"
+              onClick={handleStartCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-[#ff9635]/20 border border-[#ff9635]/50 text-[#ff9635] hover:bg-[#ff9635]/30 transition-colors"
+            >
+              <IconPlus />
+              Nouvelle catégorie
+            </button>
+          )}
           <button
             type="button"
-            onClick={handleStartCreate}
-            className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-[#ff9635]/20 border border-[#ff9635]/50 text-[#ff9635] hover:bg-[#ff9635]/30 transition-colors"
+            onClick={() => setShowTopics(prev => !prev)}
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-colors ${
+              showTopics
+                ? 'bg-[#7ba5c9]/20 border-[#7ba5c9]/50 text-[#7ba5c9]'
+                : 'bg-[#232930]/60 border-[#6b3212]/40 text-[#64707e] hover:text-[#8f99a5] hover:border-[#6b3212]/60'
+            }`}
           >
-            <IconPlus />
-            Nouvelle catégorie
+            <IconMessageSquare />
+            {showTopics ? 'Masquer les sujets' : 'Afficher les sujets'}
           </button>
-        )}
+        </div>
 
         {/* Create form */}
-        {showCreateForm && (
+        {isAdmin && showCreateForm && (
           <div className="mb-4">
             <CategoryForm
+              initialData={defaultParentId ? { parentId: defaultParentId } : undefined}
               onSubmit={handleCreateSubmit}
-              onCancel={() => setShowCreateForm(false)}
+              onCancel={() => { setShowCreateForm(false); setDefaultParentId(null); }}
               loading={createLoading}
               categories={categories}
             />
@@ -645,7 +940,7 @@ const AdminForum = () => {
         )}
 
         {/* Edit form */}
-        {editingCategory && (
+        {isAdmin && editingCategory && (
           <div className="mb-4">
             <CategoryForm
               initialData={editingCategory}
@@ -658,7 +953,7 @@ const AdminForum = () => {
           </div>
         )}
 
-        {/* Category list */}
+        {/* Category tree */}
         {loading ? (
           <CategoriesSkeleton />
         ) : categories.length === 0 ? (
@@ -670,18 +965,23 @@ const AdminForum = () => {
             <p className="text-[#64707e] text-xs mt-1">Créez votre première catégorie pour organiser le forum</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {categories.map((category, index) => (
-              <CategoryRow
+          <div className="space-y-1">
+            {categoryTree.map((category, index) => (
+              <CategoryTreeNode
                 key={category.id}
                 category={category}
+                depth={0}
+                siblings={categoryTree}
                 index={index}
-                total={categories.length}
                 onEdit={handleStartEdit}
                 onDelete={handleDelete}
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
                 reorderLoading={reorderLoading}
+                showActions={isAdmin}
+                showTopics={showTopics}
+                expandedIds={expandedIds}
+                onToggleExpand={handleToggleExpand}
               />
             ))}
           </div>

@@ -9,7 +9,7 @@ import './AdminLayout.css'
 // ============================================
 
 const SIDEBAR_WIDTH = 264
-const ADMIN_ROLES = ['ADMIN', 'MODERATOR']
+const ADMIN_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER']
 
 // ============================================
 // INLINE SVG ICONS
@@ -302,43 +302,49 @@ const AdminSidebar = ({ isOpen, onClose, badgeCounts = {} }) => {
     onClose()
   }, [location.pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const navItems = useMemo(() => [
-    {
-      to: '/admin',
-      end: true,
-      label: 'Tableau de bord',
-      icon: <IconGrid />,
-    },
-    {
-      to: '/admin/utilisateurs',
-      label: 'Utilisateurs',
-      icon: <IconUsers />,
-    },
-    {
-      to: '/admin/personnages',
-      label: 'Personnages',
-      icon: <IconShield />,
-      badge: badgeCounts.pendingCharacters,
-      badgeVariant: 'standard',
-    },
-    {
-      to: '/admin/forum',
-      label: 'Forum',
-      icon: <IconChat />,
-    },
-    {
-      to: '/admin/moderation',
-      label: 'Modération',
-      icon: <IconGavel />,
-      badge: badgeCounts.pendingReports,
-      badgeVariant: 'urgent',
-    },
-    {
-      to: '/admin/journal',
-      label: 'Journal',
-      icon: <IconScroll />,
-    },
-  ], [badgeCounts.pendingCharacters, badgeCounts.pendingReports])
+  const navItems = useMemo(() => {
+    const allItems = [
+      {
+        to: '/admin',
+        end: true,
+        label: 'Tableau de bord',
+        icon: <IconGrid />,
+      },
+      {
+        to: '/admin/utilisateurs',
+        label: 'Utilisateurs',
+        icon: <IconUsers />,
+      },
+      {
+        to: '/admin/personnages',
+        label: 'Personnages',
+        icon: <IconShield />,
+        badge: badgeCounts.pendingCharacters,
+        badgeVariant: 'standard',
+      },
+      {
+        to: '/admin/forum',
+        label: 'Forum',
+        icon: <IconChat />,
+      },
+      {
+        to: '/admin/moderation',
+        label: 'Modération',
+        icon: <IconGavel />,
+        badge: badgeCounts.pendingReports,
+        badgeVariant: 'urgent',
+        roles: ['ADMIN', 'MODERATOR'],
+      },
+      {
+        to: '/admin/journal',
+        label: 'Journal',
+        icon: <IconScroll />,
+        roles: ['ADMIN', 'MODERATOR'],
+      },
+    ]
+
+    return allItems.filter(item => !item.roles || item.roles.includes(user?.role))
+  }, [badgeCounts.pendingCharacters, badgeCounts.pendingReports, user?.role])
 
   return (
     <>

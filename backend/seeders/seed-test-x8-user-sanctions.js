@@ -45,6 +45,12 @@ module.exports = {
     const revokedBanStartsAt = daysAgo(14);
     const revokedBanRevokedAt = daysAgo(7);
 
+    // Deactivate player1 account since they have an active permanent ban
+    await queryInterface.sequelize.query(
+      'UPDATE users SET is_active = false WHERE id = ?',
+      { replacements: [player1.id] }
+    );
+
     await queryInterface.bulkInsert('user_sanctions', [
       // ------------------------------------------------------------------
       // 1. Active permanent ban — player1 is permanently banned
@@ -102,6 +108,10 @@ module.exports = {
   },
 
   async down(queryInterface) {
+    // Restore is_active for all users before deleting sanctions
+    await queryInterface.sequelize.query(
+      'UPDATE users SET is_active = true WHERE is_active = false AND deleted_at IS NULL'
+    );
     await queryInterface.bulkDelete('user_sanctions', null, {});
   },
 };

@@ -200,9 +200,10 @@ const reviewReport = asyncHandler(async (req, res) => {
       actionType: 'review_report',
       moderatorId: req.user.id,
       targetId: report.id,
-      targetType: 'report',
+      targetType: 'post_report',
       reason: reason || null,
       details: { status, postId: report.postId },
+      transaction: t,
     });
   });
 

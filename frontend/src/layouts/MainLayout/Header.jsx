@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Avatar } from '@/components'
 import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from '@/components/ui/Dropdown/Dropdown'
 import { useAuth } from '@/hooks/useAuth'
@@ -184,7 +184,8 @@ const Header = ({
   className = '',
   ...props
 }) => {
-  const { user, isAuthenticated, logout, isAdmin } = useAuth()
+  const { user, isAuthenticated, logout, isAdmin, isModerator, isGameMaster } = useAuth()
+  const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
@@ -314,7 +315,7 @@ const Header = ({
                         Mes personnages
                       </DropdownItem>
                     </Link>
-                    {isAdmin && (
+                    {(isAdmin || isModerator || isGameMaster) && (
                       <>
                         <DropdownDivider />
                         <Link to="/admin" onClick={close}>
@@ -326,9 +327,10 @@ const Header = ({
                     )}
                     <DropdownDivider />
                     <DropdownItem
-                      onClick={() => {
+                      onClick={async () => {
                         close()
-                        logout()
+                        await logout()
+                        navigate('/')
                       }}
                       className="dropdown-item-danger"
                     >
@@ -450,7 +452,7 @@ const Header = ({
                   >
                     Mes personnages
                   </Link>
-                  {isAdmin && (
+                  {(isAdmin || isModerator || isGameMaster) && (
                     <Link
                       to="/admin"
                       className="mobile-nav-item"
@@ -462,9 +464,10 @@ const Header = ({
                   <button
                     type="button"
                     className="btn-auth btn-auth-secondary"
-                    onClick={() => {
-                      logout()
+                    onClick={async () => {
+                      await logout()
                       setIsMobileMenuOpen(false)
+                      navigate('/')
                     }}
                   >
                     Deconnexion

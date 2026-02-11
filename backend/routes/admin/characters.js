@@ -18,43 +18,43 @@ const {
 router.get(
   '/',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminCharacterController.getAll
 );
 
 /**
  * @route   GET /api/admin/characters/pending
  * @desc    File d'attente des personnages en attente d'approbation
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.get(
   '/pending',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminCharacterController.getPending
 );
 
 /**
  * @route   PATCH /api/admin/characters/:id/approve
  * @desc    Approuver un personnage
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/:id/approve',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminCharacterController.approve
 );
 
 /**
  * @route   PATCH /api/admin/characters/:id/reject
  * @desc    Rejeter un personnage
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/:id/reject',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   rejectCharacterValidation,
   validate,
   adminCharacterController.reject

@@ -16,36 +16,36 @@ const {
 /**
  * @route   GET /api/admin/users
  * @desc    Lister les utilisateurs (paginé, filtrable)
- * @access  ADMIN
+ * @access  ADMIN, MODERATOR
  */
 router.get(
   '/',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminUserController.getAll
 );
 
 /**
  * @route   GET /api/admin/users/:id
  * @desc    Détail d'un utilisateur
- * @access  ADMIN
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.get(
   '/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminUserController.getById
 );
 
 /**
  * @route   PATCH /api/admin/users/:id/role
  * @desc    Modifier le rôle d'un utilisateur
- * @access  ADMIN
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/:id/role',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   changeRoleValidation,
   validate,
   adminUserController.changeRole

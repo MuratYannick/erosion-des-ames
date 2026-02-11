@@ -210,12 +210,12 @@ function App() {
             {/* Routes admin - avec AdminLayout (ProtectedRoute ADMIN/MODERATOR intégré) */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
-              <Route path="utilisateurs" element={<ProtectedRoute roles={['ADMIN']}><AdminUsers /></ProtectedRoute>} />
-              <Route path="utilisateurs/:id" element={<ProtectedRoute roles={['ADMIN']}><AdminUserDetail /></ProtectedRoute>} />
+              <Route path="utilisateurs" element={<AdminUsers />} />
+              <Route path="utilisateurs/:id" element={<AdminUserDetail />} />
               <Route path="personnages" element={<AdminCharacters />} />
-              <Route path="forum" element={<ProtectedRoute roles={['ADMIN']}><AdminForum /></ProtectedRoute>} />
-              <Route path="moderation" element={<AdminModeration />} />
-              <Route path="journal" element={<AdminLogs />} />
+              <Route path="forum" element={<AdminForum />} />
+              <Route path="moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminModeration /></ProtectedRoute>} />
+              <Route path="journal" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminLogs /></ProtectedRoute>} />
             </Route>
 
             {/* Routes principales - avec MainLayout */}

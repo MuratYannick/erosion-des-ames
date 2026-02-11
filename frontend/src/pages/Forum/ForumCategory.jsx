@@ -26,9 +26,17 @@ const NewTopicIcon = () => (
   </svg>
 )
 
+const NewCategoryIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+    <line x1="12" y1="11" x2="12" y2="17" />
+    <line x1="9" y1="14" x2="15" y2="14" />
+  </svg>
+)
+
 const ForumCategory = () => {
   const { categorySlug } = useParams()
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [page, setPage] = useState(1)
   const [sort, setSort] = useState('recent')
 
@@ -125,6 +133,15 @@ const ForumCategory = () => {
                   ))}
                 </div>
               </div>
+
+              {/* New sub-category button (admin only) */}
+              {isAdmin && (
+                <Link to={`/admin/forum?parentId=${category.id}`}>
+                  <Button variant="ghost" size="sm" icon={<NewCategoryIcon />}>
+                    Nouvelle sous-catégorie
+                  </Button>
+                </Link>
+              )}
 
               {/* New topic button */}
               {user && (

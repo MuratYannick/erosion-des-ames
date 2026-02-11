@@ -225,8 +225,10 @@ export const deleteCharacter = async (id) => {
  * Récupère toutes les catégories du forum (vue admin avec données étendues)
  * @returns {Promise<Object>} Liste complète des catégories
  */
-export const getAdminCategories = async () => {
+export const getAdminCategories = async ({ includeTopics = false } = {}) => {
+  const params = includeTopics ? { includeTopics: 'true' } : {};
   const response = await api.get('/admin/forum/categories', {
+    params,
     skipErrorRedirect: true,
   });
   return response.data;

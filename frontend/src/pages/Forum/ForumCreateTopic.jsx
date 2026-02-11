@@ -3,7 +3,7 @@ import PageHeader from '@/components/content/PageHeader'
 import { TopicForm } from '@/components/forum'
 import { Card } from '@/components/ui/Card/Card'
 import Loader from '@/components/ui/Loader/Loader'
-import { useForumCategories, useCreateTopic } from '@/hooks/useForum'
+import { useForumCategory, useCreateTopic } from '@/hooks/useForum'
 import { useAuth } from '@/hooks/useAuth'
 
 const STAFF_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER']
@@ -15,8 +15,8 @@ const ForumCreateTopic = () => {
 
   const isStaff = user && STAFF_ROLES.includes(user.role)
 
-  // Fetch categories for the selector
-  const { data: categories, loading: categoriesLoading } = useForumCategories()
+  // Fetch the target category from slug
+  const { data: category, loading: categoryLoading, error: categoryError } = useForumCategory(categorySlug)
 
   // Create topic mutation
   const { mutate: createTopic, loading: creating, error: createError } = useCreateTopic({
@@ -26,7 +26,7 @@ const ForumCreateTopic = () => {
     },
   })
 
-  if (categoriesLoading) {
+  if (categoryLoading) {
     return (
       <div className="flex justify-center py-20">
         <Loader />
@@ -34,11 +34,17 @@ const ForumCreateTopic = () => {
     )
   }
 
-  // Find the current category from slug
-  const flatCategories = categories || []
-  const currentCategory = flatCategories.find(
-    (c) => c.slug === categorySlug || String(c.id) === categorySlug
-  )
+  if (categoryError || !category) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <Card variant="bordered" padding="md">
+          <p className="font-body text-error text-center">
+            Catégorie introuvable. Veuillez revenir au forum et choisir une catégorie.
+          </p>
+        </Card>
+      </div>
+    )
+  }
 
   // Build errors object from API error
   const errors = {}
@@ -54,9 +60,7 @@ const ForumCreateTopic = () => {
         title="Nouveau sujet"
         breadcrumbs={[
           { label: 'Forum', href: '/forum' },
-          ...(currentCategory
-            ? [{ label: currentCategory.name, href: `/forum/${categorySlug}` }]
-            : []),
+          { label: category.name, href: `/forum/${categorySlug}` },
           { label: 'Nouveau sujet' },
         ]}
         size="compact"
@@ -65,16 +69,14 @@ const ForumCreateTopic = () => {
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Card variant="bordered" padding="lg">
           <TopicForm
-            initialValues={{
-              categoryId: currentCategory?.id || '',
-            }}
-            categories={flatCategories.filter((c) => c.parentId || !c.children?.length)}
+            categoryId={category.id}
+            categoryName={category.name}
+            isRpCategory={category.isRp || false}
             characters={user?.characters || []}
-            isRpCategory={currentCategory?.isRp || false}
             isStaff={isStaff}
             loading={creating}
             errors={errors}
-            onSubmit={createTopic}
+            onSubmit={(data) => createTopic({ ...data, categoryId: category.id })}
             onCancel={() => navigate(-1)}
           />
         </Card>

@@ -9,12 +9,12 @@ const { authenticate, authorize } = require('../../middlewares/auth');
 /**
  * @route   GET /api/admin/dashboard/stats
  * @desc    Statistiques générales du site
- * @access  ADMIN
+ * @access  ADMIN, MODERATOR
  */
 router.get(
   '/stats',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminDashboardController.getStats
 );
 

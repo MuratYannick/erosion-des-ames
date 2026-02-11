@@ -7,21 +7,21 @@ import Loader from '@/components/ui/Loader/Loader'
 import { useForumCategories, useRecentTopics, useMarkAllAsRead } from '@/hooks/useForum'
 import { useAuth } from '@/hooks/useAuth'
 
-const NewTopicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-)
-
 const CheckIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 )
 
+const PlusIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+)
+
 const ForumIndex = () => {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const { data: categories, loading: categoriesLoading, error: categoriesError, refetch: refetchCategories } = useForumCategories()
   const { data: recentTopics, loading: topicsLoading, refetch: refetchRecent } = useRecentTopics({ limit: 5 })
   const { mutate: markAllAsRead, loading: markingRead } = useMarkAllAsRead({
@@ -65,6 +65,13 @@ const ForumIndex = () => {
         {/* Action bar */}
         {user && (
           <div className="flex justify-end gap-3 mb-6">
+            {isAdmin && (
+              <Link to="/admin/forum">
+                <Button variant="ghost" size="sm" icon={<PlusIcon />}>
+                  Nouvelle catégorie
+                </Button>
+              </Link>
+            )}
             <Button
               variant="ghost"
               icon={<CheckIcon />}
@@ -73,11 +80,6 @@ const ForumIndex = () => {
             >
               Tout marquer comme lu
             </Button>
-            <Link to="/forum/nouveau-sujet">
-              <Button variant="primary" icon={<NewTopicIcon />}>
-                Nouveau sujet
-              </Button>
-            </Link>
           </div>
         )}
 

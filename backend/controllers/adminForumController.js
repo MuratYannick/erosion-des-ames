@@ -8,22 +8,46 @@ const { ApiError, asyncHandler } = require('../middlewares/errorHandler');
  * GET /api/admin/forum/categories
  */
 const getCategories = asyncHandler(async (req, res) => {
+  const includeTopics = req.query.includeTopics === 'true';
+
+  const include = [
+    {
+      model: ForumCategory,
+      as: 'parent',
+      attributes: ['id', 'name', 'slug'],
+      required: false,
+    },
+    {
+      model: ForumCategory,
+      as: 'children',
+      required: false,
+    },
+  ];
+
+  if (includeTopics) {
+    include.push({
+      model: ForumTopic,
+      as: 'topics',
+      attributes: ['id', 'title', 'slug', 'isPinned', 'isLocked', 'viewCount', 'postCount', 'createdAt'],
+      required: false,
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username'],
+          required: false,
+        },
+      ],
+    });
+  }
+
   const categories = await ForumCategory.findAll({
     // Pas de filtre isActive : le staff voit tout
-    include: [
-      {
-        model: ForumCategory,
-        as: 'parent',
-        attributes: ['id', 'name', 'slug'],
-        required: false,
-      },
-      {
-        model: ForumCategory,
-        as: 'children',
-        required: false,
-      },
+    include,
+    order: [
+      ['displayOrder', 'ASC'],
+      ...(includeTopics ? [[{ model: ForumTopic, as: 'topics' }, 'isPinned', 'DESC'], [{ model: ForumTopic, as: 'topics' }, 'createdAt', 'DESC']] : []),
     ],
-    order: [['displayOrder', 'ASC']],
   });
 
   res.status(200).json({
@@ -73,9 +97,10 @@ const createCategory = asyncHandler(async (req, res) => {
       actionType: 'edit_category',
       moderatorId: req.user.id,
       targetId: category.id,
-      targetType: 'category',
+      targetType: 'forum_category',
       reason: null,
       details: { action: 'create', categoryName: name },
+      transaction: t,
     });
   });
 
@@ -133,9 +158,10 @@ const updateCategory = asyncHandler(async (req, res) => {
       actionType: 'edit_category',
       moderatorId: req.user.id,
       targetId: category.id,
-      targetType: 'category',
+      targetType: 'forum_category',
       reason: null,
       details: { action: 'update', changes: updateData },
+      transaction: t,
     });
   });
 
@@ -182,9 +208,10 @@ const deleteCategory = asyncHandler(async (req, res) => {
       actionType: 'delete_category',
       moderatorId: req.user.id,
       targetId: category.id,
-      targetType: 'category',
+      targetType: 'forum_category',
       reason: req.body.reason || null,
       details: { categoryName },
+      transaction: t,
     });
   });
 
@@ -275,9 +302,10 @@ const moveTopic = asyncHandler(async (req, res) => {
       actionType: 'move_topic',
       moderatorId: req.user.id,
       targetId: topic.id,
-      targetType: 'topic',
+      targetType: 'forum_topic',
       reason: req.body.reason || null,
       details: { fromCategoryId, toCategoryId: categoryId },
+      transaction: t,
     });
   });
 
@@ -366,9 +394,10 @@ const mergeTopics = asyncHandler(async (req, res) => {
       actionType: 'merge_topics',
       moderatorId: req.user.id,
       targetId: targetTopicId,
-      targetType: 'topic',
+      targetType: 'forum_topic',
       reason: req.body.reason || null,
       details: { sourceTopicId, targetTopicId },
+      transaction: t,
     });
   });
 

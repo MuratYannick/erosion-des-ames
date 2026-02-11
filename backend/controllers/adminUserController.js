@@ -128,9 +128,19 @@ const changeRole = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Vous ne pouvez pas modifier votre propre rôle');
   }
 
-  // Un MODERATOR ne peut pas modifier le rôle d'un ADMIN
-  if (req.user.role !== 'ADMIN' && target.role === 'ADMIN') {
-    throw ApiError.forbidden('Vous n\'êtes pas autorisé à modifier le rôle d\'un administrateur');
+  // Hiérarchie des rôles : seul un rôle supérieur peut modifier un rôle inférieur
+  const ROLE_HIERARCHY = { ADMIN: 3, MODERATOR: 2, GAME_MASTER: 1, PLAYER: 0 };
+  const issuerLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
+  const targetLevel = ROLE_HIERARCHY[target.role] ?? 0;
+
+  if (issuerLevel <= targetLevel) {
+    throw ApiError.forbidden('Vous n\'êtes pas autorisé à modifier le rôle de cet utilisateur');
+  }
+
+  // On peut attribuer un rôle jusqu'à son propre niveau (inclus)
+  const newRoleLevel = ROLE_HIERARCHY[role] ?? 0;
+  if (newRoleLevel > issuerLevel) {
+    throw ApiError.forbidden('Vous ne pouvez pas attribuer un rôle supérieur au vôtre');
   }
 
   const oldRole = target.role;
@@ -145,6 +155,7 @@ const changeRole = asyncHandler(async (req, res) => {
       targetType: 'user',
       reason: req.body.reason || null,
       details: { oldRole, newRole: role },
+      transaction: t,
     });
   });
 
@@ -202,9 +213,10 @@ const ban = asyncHandler(async (req, res) => {
       moderatorId: req.user.id,
       targetUserId: target.id,
       targetId: newSanction.id,
-      targetType: 'sanction',
+      targetType: 'user_sanction',
       reason,
       details: { durationHours: durationHours || null, expiresAt },
+      transaction: t,
     });
 
     return newSanction;
@@ -239,10 +251,7 @@ const unban = asyncHandler(async (req, res) => {
   }
 
   await sequelize.transaction(async (t) => {
-    // Révoquer la sanction (la méthode revoke() fait son propre save())
-    await activeBan.revoke(req.user.id);
-
-    // Réactiver le compte
+    await activeBan.revoke(req.user.id, { transaction: t });
     await target.update({ isActive: true }, { transaction: t });
 
     await ModerationAction.log({
@@ -250,9 +259,10 @@ const unban = asyncHandler(async (req, res) => {
       moderatorId: req.user.id,
       targetUserId: target.id,
       targetId: activeBan.id,
-      targetType: 'sanction',
+      targetType: 'user_sanction',
       reason: req.body.reason || null,
       details: null,
+      transaction: t,
     });
   });
 
@@ -307,9 +317,10 @@ const mute = asyncHandler(async (req, res) => {
       moderatorId: req.user.id,
       targetUserId: target.id,
       targetId: newSanction.id,
-      targetType: 'sanction',
+      targetType: 'user_sanction',
       reason,
       details: { durationHours: durationHours || null, expiresAt },
+      transaction: t,
     });
 
     return newSanction;
@@ -344,16 +355,17 @@ const unmute = asyncHandler(async (req, res) => {
   }
 
   await sequelize.transaction(async (t) => {
-    await activeMute.revoke(req.user.id);
+    await activeMute.revoke(req.user.id, { transaction: t });
 
     await ModerationAction.log({
       actionType: 'unmute_user',
       moderatorId: req.user.id,
       targetUserId: target.id,
       targetId: activeMute.id,
-      targetType: 'sanction',
+      targetType: 'user_sanction',
       reason: req.body.reason || null,
       details: null,
+      transaction: t,
     });
   });
 
@@ -401,6 +413,7 @@ const updateStatus = asyncHandler(async (req, res) => {
       targetType: 'user',
       reason: req.body.reason || null,
       details: { isActive },
+      transaction: t,
     });
   });
 

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import {
   useAdminUser,
   useChangeUserRole,
@@ -50,21 +51,21 @@ const SectionHeader = ({ title, count, color = '#ff9635' }) => (
   </div>
 );
 
-// Character status configuration
+// Character status configuration (keys match lowercase DB values)
 const CHARACTER_STATUS_CONFIG = {
-  DRAFT: {
+  draft: {
     label: 'Brouillon',
     color: '#8f99a5',
   },
-  SUBMITTED: {
+  submitted: {
     label: 'En attente',
     color: '#ff9635',
   },
-  APPROVED: {
+  approved: {
     label: 'Approuvé',
     color: '#6b9664',
   },
-  REJECTED: {
+  rejected: {
     label: 'Rejeté',
     color: '#c95951',
   },
@@ -83,6 +84,7 @@ const formatDate = (dateString) => {
 
 const AdminUserDetail = () => {
   const { id } = useParams();
+  const { isAdmin } = useAuth();
   const { data, loading, error, refetch } = useAdminUser(id);
 
   // Modal states
@@ -129,8 +131,12 @@ const AdminUserDetail = () => {
     [id, banUser]
   );
 
-  const handleUnban = useCallback(() => {
-    unbanUser(id);
+  const handleUnban = useCallback(async () => {
+    try {
+      await unbanUser(id);
+    } catch {
+      // Error is already stored in mutation state
+    }
   }, [id, unbanUser]);
 
   const handleMute = useCallback(
@@ -140,12 +146,20 @@ const AdminUserDetail = () => {
     [id, muteUser]
   );
 
-  const handleUnmute = useCallback(() => {
-    unmuteUser(id);
+  const handleUnmute = useCallback(async () => {
+    try {
+      await unmuteUser(id);
+    } catch {
+      // Error is already stored in mutation state
+    }
   }, [id, unmuteUser]);
 
-  const handleToggleStatus = useCallback(() => {
-    updateStatus({ id, data: { isActive: !data?.user?.isActive } });
+  const handleToggleStatus = useCallback(async () => {
+    try {
+      await updateStatus({ id, data: { isActive: !data?.user?.isActive } });
+    } catch {
+      // Error is already stored in mutation state
+    }
   }, [id, data?.user?.isActive, updateStatus]);
 
   // Loading state
@@ -425,34 +439,36 @@ const AdminUserDetail = () => {
           )}
 
           {/* Toggle active status */}
-          <button
-            onClick={handleToggleStatus}
-            disabled={statusLoading}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-              user.isActive
-                ? 'bg-[#64707e]/10 border border-[#64707e]/40 text-[#64707e] hover:bg-[#64707e]/20'
-                : 'bg-[#6b9664]/10 border border-[#6b9664]/40 text-[#6b9664] hover:bg-[#6b9664]/20'
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {user.isActive ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              )}
-            </svg>
-            {user.isActive ? 'Désactiver le compte' : 'Activer le compte'}
-          </button>
+          {isAdmin && (
+            <button
+              onClick={handleToggleStatus}
+              disabled={statusLoading}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                user.isActive
+                  ? 'bg-[#64707e]/10 border border-[#64707e]/40 text-[#64707e] hover:bg-[#64707e]/20'
+                  : 'bg-[#6b9664]/10 border border-[#6b9664]/40 text-[#6b9664] hover:bg-[#6b9664]/20'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {user.isActive ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                )}
+              </svg>
+              {user.isActive ? 'Désactiver le compte' : 'Activer le compte'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -505,7 +521,7 @@ const AdminUserDetail = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {characters.map((character) => {
-              const statusConfig = CHARACTER_STATUS_CONFIG[character.status];
+              const statusConfig = CHARACTER_STATUS_CONFIG[character.status] || { label: character.status, color: '#64707e' };
               return (
                 <div
                   key={character.id}

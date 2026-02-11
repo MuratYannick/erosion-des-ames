@@ -86,11 +86,11 @@ module.exports = (sequelize, DataTypes) => {
 
   // Instance method: revoke a sanction before its natural expiry.
   // Sets isActive to false and records who revoked it and when.
-  UserSanction.prototype.revoke = async function (revokerId) {
+  UserSanction.prototype.revoke = async function (revokerId, options = {}) {
     this.isActive = false;
     this.revokedBy = revokerId;
     this.revokedAt = new Date();
-    return this.save();
+    return this.save(options);
   };
 
   // Instance method: returns true when the sanction has a finite expiry
