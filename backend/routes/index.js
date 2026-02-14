@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const authRoutes = require('./auth');
+const usersRoutes = require('./users');
 const ethnicitiesRoutes = require('./ethnicities');
 const factionsRoutes = require('./factions');
 const clansRoutes = require('./clans');
@@ -15,6 +16,7 @@ const adminRoutes = require('./admin');
  * Montage des routes
  */
 router.use('/auth', authRoutes);
+router.use('/users', usersRoutes);
 router.use('/ethnicities', ethnicitiesRoutes);
 router.use('/factions', factionsRoutes);
 router.use('/clans', clansRoutes);
