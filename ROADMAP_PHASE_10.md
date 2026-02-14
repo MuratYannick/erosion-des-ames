@@ -46,25 +46,25 @@ Cette phase finalise le projet avec quatre grands axes :
 ### 10.1.2 Backend - Fichiers
 
 #### Controller
-- [ ] `controllers/userController.js`
+- [x] `controllers/userController.js`
   - `getPublicProfile` : retourne les infos publiques (username, avatar, rôle, date inscription, personnage sélectionné, statistiques forum)
   - `getUserCharacters` : personnages approved + active de l'utilisateur, paginés
   - `getUserPosts` : posts de l'utilisateur avec topic + catégorie, paginés
   - `getUserTopics` : sujets créés par l'utilisateur avec catégorie + compteurs, paginés
 
 #### Validators
-- [ ] `validators/userValidators.js`
+- [x] `validators/userValidators.js`
   - `getUserValidation` - param('id').isUUID()
 
 #### Routes
-- [ ] `routes/users.js`
+- [x] `routes/users.js`
   - GET `/:id` -> optionalAuth -> getUserValidation -> validate -> getPublicProfile
   - GET `/:id/characters` -> optionalAuth -> getUserValidation -> validate -> getUserCharacters
   - GET `/:id/posts` -> optionalAuth -> getUserValidation -> validate -> getUserPosts
   - GET `/:id/topics` -> optionalAuth -> getUserValidation -> validate -> getUserTopics
 
 #### Modifications existantes
-- [ ] `routes/index.js` : monter `/users` -> `routes/users.js`
+- [x] `routes/index.js` : monter `/users` -> `routes/users.js`
 
 ### 10.1.3 Frontend - Service et Hooks
 
@@ -348,8 +348,8 @@ Cette phase finalise le projet avec quatre grands axes :
 ## Ordre de réalisation suggéré
 
 1. **Profil utilisateur - Backend**
-   - [ ] Controller + validators + routes profil public
-   - [ ] Montage routes dans index.js
+   - [x] Controller + validators + routes profil public
+   - [x] Montage routes dans index.js
 
 2. **Profil utilisateur - Frontend**
    - [ ] Service + hooks
