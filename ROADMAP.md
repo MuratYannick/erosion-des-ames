@@ -235,44 +235,90 @@
 
 ---
 
-## Phase 8: Administration et modération
+## Phase 8: Administration et modération ✅
 
-### 8.1 Panel d'administration
-- [ ] Dashboard admin (statistiques générales)
-- [ ] Gestion des utilisateurs (liste, ban, édition)
-- [ ] Gestion des rôles et permissions
-- [ ] Gestion des catégories forum
-- [ ] Gestion des personnages (validation, suppression)
+### 8.1 Backend - Base de données
+- [x] 3 migrations (moderation_actions, user_sanctions, category_permissions)
+- [x] 3 modèles Sequelize : ModerationAction (22 types d'actions), UserSanction (ban/mute), CategoryPermission
+- [x] Seeders dev pour les permissions de catégories
 
-### 8.2 Outils de modération
-- [ ] File des signalements
-- [ ] Historique des actions de modération
-- [ ] Outils de ban/mute utilisateur
-- [ ] Déplacement/fusion de sujets
+### 8.2 Panel d'administration
+- [x] Dashboard admin avec statistiques (users, personnages, forum, modération)
+- [x] Gestion des utilisateurs (liste paginée, filtres, détail, changement de rôle, activation/désactivation)
+- [x] Gestion des personnages (file d'approbation, approve/reject, suppression)
+- [x] Gestion des catégories forum (CRUD, réorganisation, déplacement/fusion de sujets)
+- [x] Journal d'audit (historique des actions de modération avec filtres)
+
+### 8.3 Outils de modération
+- [x] File des signalements de posts (review, accept/reject, suppression optionnelle)
+- [x] Historique des actions de modération (22 types d'actions, filtrage par type/modérateur/cible)
+- [x] Ban/unban utilisateur (temporaire ou permanent, avec raison)
+- [x] Mute/unmute utilisateur (temporaire ou permanent)
+- [x] Déplacement de sujets entre catégories (avec vérification permissions)
+- [x] Fusion de sujets (transfert des posts, recalcul compteurs)
+
+### 8.4 Système de permissions par catégorie
+- [x] 8 types de permissions : access_category, edit_category, create_subcategory, move_category, create_topic, edit_topic, move_topic, merge_topic
+- [x] 10 types de bénéficiaires : public, player, player_accepted_rules, player_with_character, player_character_faction, player_character_clan, specific_user, specific_character, game_master, moderator
+- [x] Héritage des permissions parent → enfant avec résolution récursive
+- [x] Cache en mémoire avec TTL (60s) et invalidation
+- [x] API admin : CRUD permissions, permissions effectives (directes + héritées)
+- [x] Middleware `requireCategoryPermission` intégré dans les routes forum
+- [x] Rétrocompatibilité : accès autorisé si aucune permission définie
+
+### 8.5 Frontend admin
+- [x] 7 pages admin : Dashboard, Users, UserDetail, Characters, Forum, Moderation, Logs
+- [x] Hooks React (useAdmin.js) : queries paginées + mutations pour toutes les actions
+- [x] Services API (adminService.js) : 30+ endpoints couverts
+- [x] Design dark theme cohérent, icônes SVG, skeletons de chargement
 
 ---
 
-## Phase 9: Finitions et optimisations
+## Phase 9: Sélection de personnage et permissions ✅
 
-### 9.1 Profil utilisateur
+> Détails complets : voir `ROADMAP_PHASE_9.md`
+
+### 9.1 Backend - Personnage actif
+- [x] Migration : ajout `selected_character_id` (FK nullable) sur table `users`
+- [x] Modèle User : champ `selectedCharacterId` + association `belongsTo Character`
+- [x] `PUT /api/auth/select-character` - Sélectionner un personnage approuvé
+- [x] `DELETE /api/auth/select-character` - Désélectionner le personnage actif
+- [x] Eager-loading du personnage sélectionné dans `GET /api/auth/me` et `POST /api/auth/login`
+- [x] Hook afterUpdate sur Character : auto-désélection si rejeté/archivé
+
+### 9.2 Frontend - Interface de sélection
+- [x] Service + hooks (`useSelectCharacter`, `useDeselectCharacter`)
+- [x] Bouton "Sélectionner" sur les CharacterCard approuvées (page Mes Personnages)
+- [x] Indicateur visuel "Actif" (badge + bordure dorée) sur le personnage sélectionné
+- [x] Affichage du nom du personnage actif dans le Header (desktop + mobile)
+
+### 9.3 Intégration permissions
+- [x] `req.user.selectedCharacterId` disponible automatiquement via le middleware `authenticate`
+- [x] Compatible avec les grantee types existants : `player_with_character`, `player_character_faction`, `player_character_clan`, `specific_character`
+
+---
+
+## Phase 10: Finitions et optimisations
+
+### 10.1 Profil utilisateur
 - [ ] Page profil public
 - [ ] Page paramètres du compte
 - [ ] Historique des posts
 - [ ] Liste des personnages
 
-### 9.2 Optimisations
+### 10.2 Optimisations
 - [ ] Lazy loading des composants
 - [ ] Optimisation des images
 - [ ] Mise en cache des requêtes fréquentes
 - [ ] SEO (meta tags, sitemap)
 
-### 9.3 Tests et qualité
+### 10.3 Tests et qualité
 - [ ] Tests unitaires backend
 - [ ] Tests d'intégration API
 - [ ] Tests composants React
 - [ ] Tests end-to-end (optionnel)
 
-### 9.4 Déploiement
+### 10.4 Déploiement
 - [ ] Configuration environnement production
 - [ ] CI/CD pipeline
 - [ ] Documentation déploiement
@@ -291,8 +337,9 @@
 | 5 | Phase 5 | Pages d'erreur - UX professionnelle | ✅ |
 | 6 | Phase 6 | Personnages - Coeur du RP | ✅ |
 | 7 | Phase 7 | Forum complet (BDD + API + Frontend + Recherche + Modération) | ✅ |
-| 8 | Phase 8 | Administration et modération | |
-| 9 | Phase 9 | Finitions et optimisations | |
+| 8 | Phase 8 | Administration et modération | ✅ |
+| 9 | Phase 9 | Sélection de personnage et permissions | ✅ |
+| 10 | Phase 10 | Finitions et optimisations | |
 
 ---
 
