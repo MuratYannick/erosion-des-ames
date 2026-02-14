@@ -12,7 +12,9 @@ const CharacterCard = ({
   onView,
   onEdit,
   onSubmit,
-  onDelete
+  onDelete,
+  onSelect,
+  isSelected = false,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
@@ -30,7 +32,16 @@ const CharacterCard = ({
   };
 
   return (
-    <div className="relative bg-surface border-2 border-primary-400 rounded-xl shadow-md hover:shadow-lg hover:border-primary-500 transition-all p-4 sm:p-6 flex flex-col">
+    <div className={`relative bg-surface border-2 rounded-xl shadow-md hover:shadow-lg transition-all p-4 sm:p-6 flex flex-col ${isSelected ? 'border-secondary-500 ring-2 ring-secondary-500/30 shadow-glow' : 'border-primary-400 hover:border-primary-500'}`}>
+      {/* Active badge - top-left */}
+      {isSelected && (
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-button bg-secondary-500 text-primary-900 shadow-sm">
+            Actif
+          </span>
+        </div>
+      )}
+
       {/* Status badge - absolute positioned top-right */}
       <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
         <CharacterStatusBadge status={status} size="sm" />
@@ -99,6 +110,21 @@ const CharacterCard = ({
             aria-label={`Soumettre ${name} pour approbation`}
           >
             Soumettre
+          </button>
+        )}
+
+        {/* Select/Deselect button - approved only */}
+        {status === 'approved' && onSelect && (
+          <button
+            onClick={() => onSelect(character)}
+            className={`flex-1 min-w-[100px] px-3 py-2 font-button text-sm sm:text-base rounded-lg transition-colors ${
+              isSelected
+                ? 'bg-secondary-500/20 hover:bg-secondary-500/30 text-secondary-700 border border-secondary-500/40'
+                : 'bg-secondary-500/80 hover:bg-secondary-500 text-primary-900 shadow-sm hover:shadow-glow'
+            }`}
+            aria-label={isSelected ? `Désélectionner ${name}` : `Sélectionner ${name}`}
+          >
+            {isSelected ? 'Désélectionner' : 'Sélectionner'}
           </button>
         )}
 
@@ -171,7 +197,9 @@ CharacterCard.propTypes = {
   onView: PropTypes.func,
   onEdit: PropTypes.func,
   onSubmit: PropTypes.func,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
+  onSelect: PropTypes.func,
+  isSelected: PropTypes.bool,
 };
 
 export default CharacterCard;

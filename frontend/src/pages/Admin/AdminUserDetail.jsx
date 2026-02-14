@@ -84,7 +84,8 @@ const formatDate = (dateString) => {
 
 const AdminUserDetail = () => {
   const { id } = useParams();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isGameMaster } = useAuth();
+  const canSanction = !isGameMaster;
   const { data, loading, error, refetch } = useAdminUser(id);
 
   // Modal states
@@ -369,7 +370,7 @@ const AdminUserDetail = () => {
           </button>
 
           {/* Ban/Unban */}
-          {hasActiveBan ? (
+          {canSanction && (hasActiveBan ? (
             <button
               onClick={handleUnban}
               disabled={unbanLoading}
@@ -401,10 +402,10 @@ const AdminUserDetail = () => {
               </svg>
               Bannir
             </button>
-          )}
+          ))}
 
           {/* Mute/Unmute */}
-          {hasActiveMute ? (
+          {canSanction && (hasActiveMute ? (
             <button
               onClick={handleUnmute}
               disabled={unmuteLoading}
@@ -436,7 +437,7 @@ const AdminUserDetail = () => {
               </svg>
               Muter
             </button>
-          )}
+          ))}
 
           {/* Toggle active status */}
           {isAdmin && (
@@ -613,21 +614,25 @@ const AdminUserDetail = () => {
         loading={roleLoading}
       />
 
-      <BanModal
-        isOpen={isBanModalOpen}
-        onClose={() => setIsBanModalOpen(false)}
-        onConfirm={handleBan}
-        user={user}
-        loading={banLoading}
-      />
+      {canSanction && (
+        <BanModal
+          isOpen={isBanModalOpen}
+          onClose={() => setIsBanModalOpen(false)}
+          onConfirm={handleBan}
+          user={user}
+          loading={banLoading}
+        />
+      )}
 
-      <MuteModal
-        isOpen={isMuteModalOpen}
-        onClose={() => setIsMuteModalOpen(false)}
-        onConfirm={handleMute}
-        user={user}
-        loading={muteLoading}
-      />
+      {canSanction && (
+        <MuteModal
+          isOpen={isMuteModalOpen}
+          onClose={() => setIsMuteModalOpen(false)}
+          onConfirm={handleMute}
+          user={user}
+          loading={muteLoading}
+        />
+      )}
     </div>
   );
 };

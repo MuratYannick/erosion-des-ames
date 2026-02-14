@@ -291,8 +291,15 @@ const Header = ({
                       size="sm"
                       className="user-avatar-header"
                     />
-                    <span className="hidden md:inline text-sm font-medium text-skin-base">
-                      {user?.username}
+                    <span className="hidden md:inline">
+                      <span className="text-sm font-medium text-skin-base block leading-tight">
+                        {user?.username}
+                      </span>
+                      {user?.selectedCharacter?.name && (
+                        <span className="text-xs text-secondary-600 block leading-tight">
+                          {user.selectedCharacter.name}
+                        </span>
+                      )}
                     </span>
                     <ChevronDownIcon className="user-dropdown-chevron" />
                   </button>
@@ -329,8 +336,8 @@ const Header = ({
                     <DropdownItem
                       onClick={async () => {
                         close()
+                        navigate('/', { replace: true })
                         await logout()
-                        navigate('/')
                       }}
                       className="dropdown-item-danger"
                     >
@@ -435,6 +442,9 @@ const Header = ({
                     />
                     <div>
                       <p className="font-button text-skin-base">{user?.username}</p>
+                      {user?.selectedCharacter?.name && (
+                        <p className="text-xs text-secondary-600">{user.selectedCharacter.name}</p>
+                      )}
                       <p className="text-sm text-skin-muted">{user?.email}</p>
                     </div>
                   </div>
@@ -465,9 +475,9 @@ const Header = ({
                     type="button"
                     className="btn-auth btn-auth-secondary"
                     onClick={async () => {
-                      await logout()
                       setIsMobileMenuOpen(false)
-                      navigate('/')
+                      navigate('/', { replace: true })
+                      await logout()
                     }}
                   >
                     Deconnexion

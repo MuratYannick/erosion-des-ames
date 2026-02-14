@@ -23,6 +23,10 @@ export const useAuth = () => {
   const isPlayer = user?.role === 'PLAYER';
   const isStaff = ['ADMIN', 'MODERATOR', 'GAME_MASTER'].includes(user?.role);
 
+  // Propriétés dérivées pour le personnage sélectionné
+  const selectedCharacterId = user?.selectedCharacterId || null;
+  const hasSelectedCharacter = !!selectedCharacterId;
+
   return {
     // État de base
     user,
@@ -42,5 +46,9 @@ export const useAuth = () => {
     isGameMaster,
     isPlayer,
     isStaff,
+
+    // Personnage sélectionné
+    selectedCharacterId,
+    hasSelectedCharacter,
   };
 };

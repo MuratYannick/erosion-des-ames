@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth, useMyCharacters, useSubmitCharacter, useDeleteCharacter } from '@/hooks'
+import { useAuth, useMyCharacters, useSubmitCharacter, useDeleteCharacter, useSelectCharacter, useDeselectCharacter } from '@/hooks'
+
+const STAFF_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER']
 import { useToast, Loader, ScrollToTop } from '@/components'
 import { CharacterCard } from '@/components/characters'
 
@@ -14,12 +16,13 @@ const STATUS_OPTIONS = [
 
 const MyCharactersList = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const { addToast } = useToast()
   const [statusFilter, setStatusFilter] = useState('all')
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
-  const { data, loading, error, refetch } = useMyCharacters(user?.id)
+  const isStaff = STAFF_ROLES.includes(user?.role)
+  const { data, loading, error, refetch } = useMyCharacters(user?.id, { includeUnowned: isStaff })
   const { mutate: submitCharacter, loading: submitting } = useSubmitCharacter({
     onSuccess: () => {
       addToast({
@@ -58,6 +61,42 @@ const MyCharactersList = () => {
     },
   })
 
+  const { mutate: selectCharacterMutate, loading: selecting } = useSelectCharacter({
+    onSuccess: (data) => {
+      updateUser(data.user)
+      addToast({
+        variant: 'success',
+        title: 'Personnage sélectionné',
+        description: 'Ce personnage est maintenant votre personnage actif.',
+      })
+    },
+    onError: (err) => {
+      addToast({
+        variant: 'error',
+        title: 'Erreur',
+        description: err.message || 'Impossible de sélectionner le personnage.',
+      })
+    },
+  })
+
+  const { mutate: deselectCharacterMutate, loading: deselecting } = useDeselectCharacter({
+    onSuccess: (data) => {
+      updateUser(data.user)
+      addToast({
+        variant: 'success',
+        title: 'Personnage désélectionné',
+        description: 'Aucun personnage actif.',
+      })
+    },
+    onError: (err) => {
+      addToast({
+        variant: 'error',
+        title: 'Erreur',
+        description: err.message || 'Impossible de désélectionner le personnage.',
+      })
+    },
+  })
+
   // Filter characters based on status
   const filteredCharacters = useMemo(() => {
     if (!data?.characters) return []
@@ -92,6 +131,15 @@ const MyCharactersList = () => {
 
   const handleDelete = (character) => {
     setDeleteConfirm(character)
+  }
+
+  const handleSelect = (character) => {
+    if (selecting || deselecting) return
+    if (user?.selectedCharacterId === character.id) {
+      deselectCharacterMutate()
+    } else {
+      selectCharacterMutate(character.id)
+    }
   }
 
   const confirmDelete = () => {
@@ -255,6 +303,8 @@ const MyCharactersList = () => {
                   onEdit={handleEdit}
                   onSubmit={handleSubmit}
                   onDelete={handleDelete}
+                  onSelect={handleSelect}
+                  isSelected={user?.selectedCharacterId === character.id}
                 />
               ))}
             </div>

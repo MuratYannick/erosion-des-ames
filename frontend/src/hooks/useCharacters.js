@@ -148,9 +148,13 @@ export const useCharacter = (id, options = {}) => {
  * const { user } = useAuth();
  * const { data: myCharacters, loading, refetch } = useMyCharacters(user?.id);
  */
-export const useMyCharacters = (userId, options = {}) => {
+export const useMyCharacters = (userId, { includeUnowned = false, ...options } = {}) => {
+  const params = userId ? { userId } : {};
+  if (includeUnowned) {
+    params.includeUnowned = 'true';
+  }
   return useCharacters(
-    userId ? { userId } : {},
+    params,
     { ...options, enabled: options.enabled !== false && !!userId }
   );
 };
@@ -305,6 +309,36 @@ export const useRejectCharacter = (options = {}) => {
 export const useDeleteCharacter = (options = {}) => {
   return useMutation(
     (id) => characterService.deleteCharacter(id),
+    options
+  );
+};
+
+/**
+ * Hook pour sélectionner un personnage actif
+ *
+ * @param {Object} options - Options du hook
+ * @param {Function} options.onSuccess - Callback de succès
+ * @param {Function} options.onError - Callback d'erreur
+ * @returns {Object} État de la mutation
+ */
+export const useSelectCharacter = (options = {}) => {
+  return useMutation(
+    (characterId) => characterService.selectCharacter(characterId),
+    options
+  );
+};
+
+/**
+ * Hook pour désélectionner le personnage actif
+ *
+ * @param {Object} options - Options du hook
+ * @param {Function} options.onSuccess - Callback de succès
+ * @param {Function} options.onError - Callback d'erreur
+ * @returns {Object} État de la mutation
+ */
+export const useDeselectCharacter = (options = {}) => {
+  return useMutation(
+    () => characterService.deselectCharacter(),
     options
   );
 };

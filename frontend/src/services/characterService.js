@@ -136,9 +136,36 @@ export const deleteCharacter = async (id) => {
  * @param {string} userId - ID de l'utilisateur connecté
  * @returns {Promise<Object>} Liste des personnages de l'utilisateur
  */
-export const getMyCharacters = async (userId) => {
+export const getMyCharacters = async (userId, { includeUnowned = false } = {}) => {
   if (!userId) {
     throw new Error('User ID est requis pour récupérer les personnages');
   }
-  return getCharacters({ userId });
+  const params = { userId };
+  if (includeUnowned) {
+    params.includeUnowned = 'true';
+  }
+  return getCharacters(params);
+};
+
+/**
+ * Sélectionne un personnage actif pour l'utilisateur connecté
+ * @param {number} characterId - ID du personnage à sélectionner
+ * @returns {Promise<Object>} Utilisateur mis à jour avec le personnage sélectionné
+ */
+export const selectCharacter = async (characterId) => {
+  const response = await api.put('/auth/select-character', { characterId }, {
+    skipErrorRedirect: true,
+  });
+  return response.data;
+};
+
+/**
+ * Désélectionne le personnage actif de l'utilisateur connecté
+ * @returns {Promise<Object>} Utilisateur mis à jour
+ */
+export const deselectCharacter = async () => {
+  const response = await api.delete('/auth/select-character', {
+    skipErrorRedirect: true,
+  });
+  return response.data;
 };

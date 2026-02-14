@@ -168,7 +168,7 @@ const ActionButton = ({ icon, label, onClick, disabled }) => (
 // MOBILE CARD
 // ============================================
 
-const UserMobileCard = ({ user, onUserClick, onBan, onMute, onChangeRole }) => {
+const UserMobileCard = ({ user, onUserClick, onBan, onMute, onChangeRole, showSanctions = true }) => {
   const statusInfo = getStatusInfo(user)
 
   return (
@@ -209,8 +209,8 @@ const UserMobileCard = ({ user, onUserClick, onBan, onMute, onChangeRole }) => {
         </span>
         <div className="flex gap-1">
           <ActionButton icon={<IconRole />} label="Changer le rôle" onClick={() => onChangeRole?.(user)} />
-          <ActionButton icon={<IconBan />} label="Bannir" onClick={() => onBan?.(user)} />
-          <ActionButton icon={<IconMute />} label="Muter" onClick={() => onMute?.(user)} />
+          {showSanctions && <ActionButton icon={<IconBan />} label="Bannir" onClick={() => onBan?.(user)} />}
+          {showSanctions && <ActionButton icon={<IconMute />} label="Muter" onClick={() => onMute?.(user)} />}
         </div>
       </div>
     </div>
@@ -233,6 +233,7 @@ const UserTable = ({
   onBan,
   onMute,
   onChangeRole,
+  showSanctions = true,
   className = '',
 }) => {
   const handleSort = (columnKey) => {
@@ -267,6 +268,7 @@ const UserTable = ({
             onBan={onBan}
             onMute={onMute}
             onChangeRole={onChangeRole}
+            showSanctions={showSanctions}
           />
         ))
       )}
@@ -376,16 +378,20 @@ const UserTable = ({
                           label="Changer le rôle"
                           onClick={() => onChangeRole?.(user)}
                         />
-                        <ActionButton
-                          icon={<IconBan />}
-                          label="Bannir"
-                          onClick={() => onBan?.(user)}
-                        />
-                        <ActionButton
-                          icon={<IconMute />}
-                          label="Muter"
-                          onClick={() => onMute?.(user)}
-                        />
+                        {showSanctions && (
+                          <ActionButton
+                            icon={<IconBan />}
+                            label="Bannir"
+                            onClick={() => onBan?.(user)}
+                          />
+                        )}
+                        {showSanctions && (
+                          <ActionButton
+                            icon={<IconMute />}
+                            label="Muter"
+                            onClick={() => onMute?.(user)}
+                          />
+                        )}
                       </div>
                     </td>
                   </tr>

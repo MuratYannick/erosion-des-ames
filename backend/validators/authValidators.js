@@ -145,6 +145,17 @@ const resendVerificationValidation = [
     .normalizeEmail(),
 ];
 
+/**
+ * Règles de validation pour la sélection d'un personnage actif
+ */
+const selectCharacterValidation = [
+  body('characterId')
+    .notEmpty()
+    .withMessage('L\'identifiant du personnage est requis')
+    .isInt({ min: 1 })
+    .withMessage('L\'identifiant du personnage doit être un entier positif'),
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
@@ -154,4 +165,5 @@ module.exports = {
   updateProfileValidation,
   verifyEmailValidation,
   resendVerificationValidation,
+  selectCharacterValidation,
 };

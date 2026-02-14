@@ -21,6 +21,7 @@ const {
   updateProfileValidation,
   verifyEmailValidation,
   resendVerificationValidation,
+  selectCharacterValidation,
 } = require('../validators/authValidators');
 
 /**
@@ -137,6 +138,30 @@ router.put(
   updateProfileValidation,
   validate,
   authController.updateProfile
+);
+
+/**
+ * @route   PUT /api/auth/select-character
+ * @desc    Sélectionner un personnage actif
+ * @access  Private
+ */
+router.put(
+  '/select-character',
+  authenticate,
+  selectCharacterValidation,
+  validate,
+  authController.selectCharacter
+);
+
+/**
+ * @route   DELETE /api/auth/select-character
+ * @desc    Désélectionner le personnage actif
+ * @access  Private
+ */
+router.delete(
+  '/select-character',
+  authenticate,
+  authController.deselectCharacter
 );
 
 module.exports = router;

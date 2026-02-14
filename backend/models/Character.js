@@ -134,6 +134,20 @@ module.exports = (sequelize, DataTypes) => {
     return this.save();
   };
 
+  // Auto-désélectionner le personnage si son statut change vers non-approved ou s'il est désactivé
+  Character.afterUpdate(async (character) => {
+    const statusChanged = character.changed('status') && character.status !== 'approved';
+    const deactivated = character.changed('isActive') && !character.isActive;
+
+    if (statusChanged || deactivated) {
+      const { User } = character.sequelize.models;
+      await User.update(
+        { selectedCharacterId: null },
+        { where: { selectedCharacterId: character.id } }
+      );
+    }
+  });
+
   Character.associate = (models) => {
     Character.belongsTo(models.Ethnicity, { foreignKey: 'ethnicityId', as: 'ethnicity' });
     Character.belongsTo(models.Faction, { foreignKey: 'factionId', as: 'faction' });

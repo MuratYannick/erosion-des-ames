@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { MainLayout, AdminLayout } from '@/layouts'
 import {
   ToastProvider,
+  useToast,
   Sidebar,
   SidebarHeader,
   SidebarSection,
@@ -192,6 +194,30 @@ function ProfilPage() {
 }
 
 
+/**
+ * Composant qui écoute l'événement auth:muted et affiche un toast d'avertissement
+ */
+function MuteNotifier() {
+  const toast = useToast()
+
+  useEffect(() => {
+    const handleMuted = (event) => {
+      const { expiresAt } = event.detail || {}
+      const expiry = expiresAt
+        ? ` Expire le ${new Date(expiresAt).toLocaleDateString('fr-FR')}.`
+        : ' Cette sanction est permanente.'
+      toast.warning(
+        `Vous êtes actuellement sous silence (mute). Vous ne pouvez pas publier de contenu.${expiry}`
+      )
+    }
+
+    window.addEventListener('auth:muted', handleMuted)
+    return () => window.removeEventListener('auth:muted', handleMuted)
+  }, [toast])
+
+  return null
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -199,6 +225,7 @@ function App() {
         <AuthProvider>
           <ScrollToTopOnNavigate />
           <ToastProvider position="top-right">
+            <MuteNotifier />
             <Routes>
             {/* Routes auth - sans MainLayout */}
             <Route path="/connexion" element={<Login />} />

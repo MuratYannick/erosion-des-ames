@@ -143,10 +143,25 @@ api.interceptors.response.use(
 
     // 403 Forbidden - Accès refusé
     else if (status === 403) {
-      console.warn('[API] 403 Forbidden - Accès refusé à la ressource');
+      const errorCode = response.data?.error?.code;
 
-      if (!skipErrorRedirect) {
-        window.location.href = ERROR_ROUTES[403];
+      // Cas spécial : utilisateur mute → toast au lieu de redirection
+      if (errorCode === 'USER_MUTED') {
+        console.warn('[API] 403 USER_MUTED - Utilisateur sous silence');
+        window.dispatchEvent(
+          new CustomEvent('auth:muted', {
+            detail: {
+              message: response.data?.error?.message,
+              expiresAt: response.data?.error?.expiresAt,
+            },
+          })
+        );
+      } else {
+        console.warn('[API] 403 Forbidden - Accès refusé à la ressource');
+
+        if (!skipErrorRedirect) {
+          window.location.href = ERROR_ROUTES[403];
+        }
       }
     }
 

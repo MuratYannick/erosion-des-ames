@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminUsers, useBanUser, useMuteUser, useUnbanUser, useUnmuteUser, useChangeUserRole } from '@/hooks/useAdmin';
+import { useAuth } from '@/hooks/useAuth';
 import { UserTable, BanModal, MuteModal, RoleChangeModal } from '@/components/admin';
 
 const ROLE_OPTIONS = [
@@ -19,6 +20,8 @@ const STATUS_OPTIONS = [
 
 const AdminUsers = () => {
   const navigate = useNavigate();
+  const { isGameMaster } = useAuth();
+  const canSanction = !isGameMaster;
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -255,32 +258,37 @@ const AdminUsers = () => {
         onSort={handleSort}
         onPageChange={handlePageChange}
         onUserClick={handleUserClick}
-        onBan={handleBan}
-        onMute={handleMute}
+        onBan={canSanction ? handleBan : undefined}
+        onMute={canSanction ? handleMute : undefined}
         onChangeRole={handleChangeRole}
+        showSanctions={canSanction}
       />
 
-      <BanModal
-        isOpen={banModalOpen}
-        onClose={() => {
-          setBanModalOpen(false);
-          setSelectedUser(null);
-        }}
-        onConfirm={handleBanConfirm}
-        user={selectedUser}
-        loading={banLoading}
-      />
+      {canSanction && (
+        <BanModal
+          isOpen={banModalOpen}
+          onClose={() => {
+            setBanModalOpen(false);
+            setSelectedUser(null);
+          }}
+          onConfirm={handleBanConfirm}
+          user={selectedUser}
+          loading={banLoading}
+        />
+      )}
 
-      <MuteModal
-        isOpen={muteModalOpen}
-        onClose={() => {
-          setMuteModalOpen(false);
-          setSelectedUser(null);
-        }}
-        onConfirm={handleMuteConfirm}
-        user={selectedUser}
-        loading={muteLoading}
-      />
+      {canSanction && (
+        <MuteModal
+          isOpen={muteModalOpen}
+          onClose={() => {
+            setMuteModalOpen(false);
+            setSelectedUser(null);
+          }}
+          onConfirm={handleMuteConfirm}
+          user={selectedUser}
+          loading={muteLoading}
+        />
+      )}
 
       <RoleChangeModal
         isOpen={roleModalOpen}

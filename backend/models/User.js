@@ -102,6 +102,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    selectedCharacterId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null,
+    },
   }, {
     tableName: 'users',
     underscored: true,
@@ -158,6 +163,10 @@ module.exports = (sequelize, DataTypes) => {
   User.prototype.generateAuthToken = function () {
     const { signToken } = require('../utils/jwt');
     return signToken(this.id);
+  };
+
+  User.associate = (models) => {
+    User.belongsTo(models.Character, { foreignKey: 'selectedCharacterId', as: 'selectedCharacter' });
   };
 
   return User;

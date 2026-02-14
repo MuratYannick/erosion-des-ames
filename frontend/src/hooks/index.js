@@ -11,4 +11,6 @@ export {
   useRejectCharacter,
   useDeleteCharacter,
   useReferenceData,
+  useSelectCharacter,
+  useDeselectCharacter,
 } from './useCharacters';

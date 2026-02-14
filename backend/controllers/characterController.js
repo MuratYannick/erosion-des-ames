@@ -17,6 +17,8 @@ const getAll = asyncHandler(async (req, res) => {
 
   let where = {};
 
+  const isOwnerQuery = req.user && req.query.userId && req.query.userId === req.user.id;
+
   if (isStaff) {
     // Filtres optionnels pour le staff
     if (req.query.status) {
@@ -35,8 +37,15 @@ const getAll = asyncHandler(async (req, res) => {
       where.clanId = req.query.clanId;
     }
     if (req.query.userId) {
-      where.userId = req.query.userId;
+      if (req.query.includeUnowned === 'true') {
+        where[Op.or] = [{ userId: req.query.userId }, { userId: null }];
+      } else {
+        where.userId = req.query.userId;
+      }
     }
+  } else if (isOwnerQuery) {
+    // Joueur authentifié qui consulte ses propres personnages (tous statuts)
+    where.userId = req.user.id;
   } else {
     // Public : uniquement les personnages actifs et approuvés
     where.isActive = true;

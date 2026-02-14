@@ -1,8 +1,26 @@
 'use strict';
 
-const { User, UserSanction } = require('../models');
+const { User, UserSanction, Character, Faction } = require('../models');
 const { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } = require('../utils/email');
 const { Op } = require('sequelize');
+
+/**
+ * Helper pour charger un utilisateur avec son personnage sélectionné
+ */
+const getUserWithSelectedCharacter = async (userId) => {
+  return User.findByPk(userId, {
+    include: [{
+      model: Character,
+      as: 'selectedCharacter',
+      attributes: ['id', 'name', 'avatar', 'factionId'],
+      include: [{
+        model: Faction,
+        as: 'faction',
+        attributes: ['id', 'name', 'emblem'],
+      }],
+    }],
+  });
+};
 
 /**
  * Inscription d'un nouvel utilisateur
@@ -180,8 +198,8 @@ const login = async (req, res) => {
     user.lastLoginAt = new Date();
     await user.save();
 
-    // Récupérer l'utilisateur sans le password
-    const userResponse = await User.findByPk(user.id);
+    // Récupérer l'utilisateur sans le password, avec personnage sélectionné
+    const userResponse = await getUserWithSelectedCharacter(user.id);
 
     return res.status(200).json({
       success: true,
@@ -223,11 +241,12 @@ const logout = async (req, res) => {
  */
 const me = async (req, res) => {
   try {
-    // req.user est déjà attaché par le middleware authenticate
-    // et n'a pas le password grâce au defaultScope
+    // Charger l'utilisateur avec le personnage sélectionné
+    const user = await getUserWithSelectedCharacter(req.user.id);
+
     return res.status(200).json({
       success: true,
-      data: { user: req.user },
+      data: { user },
     });
   } catch (error) {
     console.error('Erreur lors de la récupération du profil:', error);
@@ -598,6 +617,118 @@ const updateProfile = async (req, res) => {
   }
 };
 
+/**
+ * Sélectionner un personnage actif
+ * PUT /api/auth/select-character
+ */
+const selectCharacter = async (req, res) => {
+  try {
+    const { characterId } = req.body;
+
+    // Vérifier que le personnage existe, est approuvé et actif
+    const isStaff = ['ADMIN', 'MODERATOR', 'GAME_MASTER'].includes(req.user.role);
+
+    const ownerCondition = isStaff
+      ? { [Op.or]: [{ userId: req.user.id }, { userId: null }] }
+      : { userId: req.user.id };
+
+    const character = await Character.findOne({
+      where: {
+        id: characterId,
+        ...ownerCondition,
+        status: 'approved',
+        isActive: true,
+      },
+    });
+
+    if (!character) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'Personnage introuvable, non approuvé ou non accessible',
+          code: 'CHARACTER_NOT_FOUND',
+        },
+      });
+    }
+
+    // Pour les personnages sans propriétaire, vérifier qu'aucun autre staff ne l'utilise
+    if (character.userId === null) {
+      const alreadyUsedBy = await User.findOne({
+        where: {
+          selectedCharacterId: characterId,
+          id: { [Op.ne]: req.user.id },
+        },
+      });
+
+      if (alreadyUsedBy) {
+        return res.status(409).json({
+          success: false,
+          error: {
+            message: 'Ce personnage est déjà utilisé par un autre membre du staff',
+            code: 'CHARACTER_ALREADY_IN_USE',
+          },
+        });
+      }
+    }
+
+    // Mettre à jour le personnage sélectionné
+    await User.update(
+      { selectedCharacterId: characterId },
+      { where: { id: req.user.id } }
+    );
+
+    // Recharger l'utilisateur avec le personnage
+    const user = await getUserWithSelectedCharacter(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      data: { user },
+      message: 'Personnage sélectionné avec succès',
+    });
+  } catch (error) {
+    console.error('Erreur lors de la sélection du personnage:', error);
+
+    return res.status(500).json({
+      success: false,
+      error: {
+        message: 'Une erreur est survenue lors de la sélection du personnage',
+        code: 'INTERNAL_SERVER_ERROR',
+      },
+    });
+  }
+};
+
+/**
+ * Désélectionner le personnage actif
+ * DELETE /api/auth/select-character
+ */
+const deselectCharacter = async (req, res) => {
+  try {
+    await User.update(
+      { selectedCharacterId: null },
+      { where: { id: req.user.id } }
+    );
+
+    const user = await getUserWithSelectedCharacter(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      data: { user },
+      message: 'Personnage désélectionné avec succès',
+    });
+  } catch (error) {
+    console.error('Erreur lors de la désélection du personnage:', error);
+
+    return res.status(500).json({
+      success: false,
+      error: {
+        message: 'Une erreur est survenue lors de la désélection du personnage',
+        code: 'INTERNAL_SERVER_ERROR',
+      },
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -609,4 +740,6 @@ module.exports = {
   resetPassword,
   changePassword,
   updateProfile,
+  selectCharacter,
+  deselectCharacter,
 };
