@@ -26,18 +26,7 @@ Cette phase finalise le projet avec quatre grands axes :
 
 ## 10.1 Profil utilisateur
 
-### 10.1.1 Backend - Migration et modèle
-
-#### Migration `add-bio-to-users`
-
-| Colonne | Type | Contraintes | Description |
-|---------|------|-------------|-------------|
-| bio | TEXT | NULL | Biographie / description du joueur |
-
-- [ ] Migration `migrations/YYYYMMDD-add-bio-to-users.js`
-- [ ] Mise à jour du modèle `User.js` : ajout du champ `bio` (TEXT, allowNull: true)
-
-### 10.1.2 Backend - Routes API profil
+### 10.1.1 Backend - Routes API profil
 
 #### Routes publiques (`/api/users`)
 
@@ -52,13 +41,13 @@ Cette phase finalise le projet avec quatre grands axes :
 
 | Méthode | Route | Auth | Description |
 |---------|-------|------|-------------|
-| PUT | `/update-profile` | authenticate | Modifier profil (username, avatar, bio) — **route existante à étendre** |
+| PUT | `/update-profile` | authenticate | Modifier profil (username, avatar) — **route existante** |
 
-### 10.1.3 Backend - Fichiers
+### 10.1.2 Backend - Fichiers
 
 #### Controller
 - [ ] `controllers/userController.js`
-  - `getPublicProfile` : retourne les infos publiques (username, avatar, bio, rôle, date inscription, personnage sélectionné, statistiques forum)
+  - `getPublicProfile` : retourne les infos publiques (username, avatar, rôle, date inscription, personnage sélectionné, statistiques forum)
   - `getUserCharacters` : personnages approved + active de l'utilisateur, paginés
   - `getUserPosts` : posts de l'utilisateur avec topic + catégorie, paginés
   - `getUserTopics` : sujets créés par l'utilisateur avec catégorie + compteurs, paginés
@@ -75,11 +64,9 @@ Cette phase finalise le projet avec quatre grands axes :
   - GET `/:id/topics` -> optionalAuth -> getUserValidation -> validate -> getUserTopics
 
 #### Modifications existantes
-- [ ] `controllers/authController.js` : étendre `updateProfile` pour accepter `bio`
-- [ ] `validators/authValidators.js` : ajouter `body('bio').optional().isLength({ max: 500 })`
 - [ ] `routes/index.js` : monter `/users` -> `routes/users.js`
 
-### 10.1.4 Frontend - Service et Hooks
+### 10.1.3 Frontend - Service et Hooks
 
 #### Service (`services/userService.js`)
 - [ ] `getUserProfile(id)` - Profil public
@@ -92,12 +79,12 @@ Cette phase finalise le projet avec quatre grands axes :
 - [ ] `useUserCharacters(id, params)` - Query personnages
 - [ ] `useUserPosts(id, params)` - Query posts paginés
 - [ ] `useUserTopics(id, params)` - Query sujets paginés
-- [ ] `useUpdateProfile()` - Mutation mise à jour profil (username, avatar, bio)
+- [ ] `useUpdateProfile()` - Mutation mise à jour profil (username, avatar)
 
-### 10.1.5 Frontend - Pages et composants
+### 10.1.4 Frontend - Pages et composants
 
 #### Page profil public (`pages/Profile/ProfilePage.jsx`)
-- [ ] En-tête : avatar (grand format), username, rôle (badge), bio, date d'inscription, personnage actif
+- [ ] En-tête : avatar (grand format), username, rôle (badge), date d'inscription, personnage actif
 - [ ] Onglets : Personnages, Sujets, Messages
 - [ ] Onglet Personnages : grille de CharacterCard (approved + active uniquement)
 - [ ] Onglet Sujets : liste des sujets créés avec catégorie, date, nombre de réponses
@@ -106,7 +93,7 @@ Cette phase finalise le projet avec quatre grands axes :
 - [ ] Route : `/profil/:id`
 
 #### Page paramètres du compte (`pages/Profile/ProfileSettings.jsx`)
-- [ ] Section identité : formulaire username + bio (textarea, max 500 caractères, compteur)
+- [ ] Section identité : formulaire username
 - [ ] Section avatar : champ URL avatar + aperçu en temps réel (composant Avatar existant)
 - [ ] Section mot de passe : formulaire changement de mot de passe (réutilise `changePassword` existant)
 - [ ] Section email : affichage email + statut vérification
@@ -114,7 +101,7 @@ Cette phase finalise le projet avec quatre grands axes :
 - [ ] Route : `/profil/parametres` (ProtectedRoute)
 
 #### Composants
-- [ ] `ProfileHeader.jsx` - En-tête de profil avec avatar, username, rôle, bio
+- [ ] `ProfileHeader.jsx` - En-tête de profil avec avatar, username, rôle, personnage actif
 - [ ] `ProfileTabs.jsx` - Navigation par onglets (Personnages, Sujets, Messages)
 - [ ] `ProfileActivityRow.jsx` - Ligne d'activité (post ou sujet avec date relative)
 
@@ -361,9 +348,8 @@ Cette phase finalise le projet avec quatre grands axes :
 ## Ordre de réalisation suggéré
 
 1. **Profil utilisateur - Backend**
-   - [ ] Migration (ajout bio)
    - [ ] Controller + validators + routes profil public
-   - [ ] Extension updateProfile (bio)
+   - [ ] Montage routes dans index.js
 
 2. **Profil utilisateur - Frontend**
    - [ ] Service + hooks
