@@ -35,12 +35,19 @@ module.exports = {
     );
 
     const adminUser = users.find(u => u.username === 'admin');
+    const moderatorUser = users.find(u => u.username === 'moderator');
+    const gamemasterUser = users.find(u => u.username === 'gamemaster');
     const player1User = users.find(u => u.username === 'player1');
     const player2User = users.find(u => u.username === 'player2');
 
     const adminId = adminUser ? adminUser.id : null;
 
+    // Récupérer les clans sans faction pour varier
+    const freresTerre = clans.find(c => c.name === 'Les Frères de la Terre Brûlée');
+
     await queryInterface.bulkInsert('characters', [
+      // === Admin: 2 personnages ===
+      // 1. faction + clan (Inaltéré / Veilleurs / Sentinelles)
       {
         user_id: adminId,
         ethnicity_id: inalteres.id,
@@ -61,6 +68,76 @@ module.exports = {
         created_at: now,
         updated_at: now,
       },
+      // 2. sans faction, sans clan (Éveillé)
+      {
+        user_id: adminId,
+        ethnicity_id: eveilles.id,
+        faction_id: null,
+        clan_id: null,
+        name: 'Orwen le Solitaire',
+        avatar: null,
+        age: 41,
+        appearance: null,
+        personality: null,
+        background: null,
+        goals: null,
+        status: 'approved',
+        rejection_reason: null,
+        is_active: true,
+        approved_at: now,
+        approved_by: adminId,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // === Moderator: 1 personnage ===
+      // faction + clan (Éveillé / Éclaireurs / Sensitifs)
+      {
+        user_id: moderatorUser ? moderatorUser.id : null,
+        ethnicity_id: eveilles.id,
+        faction_id: eclaireurs.id,
+        clan_id: sensitifs.id,
+        name: 'Thalia la Clairvoyante',
+        avatar: null,
+        age: 30,
+        appearance: null,
+        personality: null,
+        background: null,
+        goals: null,
+        status: 'approved',
+        rejection_reason: null,
+        is_active: true,
+        approved_at: now,
+        approved_by: adminId,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // === Game Master: 1 personnage ===
+      // faction, sans clan (Inaltéré / Veilleurs)
+      {
+        user_id: gamemasterUser ? gamemasterUser.id : null,
+        ethnicity_id: inalteres.id,
+        faction_id: veilleurs.id,
+        clan_id: null,
+        name: 'Draven le Chroniqueur',
+        avatar: null,
+        age: 55,
+        appearance: null,
+        personality: null,
+        background: null,
+        goals: null,
+        status: 'approved',
+        rejection_reason: null,
+        is_active: true,
+        approved_at: now,
+        approved_by: adminId,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // === Player1: 2 personnages ===
+      // 1. faction + clan (Éveillé / Éclaireurs / Sensitifs)
       {
         user_id: player1User ? player1User.id : null,
         ethnicity_id: eveilles.id,
@@ -81,14 +158,15 @@ module.exports = {
         created_at: now,
         updated_at: now,
       },
+      // 2. sans faction, clan indépendant (Inaltéré / Vagabonds du Vent)
       {
-        user_id: null,
+        user_id: player1User ? player1User.id : null,
         ethnicity_id: inalteres.id,
         faction_id: null,
-        clan_id: null,
-        name: 'L\'Errant Sans Nom',
+        clan_id: vagabonds.id,
+        name: 'Fenris l\'Errant',
         avatar: null,
-        age: null,
+        age: 33,
         appearance: null,
         personality: null,
         background: null,
@@ -101,6 +179,9 @@ module.exports = {
         created_at: now,
         updated_at: now,
       },
+
+      // === Player2: 2 personnages ===
+      // 1. sans faction, clan indépendant (Éveillé / Vagabonds) — draft
       {
         user_id: player2User ? player2User.id : null,
         ethnicity_id: eveilles.id,
@@ -118,6 +199,50 @@ module.exports = {
         is_active: true,
         approved_at: null,
         approved_by: null,
+        created_at: now,
+        updated_at: now,
+      },
+      // 2. faction, sans clan (Éveillé / Éclaireurs)
+      {
+        user_id: player2User ? player2User.id : null,
+        ethnicity_id: eveilles.id,
+        faction_id: eclaireurs.id,
+        clan_id: null,
+        name: 'Mira l\'Audacieuse',
+        avatar: null,
+        age: 25,
+        appearance: null,
+        personality: null,
+        background: null,
+        goals: null,
+        status: 'approved',
+        rejection_reason: null,
+        is_active: true,
+        approved_at: now,
+        approved_by: adminId,
+        created_at: now,
+        updated_at: now,
+      },
+
+      // === PNJ (sans propriétaire): 1 personnage ===
+      // sans faction, sans clan (Inaltéré)
+      {
+        user_id: null,
+        ethnicity_id: inalteres.id,
+        faction_id: null,
+        clan_id: null,
+        name: 'L\'Errant Sans Nom',
+        avatar: null,
+        age: null,
+        appearance: null,
+        personality: null,
+        background: null,
+        goals: null,
+        status: 'approved',
+        rejection_reason: null,
+        is_active: true,
+        approved_at: now,
+        approved_by: adminId,
         created_at: now,
         updated_at: now,
       },

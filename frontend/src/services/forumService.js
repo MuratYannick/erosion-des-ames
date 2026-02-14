@@ -83,6 +83,18 @@ export const deleteCategory = async (id) => {
   return response.data;
 };
 
+/**
+ * Récupère les permissions de l'utilisateur connecté sur une catégorie
+ * @param {number} categoryId - ID de la catégorie
+ * @returns {Promise<Object>} Permissions de l'utilisateur
+ */
+export const getMyPermissions = async (categoryId) => {
+  const response = await api.get(`/forum/categories/${categoryId}/my-permissions`, {
+    skipErrorRedirect: true,
+  });
+  return response.data;
+};
+
 // ============================================================================
 // TOPICS
 // ============================================================================

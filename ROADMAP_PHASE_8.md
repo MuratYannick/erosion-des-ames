@@ -507,12 +507,12 @@ Cette phase consiste à créer le système complet d'administration et de modér
 - [x] Le dashboard affiche les statistiques correctes (utilisateurs, personnages, forum, signalements)
 - [x] La liste des utilisateurs est filtrable par rôle, statut et recherche textuelle
 - [x] Le bannissement désactive le compte et empêche la connexion
-- [ ] Le mute empêche la création de posts/sujets sans désactiver le compte
+- [x] Le mute empêche la création de posts/sujets sans désactiver le compte
 - [ ] Les sanctions avec durée expirent automatiquement
 - [x] La révocation d'une sanction réactive le compte (unban) ou le droit de poster (unmute)
-- [ ] Le changement de rôle est immédiatement effectif
+- [x] Le changement de rôle est immédiatement effectif
 - [x] Les personnages en attente peuvent être approuvés ou rejetés avec raison depuis le panel
-- [ ] Les catégories du forum sont gérées (CRUD + réordonnancement) depuis le panel
+- [x] Les catégories du forum sont gérées (CRUD + réordonnancement) depuis le panel
 - [ ] Le déplacement de sujet met à jour les compteurs des catégories source et destination
 - [ ] La fusion de sujets transfère tous les posts et supprime le sujet source
 - [x] Toutes les actions d'administration sont enregistrées dans moderation_actions

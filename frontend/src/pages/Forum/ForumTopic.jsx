@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import PageHeader from '@/components/content/PageHeader'
 import {
   PostCard,
@@ -20,6 +20,7 @@ import {
   useReportPost,
 } from '@/hooks/useForum'
 import { useAuth } from '@/hooks/useAuth'
+import { useToast } from '@/components/ui/Toast'
 
 const STAFF_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER']
 
@@ -34,6 +35,7 @@ const ForumTopic = () => {
   const { categorySlug, topicId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { addToast } = useToast()
   const [page, setPage] = useState(1)
   const [quotedPost, setQuotedPost] = useState(null)
   const [reportingPostId, setReportingPostId] = useState(null)
@@ -84,10 +86,15 @@ const ForumTopic = () => {
   }, [])
 
   const handleDeleteTopic = useCallback(() => {
+    const currentTopic = topicData?.topic || topicData
+    if (currentTopic?.isLocked) {
+      addToast({ variant: 'error', title: 'Action refusée', message: 'Ce sujet est verrouillé et ne peut pas être supprimé.' })
+      return
+    }
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce sujet ?')) {
       deleteTopic(topicId)
     }
-  }, [deleteTopic, topicId])
+  }, [topicData, addToast, deleteTopic, topicId])
 
   const handleDeletePost = useCallback((postId) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
@@ -125,6 +132,7 @@ const ForumTopic = () => {
   const totalItems = topicData.total || posts.length
   const category = topic.category || {}
   const isRpTopic = category.isRp || false
+  const isTopicAuthor = user && topic.author?.id === user.id
 
   return (
     <div className="forum-topic">
@@ -167,11 +175,11 @@ const ForumTopic = () => {
               </Button>
             )}
 
-            {isStaff && (
+            {(isStaff || isTopicAuthor) && (
               <>
-                <Link to={`/forum/${categorySlug}/${topicId}/modifier`}>
-                  <Button variant="outline" size="sm">Modifier</Button>
-                </Link>
+                <Button variant="outline" size="sm" onClick={() => navigate(`/forum/${categorySlug}/${topicId}/modifier`)}>
+                  Modifier
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -188,16 +196,17 @@ const ForumTopic = () => {
         {/* Posts list */}
         <div className="space-y-4">
           {posts.map((post, index) => {
+            const isFirstPost = index === 0 && page === 1
             const isAuthor = user && post.author?.id === user.id
-            const canEdit = isAuthor || isStaff
-            const canDelete = isAuthor || isStaff
+            const canEdit = !isFirstPost && !topic.isLocked && (isAuthor || isStaff)
+            const canDelete = !isFirstPost && !topic.isLocked && (isAuthor || isStaff)
             const canReport = user && !isAuthor
 
             return (
               <PostCard
                 key={post.id}
                 post={post}
-                isFirstPost={index === 0 && page === 1}
+                isFirstPost={isFirstPost}
                 onReply={!topic.isLocked && user ? () => handleQuote(null) : undefined}
                 onQuote={!topic.isLocked && user ? () => handleQuote(post) : undefined}
                 onEdit={canEdit ? () => navigate(`/forum/${categorySlug}/${topicId}/modifier-post/${post.id}`) : undefined}

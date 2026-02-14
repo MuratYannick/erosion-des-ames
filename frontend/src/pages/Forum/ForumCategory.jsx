@@ -10,7 +10,7 @@ import {
 import { Card, CardBody } from '@/components/ui/Card/Card'
 import Button from '@/components/ui/Button/Button'
 import Loader from '@/components/ui/Loader/Loader'
-import { useForumCategory, useTopicsByCategory } from '@/hooks/useForum'
+import { useForumCategory, useTopicsByCategory, useMyPermissions } from '@/hooks/useForum'
 import { useAuth } from '@/hooks/useAuth'
 
 const SORT_OPTIONS = [
@@ -36,7 +36,7 @@ const NewCategoryIcon = () => (
 
 const ForumCategory = () => {
   const { categorySlug } = useParams()
-  const { user, isAdmin } = useAuth()
+  const { user } = useAuth()
   const [page, setPage] = useState(1)
   const [sort, setSort] = useState('recent')
 
@@ -52,6 +52,11 @@ const ForumCategory = () => {
     data: topicsData,
     loading: topicsLoading,
   } = useTopicsByCategory(categoryData?.id, { page, limit: 20, sort }, {
+    enabled: !!categoryData?.id,
+  })
+
+  // Fetch permissions for this category
+  const { data: permissions } = useMyPermissions(categoryData?.id, {
     enabled: !!categoryData?.id,
   })
 
@@ -79,6 +84,8 @@ const ForumCategory = () => {
   const topics = topicsData?.topics || topicsData || []
   const totalPages = topicsData?.totalPages || 1
   const totalItems = topicsData?.total || topics.length
+
+  const hasPermission = (perm) => permissions && permissions.includes(perm)
 
   return (
     <div className="forum-category">
@@ -135,7 +142,7 @@ const ForumCategory = () => {
               </div>
 
               {/* New sub-category button (admin only) */}
-              {isAdmin && (
+              {hasPermission('create_subcategory') && (
                 <Link to={`/admin/forum?parentId=${category.id}`}>
                   <Button variant="ghost" size="sm" icon={<NewCategoryIcon />}>
                     Nouvelle sous-catégorie
@@ -144,7 +151,7 @@ const ForumCategory = () => {
               )}
 
               {/* New topic button */}
-              {user && (
+              {hasPermission('create_topic') && (
                 <Link to={`/forum/${categorySlug}/nouveau-sujet`}>
                   <Button variant="primary" size="sm" icon={<NewTopicIcon />}>
                     Nouveau sujet

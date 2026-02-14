@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 
 const forumCategoryController = require('../../controllers/forumCategoryController');
-const { authenticate, authorize, optionalAuth } = require('../../middlewares/auth');
+const categoryPermissionController = require('../../controllers/categoryPermissionController');
+const { authenticate, authorize, optionalAuth, checkMute } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validate');
 const {
   createCategoryValidation,
@@ -18,6 +19,14 @@ const {
  * @access  Public
  */
 router.get('/', optionalAuth, forumCategoryController.getAll);
+
+/**
+ * @route   GET /api/forum/categories/:id/my-permissions
+ * @desc    Récupérer les permissions de l'utilisateur courant pour une catégorie
+ * @access  Public (optionalAuth)
+ * @query   characterId - UUID du personnage sélectionné (optionnel)
+ */
+router.get('/:id/my-permissions', optionalAuth, categoryPermissionController.getMyPermissions);
 
 /**
  * @route   GET /api/forum/categories/:id
@@ -35,6 +44,7 @@ router.post(
   '/',
   authenticate,
   authorize('ADMIN'),
+  checkMute,
   createCategoryValidation,
   validate,
   forumCategoryController.create
@@ -49,6 +59,7 @@ router.put(
   '/:id',
   authenticate,
   authorize('ADMIN'),
+  checkMute,
   updateCategoryValidation,
   validate,
   forumCategoryController.update
@@ -63,6 +74,7 @@ router.patch(
   '/reorder',
   authenticate,
   authorize('ADMIN'),
+  checkMute,
   reorderCategoriesValidation,
   validate,
   forumCategoryController.reorder
@@ -77,6 +89,7 @@ router.delete(
   '/:id',
   authenticate,
   authorize('ADMIN'),
+  checkMute,
   forumCategoryController.remove
 );
 

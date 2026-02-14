@@ -1011,6 +1011,54 @@ export const useReorderCategories = (options = {}) => {
   );
 };
 
+export const useCategoryPermissions = (categoryId, options = {}) => {
+  const { enabled = true, onSuccess, onError } = options;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const refetch = useCallback(async () => {
+    if (!enabled || !categoryId) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await adminService.getCategoryEffectivePermissions(categoryId);
+      const responseData = response.data;
+      setData(responseData);
+      if (onSuccess) onSuccess(responseData);
+      return responseData;
+    } catch (err) {
+      setError(err);
+      if (onError) onError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryId, enabled, onSuccess, onError]);
+
+  useEffect(() => {
+    if (enabled && categoryId) {
+      refetch();
+    }
+  }, [refetch, enabled, categoryId]);
+
+  return { data, loading, error, refetch };
+};
+
+export const useAddCategoryPermission = (options = {}) => {
+  return useMutation(
+    ({ categoryId, data }) => adminService.addCategoryPermission(categoryId, data),
+    options
+  );
+};
+
+export const useRemoveCategoryPermission = (options = {}) => {
+  return useMutation(
+    ({ categoryId, permissionId }) => adminService.removeCategoryPermission(categoryId, permissionId),
+    options
+  );
+};
+
 // ============================================================================
 // HOOKS DE MUTATIONS — FORUM TOPICS (exécution manuelle)
 // ============================================================================

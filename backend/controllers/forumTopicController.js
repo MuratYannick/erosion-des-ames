@@ -3,6 +3,7 @@
 const { ForumTopic, ForumCategory, ForumPost, User, Character, TopicRead, TopicSubscription, sequelize } = require('../models');
 const { ApiError, asyncHandler } = require('../middlewares/errorHandler');
 const { Op } = require('sequelize');
+const categoryPermissionService = require('../services/categoryPermissionService');
 
 const STAFF_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER'];
 
@@ -20,6 +21,17 @@ const getByCategory = asyncHandler(async (req, res) => {
 
   if (!category.isActive && !isStaff) {
     throw ApiError.notFound('Catégorie non trouvée');
+  }
+
+  // Check access_category permission
+  const hasAccess = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    category.id,
+    'access_category'
+  );
+
+  if (!hasAccess) {
+    throw ApiError.forbidden("Vous n'avez pas accès à cette catégorie");
   }
 
   const page = parseInt(req.query.page, 10) || 1;
@@ -233,6 +245,21 @@ const create = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Catégorie invalide ou inactive');
   }
 
+  // Check create_topic permission
+  const canCreate = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    category.id,
+    'create_topic',
+    {
+      characterId: req.user.selectedCharacterId,
+      // We'll load faction/clan from the character if needed
+    }
+  );
+
+  if (!canCreate) {
+    throw ApiError.forbidden("Vous n'avez pas la permission de créer un sujet dans cette catégorie");
+  }
+
   // Vérifier si un personnage est requis pour les catégories RP
   if (category.isRp && !characterId) {
     throw ApiError.badRequest('Un personnage est requis pour les catégories RP');
@@ -432,8 +459,8 @@ const remove = asyncHandler(async (req, res) => {
     throw ApiError.notFound('Sujet non trouvé');
   }
 
-  const isAdmin = req.user.role === 'ADMIN';
-  if (topic.userId !== req.user.id && !isAdmin) {
+  const isStaff = STAFF_ROLES.includes(req.user.role);
+  if (topic.userId !== req.user.id && !isStaff) {
     throw ApiError.forbidden('Vous n\'êtes pas autorisé à supprimer ce sujet');
   }
 

@@ -224,8 +224,9 @@ const remove = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Le premier post ne peut pas être supprimé, supprimez le sujet à la place');
   }
 
-  // Vérifier les permissions (propriétaire ou ADMIN uniquement)
-  if (req.user.id !== post.userId && req.user.role !== 'ADMIN') {
+  // Vérifier les permissions (propriétaire ou staff)
+  const isStaff = STAFF_ROLES.includes(req.user.role);
+  if (req.user.id !== post.userId && !isStaff) {
     throw ApiError.forbidden('Vous n\'êtes pas autorisé à supprimer ce post');
   }
 

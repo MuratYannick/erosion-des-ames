@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 
 const adminForumController = require('../../controllers/adminForumController');
-const { authenticate, authorize } = require('../../middlewares/auth');
+const adminCategoryPermissionController = require('../../controllers/adminCategoryPermissionController');
+const { authenticate, authorize, checkMute } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validate');
 const {
   reorderCategoriesValidation,
@@ -13,6 +14,9 @@ const {
   moveTopicValidation,
   mergeTopicsValidation,
 } = require('../../validators/moderationValidators');
+const {
+  addPermissionValidation,
+} = require('../../validators/categoryPermissionValidators');
 
 /**
  * @route   GET /api/admin/forum/categories
@@ -28,44 +32,47 @@ router.get(
 
 /**
  * @route   POST /api/admin/forum/categories
- * @desc    Créer une catégorie
- * @access  ADMIN
+ * @desc    Créer une catégorie (permission: create_subcategory sur le parent)
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.post(
   '/categories',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   adminForumController.createCategory
 );
 
 /**
  * @route   PUT /api/admin/forum/categories/:id
- * @desc    Mettre à jour une catégorie
- * @access  ADMIN
+ * @desc    Mettre à jour une catégorie (permission: edit_category)
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.put(
   '/categories/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   adminForumController.updateCategory
 );
 
 /**
  * @route   DELETE /api/admin/forum/categories/:id
- * @desc    Supprimer une catégorie
- * @access  ADMIN
+ * @desc    Supprimer une catégorie (permission: edit_category)
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.delete(
   '/categories/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   adminForumController.deleteCategory
 );
 
 /**
  * @route   PATCH /api/admin/forum/categories/reorder
- * @desc    Réorganiser l'ordre des catégories
- * @access  ADMIN
+ * @desc    Réorganiser l'ordre des catégories (permission: move_category)
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  *
  * Note: cette route doit être déclarée avant /categories/:id
  * pour éviter que "reorder" soit interprété comme un :id param.
@@ -73,10 +80,63 @@ router.delete(
 router.patch(
   '/categories/reorder',
   authenticate,
-  authorize('ADMIN'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   reorderCategoriesValidation,
   validate,
   adminForumController.reorderCategories
+);
+
+/**
+ * @route   GET /api/admin/forum/categories/:id/permissions
+ * @desc    Liste les permissions directes d'une catégorie
+ * @access  ADMIN
+ */
+router.get(
+  '/categories/:id/permissions',
+  authenticate,
+  authorize('ADMIN'),
+  adminCategoryPermissionController.getPermissions
+);
+
+/**
+ * @route   GET /api/admin/forum/categories/:id/permissions/effective
+ * @desc    Liste les permissions effectives d'une catégorie (directes + héritées)
+ * @access  ADMIN
+ */
+router.get(
+  '/categories/:id/permissions/effective',
+  authenticate,
+  authorize('ADMIN'),
+  adminCategoryPermissionController.getEffectivePermissions
+);
+
+/**
+ * @route   POST /api/admin/forum/categories/:id/permissions
+ * @desc    Ajoute une permission à une catégorie
+ * @access  ADMIN
+ */
+router.post(
+  '/categories/:id/permissions',
+  authenticate,
+  authorize('ADMIN'),
+  checkMute,
+  addPermissionValidation,
+  validate,
+  adminCategoryPermissionController.addPermission
+);
+
+/**
+ * @route   DELETE /api/admin/forum/categories/:id/permissions/:permissionId
+ * @desc    Supprime une permission d'une catégorie
+ * @access  ADMIN
+ */
+router.delete(
+  '/categories/:id/permissions/:permissionId',
+  authenticate,
+  authorize('ADMIN'),
+  checkMute,
+  adminCategoryPermissionController.removePermission
 );
 
 /**
@@ -88,6 +148,7 @@ router.patch(
   '/topics/:id/move',
   authenticate,
   authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   moveTopicValidation,
   validate,
   adminForumController.moveTopic
@@ -102,6 +163,7 @@ router.patch(
   '/topics/merge',
   authenticate,
   authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  checkMute,
   mergeTopicsValidation,
   validate,
   adminForumController.mergeTopics

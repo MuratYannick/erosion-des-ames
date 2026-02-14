@@ -1,7 +1,7 @@
 'use strict';
 
 const { verifyToken } = require('../utils/jwt');
-const { User } = require('../models');
+const { User, UserSanction } = require('../models');
 
 /**
  * Middleware d'authentification - vérifie le JWT et attache req.user
@@ -141,8 +141,41 @@ const optionalAuth = async (req, res, next) => {
   }
 };
 
+/**
+ * Middleware de vérification du mute - bloque les utilisateurs sous sanction mute active
+ * À placer après authenticate sur les routes d'écriture (création de topic, post, etc.)
+ */
+const checkMute = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return next();
+    }
+
+    const activeMute = await UserSanction.scope(['active', 'mutes']).findOne({
+      where: { userId: req.user.id },
+    });
+
+    if (activeMute) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Votre compte est actuellement sous silence (mute). Vous ne pouvez pas publier de contenu.',
+          code: 'USER_MUTED',
+          expiresAt: activeMute.expiresAt,
+        },
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Erreur dans le middleware checkMute:', error);
+    next();
+  }
+};
+
 module.exports = {
   authenticate,
   authorize,
   optionalAuth,
+  checkMute,
 };

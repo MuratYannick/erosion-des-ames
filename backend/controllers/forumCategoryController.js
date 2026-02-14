@@ -3,6 +3,7 @@
 const { ForumCategory, ForumPost, ForumTopic, User, sequelize } = require('../models');
 const { QueryTypes } = require('sequelize');
 const { ApiError, asyncHandler } = require('../middlewares/errorHandler');
+const categoryPermissionService = require('../services/categoryPermissionService');
 
 const STAFF_ROLES = ['ADMIN', 'MODERATOR', 'GAME_MASTER'];
 
@@ -62,6 +63,32 @@ const getAll = asyncHandler(async (req, res) => {
         : [],
     }));
   }
+
+  // Filter categories by access_category permission
+  // Check permission for each category (includes child categories)
+  const filterCategoriesByPermission = async (cats) => {
+    const filtered = [];
+
+    for (const cat of cats) {
+      const hasAccess = await categoryPermissionService.hasPermissionOrNoRestrictions(
+        req.user,
+        cat.id,
+        'access_category'
+      );
+
+      if (hasAccess) {
+        // If the category has children, filter them recursively
+        if (cat.children && cat.children.length > 0) {
+          cat.children = await filterCategoriesByPermission(cat.children);
+        }
+        filtered.push(cat);
+      }
+    }
+
+    return filtered;
+  };
+
+  categoryData = await filterCategoriesByPermission(categoryData);
 
   res.status(200).json({
     success: true,

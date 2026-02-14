@@ -283,6 +283,28 @@ export const reorderCategories = async (categories) => {
   return response.data;
 };
 
+// FORUM — PERMISSIONS DES CATÉGORIES
+
+export const getCategoryPermissions = async (categoryId) => {
+  const response = await api.get(`/admin/forum/categories/${categoryId}/permissions`, { skipErrorRedirect: true });
+  return response.data;
+};
+
+export const getCategoryEffectivePermissions = async (categoryId) => {
+  const response = await api.get(`/admin/forum/categories/${categoryId}/permissions/effective`, { skipErrorRedirect: true });
+  return response.data;
+};
+
+export const addCategoryPermission = async (categoryId, data) => {
+  const response = await api.post(`/admin/forum/categories/${categoryId}/permissions`, data, { skipErrorRedirect: true });
+  return response.data;
+};
+
+export const removeCategoryPermission = async (categoryId, permissionId) => {
+  const response = await api.delete(`/admin/forum/categories/${categoryId}/permissions/${permissionId}`, { skipErrorRedirect: true });
+  return response.data;
+};
+
 // ============================================================================
 // FORUM — TOPICS
 // ============================================================================

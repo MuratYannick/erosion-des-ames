@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const forumPostController = require('../../controllers/forumPostController');
-const { authenticate, optionalAuth } = require('../../middlewares/auth');
+const { authenticate, optionalAuth, checkMute } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validate');
 const {
   createPostValidation,
@@ -27,6 +27,7 @@ router.get('/topic/:topicId', optionalAuth, forumPostController.getByTopic);
 router.post(
   '/topic/:topicId',
   authenticate,
+  checkMute,
   createPostValidation,
   validate,
   forumPostController.create
@@ -40,6 +41,7 @@ router.post(
 router.put(
   '/:id',
   authenticate,
+  checkMute,
   updatePostValidation,
   validate,
   forumPostController.update
@@ -53,6 +55,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate,
+  checkMute,
   forumPostController.remove
 );
 

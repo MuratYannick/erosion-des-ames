@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   useAdminForumCategories,
@@ -8,8 +8,12 @@ import {
   useReorderCategories,
   useMoveTopic,
   useMergeTopics,
+  useCategoryPermissions,
+  useAddCategoryPermission,
+  useRemoveCategoryPermission,
 } from '@/hooks/useAdmin';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/Toast';
 import { MoveTopicModal } from '@/components/admin';
 
 // ============================================
@@ -163,6 +167,210 @@ const getDescendantIds = (categoryId, flatCategories) => {
   };
   collect(categoryId);
   return ids;
+};
+
+// ============================================
+// PERMISSION LABELS
+// ============================================
+
+const PERMISSION_LABELS = {
+  access_category: 'Accéder à la catégorie',
+  edit_category: 'Modifier la catégorie',
+  create_subcategory: 'Créer une sous-catégorie',
+  move_category: 'Déplacer la catégorie',
+  create_topic: 'Créer un sujet',
+  edit_topic: 'Modifier un sujet',
+  move_topic: 'Déplacer un sujet',
+  merge_topic: 'Fusionner des sujets',
+};
+
+const GRANTEE_LABELS = {
+  public: 'Tout le monde (public)',
+  player: 'Joueurs (PLAYER)',
+  player_accepted_rules: 'Joueurs (règlement accepté)',
+  player_with_character: 'Joueurs (avec personnage)',
+  player_character_faction: 'Faction spécifique',
+  player_character_clan: 'Clan spécifique',
+  specific_user: 'Utilisateur spécifique',
+  specific_character: 'Personnage spécifique',
+  game_master: 'Maîtres du jeu (GAME_MASTER)',
+  moderator: 'Modérateurs (MODERATOR)',
+};
+
+const GRANTEE_REQUIRES_ID = ['player_character_faction', 'player_character_clan', 'specific_user', 'specific_character'];
+
+const GRANTEE_ID_LABELS = {
+  player_character_faction: 'ID de la faction',
+  player_character_clan: 'ID du clan',
+  specific_user: 'UUID de l\'utilisateur',
+  specific_character: 'UUID du personnage',
+};
+
+// ============================================
+// CATEGORY PERMISSION EDITOR
+// ============================================
+
+const CategoryPermissionEditor = ({ categoryId }) => {
+  const [newPermission, setNewPermission] = useState('access_category');
+  const [newGranteeType, setNewGranteeType] = useState('public');
+  const [newGranteeId, setNewGranteeId] = useState('');
+  const [permError, setPermError] = useState(null);
+
+  const { data: permData, loading: permLoading, refetch: refetchPerms } = useCategoryPermissions(categoryId);
+
+  const { mutate: addMutate, loading: addLoading } = useAddCategoryPermission({
+    onSuccess: () => {
+      setNewGranteeId('');
+      setPermError(null);
+      refetchPerms();
+    },
+    onError: (err) => {
+      setPermError(err?.response?.data?.message || err?.message || 'Erreur lors de l\'ajout');
+    },
+  });
+
+  const { mutate: removeMutate } = useRemoveCategoryPermission({
+    onSuccess: () => {
+      setPermError(null);
+      refetchPerms();
+    },
+    onError: (err) => {
+      setPermError(err?.response?.data?.message || err?.message || 'Erreur lors de la suppression');
+    },
+  });
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    const requiresId = GRANTEE_REQUIRES_ID.includes(newGranteeType);
+    if (requiresId && !newGranteeId.trim()) {
+      setPermError('L\'identifiant de la cible est requis pour ce type');
+      return;
+    }
+    setPermError(null);
+    addMutate({
+      categoryId,
+      data: {
+        permission: newPermission,
+        granteeType: newGranteeType,
+        granteeId: requiresId ? newGranteeId.trim() : undefined,
+      },
+    });
+  };
+
+  const handleRemove = (permId) => {
+    removeMutate({ categoryId, permissionId: permId });
+  };
+
+  const directPerms = permData?.direct || [];
+  const inheritedPerms = permData?.inherited || [];
+  const requiresId = GRANTEE_REQUIRES_ID.includes(newGranteeType);
+
+  if (permLoading && !permData) {
+    return (
+      <div className="flex items-center gap-2 py-4 text-[#8f99a5] text-sm">
+        <div className="w-4 h-4 border-2 border-[#ff9635]/30 border-t-[#ff9635] rounded-full animate-spin" />
+        Chargement des permissions...
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {permError && (
+        <div className="p-3 bg-[#c95951]/10 border border-[#c95951]/30 rounded-lg flex items-center justify-between">
+          <p className="text-[#c95951] text-sm">{permError}</p>
+          <button type="button" onClick={() => setPermError(null)} className="text-[#c95951] hover:text-[#c95951]/80 transition-colors">
+            <IconX />
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-3">
+        <div className="flex-1 min-w-[160px]">
+          <label className="block text-[#8f99a5] text-xs uppercase tracking-wide mb-1.5">Permission</label>
+          <select value={newPermission} onChange={(e) => setNewPermission(e.target.value)}
+            className="w-full px-3 py-2 bg-[#232930] border border-[#6b3212]/40 text-[#bba794] text-sm rounded-md focus:outline-none focus:border-[#ff9635]/60 transition-colors cursor-pointer">
+            {Object.entries(PERMISSION_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex-1 min-w-[160px]">
+          <label className="block text-[#8f99a5] text-xs uppercase tracking-wide mb-1.5">Cible</label>
+          <select value={newGranteeType} onChange={(e) => { setNewGranteeType(e.target.value); setNewGranteeId(''); }}
+            className="w-full px-3 py-2 bg-[#232930] border border-[#6b3212]/40 text-[#bba794] text-sm rounded-md focus:outline-none focus:border-[#ff9635]/60 transition-colors cursor-pointer">
+            {Object.entries(GRANTEE_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
+
+        {requiresId && (
+          <div className="flex-1 min-w-[140px]">
+            <label className="block text-[#8f99a5] text-xs uppercase tracking-wide mb-1.5">
+              {GRANTEE_ID_LABELS[newGranteeType]} <span className="text-[#c95951]">*</span>
+            </label>
+            <input type="text" value={newGranteeId} onChange={(e) => setNewGranteeId(e.target.value)}
+              placeholder="ID / UUID"
+              className="w-full px-3 py-2 bg-[#232930] border border-[#6b3212]/40 text-[#bba794] text-sm placeholder:text-[#64707e] rounded-md focus:outline-none focus:border-[#ff9635]/60 focus:ring-2 focus:ring-[#ff9635]/20 focus:ring-offset-0 transition-colors"
+            />
+          </div>
+        )}
+
+        <button type="submit" disabled={addLoading}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-[#ff9635]/20 border border-[#ff9635]/50 text-[#ff9635] hover:bg-[#ff9635]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          {addLoading ? (
+            <div className="w-4 h-4 border-2 border-[#ff9635]/30 border-t-[#ff9635] rounded-full animate-spin" />
+          ) : (
+            <IconPlus />
+          )}
+          Ajouter
+        </button>
+      </form>
+
+      {directPerms.length > 0 && (
+        <div>
+          <h4 className="text-[#8f99a5] text-xs uppercase tracking-wide mb-2">Permissions directes ({directPerms.length})</h4>
+          <div className="space-y-1">
+            {directPerms.map((perm) => (
+              <div key={perm.id} className="flex items-center gap-3 py-2 px-3 bg-[#232930]/60 border border-[#6b3212]/20 rounded-md text-sm">
+                <span className="text-[#d4c9ba] font-medium min-w-[180px]">{PERMISSION_LABELS[perm.permission] || perm.permission}</span>
+                <span className="text-[#bba794]">{GRANTEE_LABELS[perm.granteeType] || perm.granteeType}</span>
+                {perm.granteeId && <span className="text-[#64707e] font-mono text-xs">{perm.granteeId}</span>}
+                <div className="flex-1" />
+                <button type="button" onClick={() => handleRemove(perm.id)}
+                  className="p-1 rounded text-[#64707e] hover:text-[#c95951] hover:bg-[#c95951]/10 transition-colors" title="Supprimer">
+                  <IconTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {inheritedPerms.length > 0 && (
+        <div>
+          <h4 className="text-[#64707e] text-xs uppercase tracking-wide mb-2">Permissions héritées ({inheritedPerms.length})</h4>
+          <div className="space-y-1 opacity-60">
+            {inheritedPerms.map((perm, idx) => (
+              <div key={`inh-${idx}`} className="flex items-center gap-3 py-2 px-3 bg-[#232930]/30 border border-[#6b3212]/10 rounded-md text-sm">
+                <span className="text-[#8f99a5] min-w-[180px]">{PERMISSION_LABELS[perm.permission] || perm.permission}</span>
+                <span className="text-[#64707e]">{GRANTEE_LABELS[perm.granteeType] || perm.granteeType}</span>
+                {perm.granteeId && <span className="text-[#64707e] font-mono text-xs">{perm.granteeId}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {directPerms.length === 0 && inheritedPerms.length === 0 && (
+        <p className="text-[#64707e] text-sm py-2">
+          Aucune permission définie. Sans permission, toutes les actions sont autorisées (rétrocompatibilité).
+        </p>
+      )}
+    </div>
+  );
 };
 
 // ============================================
@@ -431,7 +639,6 @@ const CategoryTreeNode = ({
   onMoveUp,
   onMoveDown,
   reorderLoading,
-  showActions = true,
   showTopics = false,
   expandedIds,
   onToggleExpand,
@@ -441,6 +648,12 @@ const CategoryTreeNode = ({
   const hasTopics = showTopics && category.topics?.length > 0;
   const hasExpandableContent = hasChildren || hasTopics;
   const isExpanded = expandedIds.has(category.id);
+
+  // Permissions effectives de l'utilisateur sur cette catégorie
+  const perms = category.userPermissions || [];
+  const canEditCategory = perms.includes('edit_category');
+  const canMoveCategory = perms.includes('move_category');
+  const hasAnyAction = canEditCategory || canMoveCategory;
 
   return (
     <>
@@ -464,7 +677,7 @@ const CategoryTreeNode = ({
         </button>
 
         {/* Order arrows */}
-        {showActions && (
+        {canMoveCategory && (
           <div className="flex flex-col gap-0.5">
             <button
               type="button"
@@ -526,45 +739,49 @@ const CategoryTreeNode = ({
         )}
 
         {/* Actions */}
-        {showActions && (
+        {hasAnyAction && (
           <div className="flex items-center gap-1 shrink-0">
-            <button
-              type="button"
-              onClick={() => onEdit(category)}
-              className="p-1.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 transition-colors"
-              title="Modifier"
-            >
-              <IconEdit />
-            </button>
-
-            {confirmDelete ? (
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => onDelete(category.id)}
-                  className="p-1.5 rounded text-[#c95951] hover:bg-[#c95951]/10 transition-colors text-xs font-medium"
-                  title="Confirmer la suppression"
-                >
-                  <IconCheck />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmDelete(false)}
-                  className="p-1.5 rounded text-[#64707e] hover:text-[#d4c9ba] transition-colors"
-                  title="Annuler"
-                >
-                  <IconX />
-                </button>
-              </div>
-            ) : (
+            {canEditCategory && (
               <button
                 type="button"
-                onClick={() => setConfirmDelete(true)}
-                className="p-1.5 rounded text-[#64707e] hover:text-[#c95951] hover:bg-[#c95951]/10 transition-colors"
-                title="Supprimer"
+                onClick={() => onEdit(category)}
+                className="p-1.5 rounded text-[#64707e] hover:text-[#ff9635] hover:bg-[#ff9635]/10 transition-colors"
+                title="Modifier"
               >
-                <IconTrash />
+                <IconEdit />
               </button>
+            )}
+
+            {canEditCategory && (
+              confirmDelete ? (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onDelete(category.id)}
+                    className="p-1.5 rounded text-[#c95951] hover:bg-[#c95951]/10 transition-colors text-xs font-medium"
+                    title="Confirmer la suppression"
+                  >
+                    <IconCheck />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(false)}
+                    className="p-1.5 rounded text-[#64707e] hover:text-[#d4c9ba] transition-colors"
+                    title="Annuler"
+                  >
+                    <IconX />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="p-1.5 rounded text-[#64707e] hover:text-[#c95951] hover:bg-[#c95951]/10 transition-colors"
+                  title="Supprimer"
+                >
+                  <IconTrash />
+                </button>
+              )
             )}
           </div>
         )}
@@ -591,7 +808,6 @@ const CategoryTreeNode = ({
               onMoveUp={onMoveUp}
               onMoveDown={onMoveDown}
               reorderLoading={reorderLoading}
-              showActions={showActions}
               showTopics={showTopics}
               expandedIds={expandedIds}
               onToggleExpand={onToggleExpand}
@@ -651,7 +867,11 @@ const CategoriesSkeleton = () => (
 
 const AdminForum = () => {
   const { isAdmin } = useAuth();
+  const { addToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // --- Refs ---
+  const editFormRef = useRef(null);
 
   // --- Category state ---
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -671,7 +891,7 @@ const AdminForum = () => {
   // --- Auto-open create form from URL ?parentId=X ---
   useEffect(() => {
     const parentIdParam = searchParams.get('parentId');
-    if (parentIdParam && isAdmin) {
+    if (parentIdParam) {
       setDefaultParentId(Number(parentIdParam));
       setShowCreateForm(true);
       // Clean up the URL
@@ -686,6 +906,11 @@ const AdminForum = () => {
   const categories = useMemo(() => {
     return categoriesData?.categories || [];
   }, [categoriesData]);
+
+  // Permissions dérivées des données — pas de hardcode par rôle
+  const canCreateCategory = useMemo(() => {
+    return categories.some(c => c.userPermissions?.includes('create_subcategory'));
+  }, [categories]);
 
   // --- Tree structure ---
   const categoryTree = useMemo(() => {
@@ -721,12 +946,26 @@ const AdminForum = () => {
       setShowCreateForm(false);
       refetch();
     },
+    onError: (err) => {
+      addToast({
+        variant: 'error',
+        title: 'Erreur',
+        message: err?.response?.data?.message || err?.message || 'Erreur lors de la création',
+      });
+    },
   });
 
   const { mutate: updateMutate, loading: updateLoading } = useUpdateCategory({
     onSuccess: () => {
       setEditingCategory(null);
       refetch();
+    },
+    onError: (err) => {
+      addToast({
+        variant: 'error',
+        title: 'Erreur',
+        message: err?.response?.data?.message || err?.message || 'Erreur lors de la modification',
+      });
     },
   });
 
@@ -736,13 +975,22 @@ const AdminForum = () => {
       refetch();
     },
     onError: (err) => {
-      setDeleteError(err?.response?.data?.message || err?.message || 'Erreur lors de la suppression');
+      const msg = err?.response?.data?.message || err?.message || 'Erreur lors de la suppression';
+      setDeleteError(msg);
+      addToast({ variant: 'error', title: 'Erreur', message: msg });
     },
   });
 
   const { mutate: reorderMutate, loading: reorderLoading } = useReorderCategories({
     onSuccess: () => {
       refetch();
+    },
+    onError: (err) => {
+      addToast({
+        variant: 'error',
+        title: 'Erreur',
+        message: err?.response?.data?.message || err?.message || 'Erreur lors du réordonnement',
+      });
     },
   });
 
@@ -755,7 +1003,9 @@ const AdminForum = () => {
       refetch();
     },
     onError: (err) => {
-      setTopicMessage({ type: 'error', text: err?.response?.data?.message || err?.message || 'Erreur lors du déplacement' });
+      const msg = err?.response?.data?.message || err?.message || 'Erreur lors du déplacement';
+      setTopicMessage({ type: 'error', text: msg });
+      addToast({ variant: 'error', title: 'Erreur', message: msg });
     },
   });
 
@@ -767,7 +1017,9 @@ const AdminForum = () => {
       refetch();
     },
     onError: (err) => {
-      setTopicMessage({ type: 'error', text: err?.response?.data?.message || err?.message || 'Erreur lors de la fusion' });
+      const msg = err?.response?.data?.message || err?.message || 'Erreur lors de la fusion';
+      setTopicMessage({ type: 'error', text: msg });
+      addToast({ variant: 'error', title: 'Erreur', message: msg });
     },
   });
 
@@ -808,6 +1060,10 @@ const AdminForum = () => {
   const handleStartEdit = useCallback((category) => {
     setEditingCategory(category);
     setShowCreateForm(false);
+    // Scroll vers le formulaire après le rendu
+    setTimeout(() => {
+      editFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   }, []);
 
   const handleStartCreate = useCallback(() => {
@@ -902,7 +1158,7 @@ const AdminForum = () => {
 
         {/* Toolbar: create button + topic toggle */}
         <div className="flex items-center gap-3 mb-4">
-          {isAdmin && !showCreateForm && !editingCategory && (
+          {canCreateCategory && !showCreateForm && !editingCategory && (
             <button
               type="button"
               onClick={handleStartCreate}
@@ -927,7 +1183,7 @@ const AdminForum = () => {
         </div>
 
         {/* Create form */}
-        {isAdmin && showCreateForm && (
+        {showCreateForm && (
           <div className="mb-4">
             <CategoryForm
               initialData={defaultParentId ? { parentId: defaultParentId } : undefined}
@@ -940,8 +1196,8 @@ const AdminForum = () => {
         )}
 
         {/* Edit form */}
-        {isAdmin && editingCategory && (
-          <div className="mb-4">
+        {editingCategory && (
+          <div ref={editFormRef} className="mb-4 space-y-4">
             <CategoryForm
               initialData={editingCategory}
               onSubmit={handleEditSubmit}
@@ -950,6 +1206,12 @@ const AdminForum = () => {
               categories={categories}
               isEdit
             />
+            {isAdmin && (
+              <div className="bg-[#1a2027] border border-[#6b3212]/40 rounded-lg p-5">
+                <h3 className="text-[#d4c9ba] font-medium text-base mb-4">Permissions</h3>
+                <CategoryPermissionEditor categoryId={editingCategory.id} />
+              </div>
+            )}
           </div>
         )}
 
@@ -978,7 +1240,6 @@ const AdminForum = () => {
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
                 reorderLoading={reorderLoading}
-                showActions={isAdmin}
                 showTopics={showTopics}
                 expandedIds={expandedIds}
                 onToggleExpand={handleToggleExpand}

@@ -33,7 +33,7 @@ module.exports = {
     const [categories] = await queryInterface.sequelize.query(
       'SELECT id, name FROM forum_categories WHERE deleted_at IS NULL'
     );
-    const discussions = categories.find(c => c.name === 'Discussions générales');
+    const discussions = categories.find(c => c.name === 'Discussions autour du jeu');
 
     // Retrieve the revoked ban sanction inserted by seeder x8 so we can
     // reference its id in the unban_user action.
@@ -201,7 +201,7 @@ module.exports = {
         target_type:    'forum_category',
         reason:         null,
         details:        JSON.stringify({
-          categoryName: 'Discussions générales',
+          categoryName: 'Discussions autour du jeu',
           changes: { description: 'Mise à jour de la description de la catégorie.' },
         }),
         created_at:     now,

@@ -134,6 +134,71 @@ export const useForumCategory = (id, params = {}, options = {}) => {
 };
 
 /**
+ * Hook pour récupérer les permissions de l'utilisateur connecté sur une catégorie
+ * Exécute automatiquement la requête au montage
+ *
+ * @param {number} categoryId - ID de la catégorie
+ * @param {Object} options - Options du hook
+ * @param {boolean} options.enabled - Activer la requête automatique (défaut: true)
+ * @param {Function} options.onSuccess - Callback de succès
+ * @param {Function} options.onError - Callback d'erreur
+ * @returns {Object} État de la requête
+ *
+ * @example
+ * const { data: permissions, loading, error, refetch } = useMyPermissions(categoryId, {
+ *   enabled: !!categoryId,
+ * });
+ */
+export const useMyPermissions = (categoryId, options = {}) => {
+  const { enabled = true, onSuccess, onError } = options;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const refetch = useCallback(async () => {
+    if (!enabled || !categoryId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await forumService.getMyPermissions(categoryId);
+      const responseData = response.data?.permissions || [];
+      setData(responseData);
+
+      if (onSuccess) {
+        onSuccess(responseData);
+      }
+
+      return responseData;
+    } catch (err) {
+      setError(err);
+
+      if (onError) {
+        onError(err);
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryId, enabled, onSuccess, onError]);
+
+  useEffect(() => {
+    if (enabled && categoryId) {
+      refetch();
+    }
+  }, [refetch, enabled, categoryId]);
+
+  return {
+    data,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+/**
  * Hook pour récupérer les sujets récents
  * Exécute automatiquement la requête au montage
  *

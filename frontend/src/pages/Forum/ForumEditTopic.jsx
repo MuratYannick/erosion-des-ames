@@ -3,6 +3,7 @@ import PageHeader from '@/components/content/PageHeader'
 import { TopicForm } from '@/components/forum'
 import { Card } from '@/components/ui/Card/Card'
 import Loader from '@/components/ui/Loader/Loader'
+import { useToast } from '@/components/ui/Toast'
 import { useTopic, useUpdateTopic } from '@/hooks/useForum'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -14,6 +15,7 @@ const ForumEditTopic = () => {
   const { user } = useAuth()
 
   const isStaff = user && STAFF_ROLES.includes(user.role)
+  const { addToast } = useToast()
 
   // Fetch topic data
   const { data: topicData, loading } = useTopic(topicId)
@@ -46,8 +48,9 @@ const ForumEditTopic = () => {
 
   const category = topic.category || {}
 
-  // Find first post content
-  const firstPost = topic.posts?.find((p) => p.isFirstPost) || topic.posts?.[0]
+  // Find first post content (posts are in topicData.posts, not topic.posts)
+  const posts = topicData?.posts || []
+  const firstPost = posts.find((p) => p.isFirstPost) || posts[0]
 
   // Build errors from API
   const errors = {}
@@ -58,6 +61,14 @@ const ForumEditTopic = () => {
   }
 
   const handleSubmit = (data) => {
+    if (data.isLocked) {
+      addToast({
+        variant: 'error',
+        title: 'Action refusée',
+        message: 'Décochez « Sujet verrouillé » avant de valider pour pouvoir modifier ce sujet.',
+      })
+      return
+    }
     updateTopic({ id: topicId, data })
   }
 

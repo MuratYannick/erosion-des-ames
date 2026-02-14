@@ -2,6 +2,7 @@
 
 const { ForumCategory, ForumTopic, ForumPost, User, ModerationAction, sequelize } = require('../models');
 const { ApiError, asyncHandler } = require('../middlewares/errorHandler');
+const categoryPermissionService = require('../services/categoryPermissionService');
 
 /**
  * Liste toutes les catégories (actives ET inactives) pour la gestion admin
@@ -41,8 +42,11 @@ const getCategories = asyncHandler(async (req, res) => {
     });
   }
 
+  // GAME_MASTER ne voit que les catégories RP
+  const where = req.user.role === 'GAME_MASTER' ? { isRp: true } : {};
+
   const categories = await ForumCategory.findAll({
-    // Pas de filtre isActive : le staff voit tout
+    where,
     include,
     order: [
       ['displayOrder', 'ASC'],
@@ -50,9 +54,15 @@ const getCategories = asyncHandler(async (req, res) => {
     ],
   });
 
+  // Ajouter les permissions effectives de l'utilisateur sur chaque catégorie
+  const categoriesJson = categories.map(c => c.toJSON());
+  await Promise.all(categoriesJson.map(async (cat) => {
+    cat.userPermissions = await categoryPermissionService.getCategoryPermissionsForUser(req.user, cat.id);
+  }));
+
   res.status(200).json({
     success: true,
-    data: { categories },
+    data: { categories: categoriesJson },
   });
 });
 
@@ -69,6 +79,19 @@ const createCategory = asyncHandler(async (req, res) => {
     const parent = await ForumCategory.findByPk(parentId);
     if (!parent) {
       throw ApiError.badRequest('La catégorie parente n\'existe pas');
+    }
+  }
+
+  // Non-ADMIN : vérifier la permission create_subcategory sur le parent
+  if (req.user.role !== 'ADMIN') {
+    if (!parentId) {
+      throw ApiError.forbidden('Vous n\'avez pas la permission de créer une catégorie racine');
+    }
+    const canCreate = await categoryPermissionService.userHasPermission(
+      req.user, parentId, 'create_subcategory'
+    );
+    if (!canCreate) {
+      throw ApiError.forbidden('Vous n\'avez pas la permission de créer une sous-catégorie ici');
     }
   }
 
@@ -123,8 +146,41 @@ const updateCategory = asyncHandler(async (req, res) => {
     throw ApiError.notFound('Catégorie non trouvée');
   }
 
+  // Non-ADMIN : vérifier la permission edit_category
+  if (req.user.role !== 'ADMIN') {
+    const canEdit = await categoryPermissionService.userHasPermission(
+      req.user, category.id, 'edit_category'
+    );
+    if (!canEdit) {
+      throw ApiError.forbidden('Vous n\'avez pas la permission de modifier cette catégorie');
+    }
+  }
+
   const { name, description, parentId, icon, displayOrder, isActive, isRp } = req.body;
   const updateData = {};
+
+  // Non-ADMIN : si le parentId change, vérifier move_category sur le parent source ET destination
+  if (parentId !== undefined && parentId !== category.parentId && req.user.role !== 'ADMIN') {
+    if (category.parentId) {
+      const canMoveFromSource = await categoryPermissionService.userHasPermission(
+        req.user, category.parentId, 'move_category'
+      );
+      if (!canMoveFromSource) {
+        throw ApiError.forbidden('Vous n\'avez pas la permission de déplacer une catégorie depuis ce parent');
+      }
+    }
+
+    if (parentId) {
+      const canMoveToTarget = await categoryPermissionService.userHasPermission(
+        req.user, parentId, 'move_category'
+      );
+      if (!canMoveToTarget) {
+        throw ApiError.forbidden('Vous n\'avez pas la permission de déplacer une catégorie vers ce parent');
+      }
+    } else {
+      throw ApiError.forbidden('Vous n\'avez pas la permission de déplacer une catégorie à la racine');
+    }
+  }
 
   if (name !== undefined) {
     // Unicité du nom (en excluant la catégorie courante)
@@ -183,6 +239,16 @@ const deleteCategory = asyncHandler(async (req, res) => {
     throw ApiError.notFound('Catégorie non trouvée');
   }
 
+  // Non-ADMIN : vérifier la permission edit_category (même permission pour edit et delete)
+  if (req.user.role !== 'ADMIN') {
+    const canEdit = await categoryPermissionService.userHasPermission(
+      req.user, category.id, 'edit_category'
+    );
+    if (!canEdit) {
+      throw ApiError.forbidden('Vous n\'avez pas la permission de supprimer cette catégorie');
+    }
+  }
+
   // Refuser si des sujets actifs existent dans cette catégorie
   const topicCount = await ForumTopic.count({ where: { categoryId: req.params.id } });
   if (topicCount > 0) {
@@ -233,6 +299,18 @@ const reorderCategories = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Le tableau de catégories est requis');
   }
 
+  // Non-ADMIN : vérifier la permission move_category sur chaque catégorie concernée
+  if (req.user.role !== 'ADMIN') {
+    for (const cat of categories) {
+      const canMove = await categoryPermissionService.userHasPermission(
+        req.user, cat.id, 'move_category'
+      );
+      if (!canMove) {
+        throw ApiError.forbidden('Vous n\'avez pas la permission de réordonner ces catégories');
+      }
+    }
+  }
+
   await sequelize.transaction(async (t) => {
     for (const cat of categories) {
       await ForumCategory.update(
@@ -270,6 +348,28 @@ const moveTopic = asyncHandler(async (req, res) => {
 
   if (!destCategory) {
     throw ApiError.badRequest('Catégorie de destination introuvable');
+  }
+
+  // Check move_topic permission on source category
+  const canMoveFromSource = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    topic.categoryId,
+    'move_topic'
+  );
+
+  if (!canMoveFromSource) {
+    throw ApiError.forbidden("Vous n'avez pas la permission de déplacer un sujet depuis cette catégorie");
+  }
+
+  // Check move_topic permission on destination category
+  const canMoveToTarget = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    categoryId,
+    'move_topic'
+  );
+
+  if (!canMoveToTarget) {
+    throw ApiError.forbidden("Vous n'avez pas la permission de déplacer un sujet vers cette catégorie");
   }
 
   const fromCategoryId = topic.categoryId;
@@ -336,6 +436,28 @@ const mergeTopics = asyncHandler(async (req, res) => {
   const targetTopic = await ForumTopic.findByPk(targetTopicId);
   if (!targetTopic) {
     throw ApiError.notFound('Sujet cible introuvable');
+  }
+
+  // Check merge_topic permission on source topic's category
+  const canMergeSource = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    sourceTopic.categoryId,
+    'merge_topic'
+  );
+
+  if (!canMergeSource) {
+    throw ApiError.forbidden("Vous n'avez pas la permission de fusionner un sujet depuis cette catégorie");
+  }
+
+  // Check merge_topic permission on target topic's category
+  const canMergeTarget = await categoryPermissionService.hasPermissionOrNoRestrictions(
+    req.user,
+    targetTopic.categoryId,
+    'merge_topic'
+  );
+
+  if (!canMergeTarget) {
+    throw ApiError.forbidden("Vous n'avez pas la permission de fusionner un sujet vers cette catégorie");
   }
 
   await sequelize.transaction(async (t) => {
