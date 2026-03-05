@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import SEO from '@/components/common/SEO'
 import PageHeader from '@/components/content/PageHeader'
 import {
   PostCard,
@@ -136,6 +137,10 @@ const ForumTopic = () => {
 
   return (
     <div className="forum-topic">
+      <SEO
+        title={topic.title}
+        description={`Sujet : ${topic.title} — Forum Erosion des Âmes.`}
+      />
       {/* Page header */}
       <PageHeader
         title={topic.title}

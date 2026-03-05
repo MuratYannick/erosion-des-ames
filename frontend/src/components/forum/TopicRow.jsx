@@ -67,7 +67,10 @@ const TopicRow = ({ topic, categorySlug: categorySlugProp, className = '' }) => 
           </Link>
         </div>
         <div className="font-ui text-xs text-skin-muted mt-0.5">
-          par <span className="text-skin-secondary">{character?.name || author?.username}</span>
+          par{' '}
+          <Link to={`/profil/${author?.id}`} className="text-skin-secondary hover:text-secondary-600 transition-colors">
+            {character?.name || author?.username}
+          </Link>
           {' · '}
           {new Date(createdAt).toLocaleDateString('fr-FR', {
             day: 'numeric',
@@ -98,9 +101,9 @@ const TopicRow = ({ topic, categorySlug: categorySlugProp, className = '' }) => 
             size="xs"
           />
           <div className="min-w-0">
-            <div className="font-ui text-xs text-skin-secondary truncate">
+            <Link to={`/profil/${lastPost.author?.id}`} className="font-ui text-xs text-skin-secondary hover:text-secondary-600 transition-colors truncate block">
               {lastPost.author?.username}
-            </div>
+            </Link>
             <div className="font-ui text-xs text-skin-muted">
               {new Date(lastPost.createdAt).toLocaleDateString('fr-FR', {
                 day: 'numeric',

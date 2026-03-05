@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import SEO from '@/components/common/SEO'
 import PageHeader from '@/components/content/PageHeader'
 import {
   ForumCategoryCard,
@@ -89,6 +90,10 @@ const ForumCategory = () => {
 
   return (
     <div className="forum-category">
+      <SEO
+        title={`${category.name} - Forum`}
+        description={category.description || `Catégorie ${category.name} du forum Erosion des Âmes.`}
+      />
       {/* Page header */}
       <PageHeader
         title={category.name}

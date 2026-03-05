@@ -312,9 +312,14 @@ const Header = ({
                       {user?.username}
                     </DropdownHeader>
                     <DropdownDivider />
-                    <Link to="/profil" onClick={close}>
+                    <Link to={`/profil/${user?.id}`} onClick={close}>
                       <DropdownItem>
                         Mon profil
+                      </DropdownItem>
+                    </Link>
+                    <Link to="/profil/parametres" onClick={close}>
+                      <DropdownItem>
+                        Paramètres
                       </DropdownItem>
                     </Link>
                     <Link to="/mes-personnages" onClick={close}>
@@ -449,11 +454,18 @@ const Header = ({
                     </div>
                   </div>
                   <Link
-                    to="/profil"
+                    to={`/profil/${user?.id}`}
                     className="mobile-nav-item"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Mon profil
+                  </Link>
+                  <Link
+                    to="/profil/parametres"
+                    className="mobile-nav-item"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Paramètres
                   </Link>
                   <Link
                     to="/mes-personnages"

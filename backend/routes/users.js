@@ -15,6 +15,7 @@ const { getUserValidation } = require('../validators/userValidators');
  */
 router.get(
   '/:id',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=300'); next(); },
   optionalAuth,
   getUserValidation,
   validate,
@@ -28,6 +29,7 @@ router.get(
  */
 router.get(
   '/:id/characters',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=300'); next(); },
   optionalAuth,
   getUserValidation,
   validate,
@@ -41,6 +43,7 @@ router.get(
  */
 router.get(
   '/:id/posts',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=300'); next(); },
   optionalAuth,
   getUserValidation,
   validate,
@@ -54,6 +57,7 @@ router.get(
  */
 router.get(
   '/:id/topics',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=300'); next(); },
   optionalAuth,
   getUserValidation,
   validate,

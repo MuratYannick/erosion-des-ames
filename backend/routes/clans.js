@@ -17,14 +17,24 @@ const {
  * @desc    Récupérer tous les clans (filtrage selon rôle)
  * @access  Public (filtre active+approved) / Staff (tous + filtres)
  */
-router.get('/', optionalAuth, clanController.getAll);
+router.get(
+  '/',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  optionalAuth,
+  clanController.getAll
+);
 
 /**
  * @route   GET /api/clans/:id
  * @desc    Récupérer un clan par son ID
  * @access  Public (active+approved) / Staff (tous)
  */
-router.get('/:id', optionalAuth, clanController.getById);
+router.get(
+  '/:id',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  optionalAuth,
+  clanController.getById
+);
 
 /**
  * @route   POST /api/clans

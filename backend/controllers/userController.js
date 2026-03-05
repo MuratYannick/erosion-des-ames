@@ -92,6 +92,19 @@ const getUserCharacters = asyncHandler(async (req, res) => {
     offset,
   });
 
+  // ETag basé sur les IDs des personnages retournés + pagination
+  const etag = require('crypto')
+    .createHash('md5')
+    .update(JSON.stringify({ items: rows.map((i) => i.id), total: count, page }))
+    .digest('hex');
+
+  res.set('ETag', `"${etag}"`);
+
+  // Réponse 304 si le client possède déjà cette version
+  if (req.headers['if-none-match'] === `"${etag}"`) {
+    return res.status(304).end();
+  }
+
   res.status(200).json({
     success: true,
     data: {
@@ -146,6 +159,18 @@ const getUserPosts = asyncHandler(async (req, res) => {
     offset,
   });
 
+  // ETag basé sur les IDs des posts retournés + pagination
+  const etagPosts = require('crypto')
+    .createHash('md5')
+    .update(JSON.stringify({ items: rows.map((i) => i.id), total: count, page }))
+    .digest('hex');
+
+  res.set('ETag', `"${etagPosts}"`);
+
+  if (req.headers['if-none-match'] === `"${etagPosts}"`) {
+    return res.status(304).end();
+  }
+
   res.status(200).json({
     success: true,
     data: {
@@ -192,6 +217,18 @@ const getUserTopics = asyncHandler(async (req, res) => {
     limit,
     offset,
   });
+
+  // ETag basé sur les IDs des sujets retournés + pagination
+  const etagTopics = require('crypto')
+    .createHash('md5')
+    .update(JSON.stringify({ items: rows.map((i) => i.id), total: count, page }))
+    .digest('hex');
+
+  res.set('ETag', `"${etagTopics}"`);
+
+  if (req.headers['if-none-match'] === `"${etagTopics}"`) {
+    return res.status(304).end();
+  }
 
   res.status(200).json({
     success: true,

@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { MainLayout, AdminLayout } from '@/layouts'
 import {
   ToastProvider,
@@ -15,21 +16,64 @@ import {
   Badge,
   ScrollToTopOnNavigate,
 } from '@/components'
-import { Home, Foreword, Universe, Characters } from '@/pages'
-import { ForumIndex, ForumCategory, ForumTopic, ForumCreateTopic, ForumEditTopic, ForumEditPost, ForumSearch, ForumModeration } from '@/pages/Forum'
-import { MyCharactersList, MyCharacterDetail, MyCharacterCreate, MyCharacterEdit } from '@/pages/MyCharacters'
-import { Login, Register, ForgotPassword, ResetPassword, VerifyEmail } from '@/pages/Auth'
-import { AdminDashboard } from '@/pages/Admin/AdminDashboard'
-import { AdminUsers } from '@/pages/Admin/AdminUsers'
-import { AdminUserDetail } from '@/pages/Admin/AdminUserDetail'
-import { AdminCharacters } from '@/pages/Admin/AdminCharacters'
-import { AdminForum } from '@/pages/Admin/AdminForum'
-import { AdminModeration } from '@/pages/Admin/AdminModeration'
-import { AdminLogs } from '@/pages/Admin/AdminLogs'
-import { NotFound, Forbidden, ServerError, Maintenance } from '@/pages/errors'
 import { ErrorBoundary } from '@/components/errors'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components'
+import SuspenseFallback from '@/components/ui/Loader/SuspenseFallback'
+
+// ---------------------------------------------------------------------------
+// Lazy imports — pages principales
+// Le code splitting Vite génère un chunk séparé pour chaque page.
+// Les layouts, providers et composants UI restent en import statique.
+// ---------------------------------------------------------------------------
+
+// Pages publiques
+const Home = lazy(() => import('@/pages/Home/Home'))
+const Foreword = lazy(() => import('@/pages/Foreword/Foreword'))
+const Universe = lazy(() => import('@/pages/Universe/Universe'))
+const Characters = lazy(() => import('@/pages/Characters/Characters'))
+
+// Forum
+const ForumIndex = lazy(() => import('@/pages/Forum/ForumIndex'))
+const ForumCategory = lazy(() => import('@/pages/Forum/ForumCategory'))
+const ForumTopic = lazy(() => import('@/pages/Forum/ForumTopic'))
+const ForumCreateTopic = lazy(() => import('@/pages/Forum/ForumCreateTopic'))
+const ForumEditTopic = lazy(() => import('@/pages/Forum/ForumEditTopic'))
+const ForumEditPost = lazy(() => import('@/pages/Forum/ForumEditPost'))
+const ForumSearch = lazy(() => import('@/pages/Forum/ForumSearch'))
+const ForumModeration = lazy(() => import('@/pages/Forum/ForumModeration'))
+
+// Mes personnages
+const MyCharactersList = lazy(() => import('@/pages/MyCharacters/MyCharactersList'))
+const MyCharacterDetail = lazy(() => import('@/pages/MyCharacters/MyCharacterDetail'))
+const MyCharacterCreate = lazy(() => import('@/pages/MyCharacters/MyCharacterCreate'))
+const MyCharacterEdit = lazy(() => import('@/pages/MyCharacters/MyCharacterEdit'))
+
+// Auth
+const Login = lazy(() => import('@/pages/Auth/Login'))
+const Register = lazy(() => import('@/pages/Auth/Register'))
+const ForgotPassword = lazy(() => import('@/pages/Auth/ForgotPassword'))
+const ResetPassword = lazy(() => import('@/pages/Auth/ResetPassword'))
+const VerifyEmail = lazy(() => import('@/pages/Auth/VerifyEmail'))
+
+// Profil
+const ProfilePage = lazy(() => import('@/pages/Profile/ProfilePage'))
+const ProfileSettings = lazy(() => import('@/pages/Profile/ProfileSettings'))
+
+// Admin
+const AdminDashboard = lazy(() => import('@/pages/Admin/AdminDashboard'))
+const AdminUsers = lazy(() => import('@/pages/Admin/AdminUsers'))
+const AdminUserDetail = lazy(() => import('@/pages/Admin/AdminUserDetail'))
+const AdminCharacters = lazy(() => import('@/pages/Admin/AdminCharacters'))
+const AdminForum = lazy(() => import('@/pages/Admin/AdminForum'))
+const AdminModeration = lazy(() => import('@/pages/Admin/AdminModeration'))
+const AdminLogs = lazy(() => import('@/pages/Admin/AdminLogs'))
+
+// Erreurs
+const NotFound = lazy(() => import('@/pages/errors/NotFound'))
+const Forbidden = lazy(() => import('@/pages/errors/Forbidden'))
+const ServerError = lazy(() => import('@/pages/errors/ServerError'))
+const Maintenance = lazy(() => import('@/pages/errors/Maintenance'))
 
 // Placeholder pages
 function AvantProposPage() {
@@ -183,16 +227,6 @@ function PersonnagesPage() {
 
 
 
-// Pages protégées (placeholders)
-function ProfilPage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="font-display text-4xl text-primary-800 mb-4">Mon Profil</h1>
-      <p className="font-body text-skin-secondary">Page de profil utilisateur (à venir)...</p>
-    </div>
-  )
-}
-
 
 /**
  * Composant qui écoute l'événement auth:muted et affiche un toast d'avertissement
@@ -221,71 +255,77 @@ function MuteNotifier() {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <AuthProvider>
-          <ScrollToTopOnNavigate />
-          <ToastProvider position="top-right">
-            <MuteNotifier />
-            <Routes>
-            {/* Routes auth - sans MainLayout */}
-            <Route path="/connexion" element={<Login />} />
-            <Route path="/inscription" element={<Register />} />
-            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
-            <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
-            <Route path="/verifier-email" element={<VerifyEmail />} />
+      <HelmetProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <ScrollToTopOnNavigate />
+            <ToastProvider position="top-right">
+              <MuteNotifier />
+              {/* Suspense enveloppe toutes les Routes pour capturer les lazy chunks */}
+              <Suspense fallback={<SuspenseFallback />}>
+                <Routes>
+                {/* Routes auth - sans MainLayout */}
+                <Route path="/connexion" element={<Login />} />
+                <Route path="/inscription" element={<Register />} />
+                <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+                <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+                <Route path="/verifier-email" element={<VerifyEmail />} />
 
-            {/* Routes admin - avec AdminLayout (ProtectedRoute ADMIN/MODERATOR intégré) */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="utilisateurs" element={<AdminUsers />} />
-              <Route path="utilisateurs/:id" element={<AdminUserDetail />} />
-              <Route path="personnages" element={<AdminCharacters />} />
-              <Route path="forum" element={<AdminForum />} />
-              <Route path="moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminModeration /></ProtectedRoute>} />
-              <Route path="journal" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminLogs /></ProtectedRoute>} />
-            </Route>
+                {/* Routes admin - avec AdminLayout (ProtectedRoute ADMIN/MODERATOR intégré) */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="utilisateurs" element={<AdminUsers />} />
+                  <Route path="utilisateurs/:id" element={<AdminUserDetail />} />
+                  <Route path="personnages" element={<AdminCharacters />} />
+                  <Route path="forum" element={<AdminForum />} />
+                  <Route path="moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminModeration /></ProtectedRoute>} />
+                  <Route path="journal" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><AdminLogs /></ProtectedRoute>} />
+                </Route>
 
-            {/* Routes principales - avec MainLayout */}
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/avant-propos" element={<Foreword />} />
-              <Route path="/univers" element={<Universe />} />
-              <Route path="/univers/explorer" element={<UniversLayout />}>
-                <Route index element={<UniversPage />} />
-                <Route path="lore" element={<UniversLorePage />} />
-                <Route path="factions" element={<UniversFactionsPage />} />
-                <Route path="regions/:region" element={<UniversPage />} />
-                <Route path="archives" element={<UniversPage />} />
-              </Route>
-              <Route path="/personnages" element={<Characters />} />
-              <Route path="/forum" element={<ForumIndex />} />
-              <Route path="/forum/recherche" element={<ForumSearch />} />
-              <Route path="/forum/moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><ForumModeration /></ProtectedRoute>} />
-              <Route path="/forum/:categorySlug" element={<ForumCategory />} />
-              <Route path="/forum/:categorySlug/nouveau-sujet" element={<ProtectedRoute><ForumCreateTopic /></ProtectedRoute>} />
-              <Route path="/forum/:categorySlug/:topicId" element={<ForumTopic />} />
-              <Route path="/forum/:categorySlug/:topicId/modifier" element={<ProtectedRoute><ForumEditTopic /></ProtectedRoute>} />
-              <Route path="/forum/:categorySlug/:topicId/modifier-post/:postId" element={<ProtectedRoute><ForumEditPost /></ProtectedRoute>} />
+                {/* Routes principales - avec MainLayout */}
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/avant-propos" element={<Foreword />} />
+                  <Route path="/univers" element={<Universe />} />
+                  <Route path="/univers/explorer" element={<UniversLayout />}>
+                    <Route index element={<UniversPage />} />
+                    <Route path="lore" element={<UniversLorePage />} />
+                    <Route path="factions" element={<UniversFactionsPage />} />
+                    <Route path="regions/:region" element={<UniversPage />} />
+                    <Route path="archives" element={<UniversPage />} />
+                  </Route>
+                  <Route path="/personnages" element={<Characters />} />
+                  <Route path="/forum" element={<ForumIndex />} />
+                  <Route path="/forum/recherche" element={<ForumSearch />} />
+                  <Route path="/forum/moderation" element={<ProtectedRoute roles={['ADMIN', 'MODERATOR']}><ForumModeration /></ProtectedRoute>} />
+                  <Route path="/forum/:categorySlug" element={<ForumCategory />} />
+                  <Route path="/forum/:categorySlug/nouveau-sujet" element={<ProtectedRoute><ForumCreateTopic /></ProtectedRoute>} />
+                  <Route path="/forum/:categorySlug/:topicId" element={<ForumTopic />} />
+                  <Route path="/forum/:categorySlug/:topicId/modifier" element={<ProtectedRoute><ForumEditTopic /></ProtectedRoute>} />
+                  <Route path="/forum/:categorySlug/:topicId/modifier-post/:postId" element={<ProtectedRoute><ForumEditPost /></ProtectedRoute>} />
 
-              {/* Routes protégées - nécessitent une authentification */}
-              <Route path="/profil" element={<ProtectedRoute><ProfilPage /></ProtectedRoute>} />
-              <Route path="/mes-personnages" element={<ProtectedRoute><MyCharactersList /></ProtectedRoute>} />
-              <Route path="/mes-personnages/creer" element={<ProtectedRoute><MyCharacterCreate /></ProtectedRoute>} />
-              <Route path="/mes-personnages/:id" element={<ProtectedRoute><MyCharacterDetail /></ProtectedRoute>} />
-              <Route path="/mes-personnages/:id/modifier" element={<ProtectedRoute><MyCharacterEdit /></ProtectedRoute>} />
+                  {/* Routes profil - statique avant dynamique */}
+                  <Route path="/profil/parametres" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+                  <Route path="/profil/:id" element={<ProfilePage />} />
+                  <Route path="/mes-personnages" element={<ProtectedRoute><MyCharactersList /></ProtectedRoute>} />
+                  <Route path="/mes-personnages/creer" element={<ProtectedRoute><MyCharacterCreate /></ProtectedRoute>} />
+                  <Route path="/mes-personnages/:id" element={<ProtectedRoute><MyCharacterDetail /></ProtectedRoute>} />
+                  <Route path="/mes-personnages/:id/modifier" element={<ProtectedRoute><MyCharacterEdit /></ProtectedRoute>} />
 
-              {/* Routes d'erreur */}
-              <Route path="/interdit" element={<Forbidden />} />
-              <Route path="/erreur" element={<ServerError />} />
-              <Route path="/maintenance" element={<Maintenance />} />
+                  {/* Routes d'erreur */}
+                  <Route path="/interdit" element={<Forbidden />} />
+                  <Route path="/erreur" element={<ServerError />} />
+                  <Route path="/maintenance" element={<Maintenance />} />
 
-              {/* Route 404 - catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-            </Routes>
-          </ToastProvider>
-        </AuthProvider>
-      </BrowserRouter>
+                  {/* Route 404 - catch-all */}
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+                </Routes>
+              </Suspense>
+            </ToastProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </HelmetProvider>
     </ErrorBoundary>
   )
 }

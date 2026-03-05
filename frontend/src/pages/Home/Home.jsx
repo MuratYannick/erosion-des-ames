@@ -1,6 +1,7 @@
 import { HeroSection, PresentationSection, NewsSection, QuickLinksSection } from './components'
 import { ScrollToTop } from '@/components'
 import { mockNews } from '@/data/mockNews'
+import SEO from '@/components/common/SEO'
 import './Home.css'
 
 /**
@@ -15,6 +16,10 @@ import './Home.css'
 const Home = () => {
   return (
     <div className="home-page w-full">
+      <SEO
+        title="Accueil"
+        description="Bienvenue sur Erosion des Âmes, forum de jeu de rôle dark fantasy tribale. Rejoignez la communauté et plongez dans un monde de cendres et de désolation."
+      />
       <HeroSection
         title="EROSION DES AMES"
         subtitle="Là où les pierres murmurent&#10;et les braises se souviennent"

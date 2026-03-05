@@ -17,14 +17,24 @@ const {
  * @desc    Récupérer toutes les factions (filtrage selon rôle)
  * @access  Public (filtre active+approved) / Staff (tous + filtres)
  */
-router.get('/', optionalAuth, factionController.getAll);
+router.get(
+  '/',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  optionalAuth,
+  factionController.getAll
+);
 
 /**
  * @route   GET /api/factions/:id
  * @desc    Récupérer une faction par son ID
  * @access  Public (active+approved) / Staff (tous)
  */
-router.get('/:id', optionalAuth, factionController.getById);
+router.get(
+  '/:id',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  optionalAuth,
+  factionController.getById
+);
 
 /**
  * @route   POST /api/factions
