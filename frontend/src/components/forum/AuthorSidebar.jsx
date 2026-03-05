@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Avatar from '@/components/ui/Avatar/Avatar'
 import Badge from '@/components/ui/Badge/Badge'
 
@@ -34,9 +35,12 @@ const AuthorSidebar = ({ author, character, className = '' }) => {
       />
 
       {/* Username */}
-      <div className="font-heading text-sm text-skin-base mt-2 truncate max-w-full">
+      <Link
+        to={`/profil/${author.id}`}
+        className="font-heading text-sm text-skin-base mt-2 truncate max-w-full hover:text-secondary-600 transition-colors"
+      >
         {author.username}
-      </div>
+      </Link>
 
       {/* Role badge */}
       <Badge variant={roleConfig.variant} size="sm" dot className="mt-1">

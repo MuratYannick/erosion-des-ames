@@ -4,23 +4,27 @@ const express = require('express');
 const router = express.Router();
 
 const authRoutes = require('./auth');
+const usersRoutes = require('./users');
 const ethnicitiesRoutes = require('./ethnicities');
 const factionsRoutes = require('./factions');
 const clansRoutes = require('./clans');
 const charactersRoutes = require('./characters');
 const forumRoutes = require('./forum');
 const adminRoutes = require('./admin');
+const uploadRoutes = require('./upload');
 
 /**
  * Montage des routes
  */
 router.use('/auth', authRoutes);
+router.use('/users', usersRoutes);
 router.use('/ethnicities', ethnicitiesRoutes);
 router.use('/factions', factionsRoutes);
 router.use('/clans', clansRoutes);
 router.use('/characters', charactersRoutes);
 router.use('/forum', forumRoutes);
 router.use('/admin', adminRoutes);
+router.use('/upload', uploadRoutes);
 
 /**
  * Route de santé de l'API (alternative à /api/health)

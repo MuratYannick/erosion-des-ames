@@ -1,6 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
 import api from '@/services/api';
 
+// ---------------------------------------------------------------------------
+// Cache mémoire module-level — partagé entre tous les composants
+// Structure : clé (url + params sérialisés) → { data, timestamp }
+// ---------------------------------------------------------------------------
+const queryCache = new Map()
+
+/**
+ * Invalide toutes les entrées du cache dont la clé contient le pattern fourni.
+ *
+ * @param {string} pattern - Sous-chaîne à rechercher dans les clés
+ *
+ * @example
+ * invalidateCache('/forum/categories') // invalide toutes les clés qui contiennent cette URL
+ */
+export const invalidateCache = (pattern) => {
+  for (const key of queryCache.keys()) {
+    if (key.includes(pattern)) queryCache.delete(key)
+  }
+}
+
 /**
  * Hook personnalisé pour simplifier les appels API
  * Gère automatiquement les états de chargement et d'erreur
@@ -99,15 +119,20 @@ export const useApi = (apiFunc, options = {}) => {
  * @param {Object} options - Options du hook
  * @param {boolean} options.enabled - Activer la requête automatique (défaut: true)
  * @param {Array} options.deps - Dépendances pour réexécuter la requête
+ * @param {boolean} options.cache - Activer le cache mémoire (défaut: false)
+ * @param {number} options.cacheTTL - Durée de vie du cache en ms (défaut: 60000)
  * @returns {Object} État de la requête
  *
  * @example
  * const { data, loading, error, refetch } = useGet('/users', {
  *   params: { page: 1, limit: 10 }
  * });
+ *
+ * // Avec cache activé
+ * const { data } = useGet('/forum/categories', {}, { cache: true, cacheTTL: 120000 });
  */
 export const useGet = (url, config = {}, options = {}) => {
-  const { enabled = true, deps = [], onSuccess, onError } = options;
+  const { enabled = true, deps = [], onSuccess, onError, cache = false, cacheTTL = 60000 } = options;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -123,6 +148,18 @@ export const useGet = (url, config = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
+      // --- Lecture du cache ---
+      if (cache) {
+        const cacheKey = url + JSON.stringify(config.params || {})
+        const cached = queryCache.get(cacheKey)
+        if (cached && Date.now() - cached.timestamp < cacheTTL) {
+          setData(cached.data)
+          if (onSuccess) onSuccess(cached.data)
+          setLoading(false)
+          return cached.data
+        }
+      }
+
       const response = await api.get(url, {
         skipErrorRedirect: true,
         ...config,
@@ -130,6 +167,12 @@ export const useGet = (url, config = {}, options = {}) => {
 
       const responseData = response.data?.data || response.data;
       setData(responseData);
+
+      // --- Écriture dans le cache ---
+      if (cache) {
+        const cacheKey = url + JSON.stringify(config.params || {})
+        queryCache.set(cacheKey, { data: responseData, timestamp: Date.now() })
+      }
 
       if (onSuccess) {
         onSuccess(responseData);
@@ -147,12 +190,12 @@ export const useGet = (url, config = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [url, enabled, config, onSuccess, onError]);
+  }, [url, enabled, config, onSuccess, onError, cache, cacheTTL]);
 
   // Exécuter automatiquement au montage et quand les dépendances changent
   useEffect(() => {
     if (enabled) {
-      refetch();
+      refetch().catch(() => {}); // l'erreur est déjà stockée dans state via setError
     }
   }, [refetch, enabled]);
 

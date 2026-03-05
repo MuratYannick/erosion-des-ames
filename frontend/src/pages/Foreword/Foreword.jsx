@@ -3,6 +3,7 @@ import TableOfContents from '../../components/ui/TableOfContents'
 import { ScrollToTop } from '../../components/ui/ScrollToTop'
 import { TribalDivider } from '../../components/ui/Card/TribalDivider'
 import { TribalCorner } from '../../components/ui/Card/TribalCorner'
+import SEO from '@/components/common/SEO'
 
 const sections = [
   { id: 'introduction', title: 'Introduction & Bienvenue', level: 1 },
@@ -30,6 +31,10 @@ const Foreword = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-primary-50/30">
+      <SEO
+        title="Avant-propos"
+        description="Règles de conduite, charte du roleplay et mentions légales du forum Erosion des Âmes."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <aside className="lg:col-span-3">

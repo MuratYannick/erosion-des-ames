@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import SEO from '@/components/common/SEO'
 import PageHeader from '@/components/content/PageHeader'
 import { ForumCategoryCard, ForumStats, TopicRow } from '@/components/forum'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card/Card'
@@ -44,6 +45,10 @@ const ForumIndex = () => {
 
   return (
     <div className="forum-index">
+      <SEO
+        title="Forum"
+        description="Discussions de la communauté Erosion des Âmes. Échangez, débattez et participez au roleplay."
+      />
       {/* Page header */}
       <PageHeader
         title="Forum"

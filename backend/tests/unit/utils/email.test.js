@@ -138,7 +138,7 @@ describe('Email Utils', () => {
       await sendVerificationEmail(user, token);
 
       const callArgs = mockSendMail.mock.calls[0][0];
-      const expectedLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+      const expectedLink = `${process.env.FRONTEND_URL}/verifier-email?token=${token}`;
       expect(callArgs.html).toContain(expectedLink);
       expect(callArgs.text).toContain(expectedLink);
     });
@@ -200,7 +200,7 @@ describe('Email Utils', () => {
       await sendPasswordResetEmail(user, token);
 
       const callArgs = mockSendMail.mock.calls[0][0];
-      const expectedLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+      const expectedLink = `${process.env.FRONTEND_URL}/reinitialiser-mot-de-passe?token=${token}`;
       expect(callArgs.html).toContain(expectedLink);
       expect(callArgs.text).toContain(expectedLink);
     });
@@ -259,7 +259,7 @@ describe('Email Utils', () => {
       await sendWelcomeEmail(user);
 
       const callArgs = mockSendMail.mock.calls[0][0];
-      const expectedLink = `${process.env.FRONTEND_URL}/login`;
+      const expectedLink = `${process.env.FRONTEND_URL}/connexion`;
       expect(callArgs.html).toContain(expectedLink);
     });
   });

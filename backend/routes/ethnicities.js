@@ -16,14 +16,22 @@ const {
  * @desc    Récupérer toutes les ethnies
  * @access  Public
  */
-router.get('/', ethnicityController.getAll);
+router.get(
+  '/',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  ethnicityController.getAll
+);
 
 /**
  * @route   GET /api/ethnicities/:id
  * @desc    Récupérer une ethnie par son ID
  * @access  Public
  */
-router.get('/:id', ethnicityController.getById);
+router.get(
+  '/:id',
+  (req, res, next) => { res.set('Cache-Control', 'public, max-age=3600'); next(); },
+  ethnicityController.getById
+);
 
 /**
  * @route   POST /api/ethnicities
