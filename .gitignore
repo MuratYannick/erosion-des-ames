@@ -32,3 +32,11 @@ coverage/
 *.tmp
 *.temp
 temp/
+
+# Uploaded user files (generated at runtime)
+backend/uploads/avatars/*
+!backend/uploads/avatars/.gitkeep
+
+# Claude Code internal files
+.claude/settings.local.json
+.claude/agents/
