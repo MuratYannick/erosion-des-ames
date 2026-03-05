@@ -366,7 +366,7 @@ describe('Auth Validators', () => {
     it('devrait valider un payload correct', async () => {
       const req = {
         body: {
-          email: 'valid@example.com',
+          identifier: 'valid@example.com',
           password: 'AnyPassword123!',
         },
       };

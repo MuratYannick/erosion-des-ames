@@ -7,7 +7,23 @@ jest.mock('../../models', () => ({
     findOne: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
     scope: jest.fn(),
+  },
+  UserSanction: {
+    scope: jest.fn(),
+  },
+  Character: {
+    findOne: jest.fn(),
+    findByPk: jest.fn(),
+  },
+  Faction: {
+    findByPk: jest.fn(),
+  },
+  CategoryPermission: {
+    PERMISSIONS: ['access_category', 'edit_category', 'create_subcategory', 'move_category', 'create_topic', 'edit_topic', 'move_topic', 'merge_topic'],
+    GRANTEE_TYPES: ['public', 'player', 'player_accepted_rules', 'player_with_character', 'player_character_faction', 'player_character_clan', 'specific_user', 'specific_character', 'game_master', 'moderator'],
+    GRANTEE_REQUIRES_ID: ['player_character_faction', 'player_character_clan', 'specific_user', 'specific_character'],
   },
 }));
 
@@ -29,7 +45,7 @@ jest.mock('../../middlewares/rateLimit', () => ({
 // Maintenant on peut importer les modules
 const request = require('supertest');
 const app = require('../../app');
-const { User } = require('../../models');
+const { User, UserSanction } = require('../../models');
 const { signToken } = require('../../utils/jwt');
 const { hashPassword } = require('../../utils/password');
 const emailUtils = require('../../utils/email');
@@ -38,11 +54,22 @@ describe('Auth Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Setup du mock User.scope
+    // Setup du mock User.scope — utilisé par authenticate ('active') et changePassword ('withPassword')
     User.scope.mockReturnValue({
-      findByPk: User.findByPk,
-      findOne: User.findOne,
+      findByPk: jest.fn().mockResolvedValue(null),
+      findOne: jest.fn().mockResolvedValue(null),
     });
+
+    // Setup du mock UserSanction.scope — utilisé par le controller login (vérif ban)
+    // Par défaut : aucun ban actif
+    UserSanction.scope.mockReturnValue({
+      findOne: jest.fn().mockResolvedValue(null),
+    });
+
+    // resetMocks: true efface les implémentations — les re-configurer ici
+    emailUtils.sendVerificationEmail.mockResolvedValue({});
+    emailUtils.sendPasswordResetEmail.mockResolvedValue({});
+    emailUtils.sendWelcomeEmail.mockResolvedValue({});
   });
 
   describe('POST /api/auth/register', () => {
@@ -199,8 +226,9 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('POST /api/auth/login', () => {
+    // Le validator attend le champ 'identifier' (email OU username)
     const validLoginPayload = {
-      email: 'user@example.com',
+      identifier: 'user@example.com',
       password: 'ValidPass123!',
     };
 
@@ -209,7 +237,7 @@ describe('Auth Integration Tests', () => {
       const mockUser = {
         id: 'user-123',
         username: 'TestUser',
-        email: validLoginPayload.email,
+        email: 'user@example.com',
         password: hashedPassword,
         isActive: true,
         isEmailVerified: true,
@@ -218,7 +246,18 @@ describe('Auth Integration Tests', () => {
         save: jest.fn().mockResolvedValue(true),
       };
 
-      User.findOne.mockResolvedValue(mockUser);
+      // User.scope('withPassword').findOne(...) — utilisé par le controller login
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(mockUser),
+        findOne: jest.fn().mockResolvedValue(mockUser),
+      });
+
+      // UserSanction.scope(['active','bans']).findOne(...) — aucun ban actif
+      UserSanction.scope.mockReturnValue({
+        findOne: jest.fn().mockResolvedValue(null),
+      });
+
+      // getUserWithSelectedCharacter appelle User.findByPk
       User.findByPk.mockResolvedValue({
         id: mockUser.id,
         username: mockUser.username,
@@ -236,8 +275,11 @@ describe('Auth Integration Tests', () => {
       expect(res.body.message).toContain('Connexion réussie');
     });
 
-    it('devrait rejeter avec un email inexistant', async () => {
-      User.findOne.mockResolvedValue(null);
+    it('devrait rejeter avec un identifiant inexistant', async () => {
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
 
       const res = await request(app)
         .post('/api/auth/login')
@@ -251,13 +293,16 @@ describe('Auth Integration Tests', () => {
     it('devrait rejeter avec un mauvais mot de passe', async () => {
       const mockUser = {
         id: 'user-123',
-        email: validLoginPayload.email,
+        email: 'user@example.com',
         isActive: true,
         isEmailVerified: true,
         validatePassword: jest.fn().mockResolvedValue(false),
       };
 
-      User.findOne.mockResolvedValue(mockUser);
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockResolvedValue(mockUser),
+      });
 
       const res = await request(app)
         .post('/api/auth/login')
@@ -270,12 +315,15 @@ describe('Auth Integration Tests', () => {
     it('devrait rejeter si le compte est désactivé', async () => {
       const mockUser = {
         id: 'user-123',
-        email: validLoginPayload.email,
+        email: 'user@example.com',
         isActive: false,
         isEmailVerified: true,
       };
 
-      User.findOne.mockResolvedValue(mockUser);
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockResolvedValue(mockUser),
+      });
 
       const res = await request(app)
         .post('/api/auth/login')
@@ -288,13 +336,22 @@ describe('Auth Integration Tests', () => {
     it('devrait rejeter si l\'email n\'est pas vérifié', async () => {
       const mockUser = {
         id: 'user-123',
-        email: validLoginPayload.email,
+        email: 'user@example.com',
         isActive: true,
         isEmailVerified: false,
         validatePassword: jest.fn().mockResolvedValue(true),
+        save: jest.fn().mockResolvedValue(true),
       };
 
-      User.findOne.mockResolvedValue(mockUser);
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockResolvedValue(mockUser),
+      });
+
+      // Aucun ban actif
+      UserSanction.scope.mockReturnValue({
+        findOne: jest.fn().mockResolvedValue(null),
+      });
 
       const res = await request(app)
         .post('/api/auth/login')
@@ -304,11 +361,11 @@ describe('Auth Integration Tests', () => {
       expect(res.body.error.code).toBe('EMAIL_NOT_VERIFIED');
     });
 
-    it('devrait rejeter avec un email invalide', async () => {
+    it('devrait rejeter avec un identifier vide', async () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'invalid-email',
+          identifier: '',
           password: 'AnyPassword',
         });
 
@@ -320,7 +377,7 @@ describe('Auth Integration Tests', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'user@example.com',
+          identifier: 'user@example.com',
           password: '',
         });
 
@@ -339,7 +396,11 @@ describe('Auth Integration Tests', () => {
         email: 'test@example.com',
       };
 
-      User.findByPk.mockResolvedValue(mockUser);
+      // authenticate appelle User.scope('active').findByPk(decoded.userId)
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(mockUser),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
 
       const res = await request(app)
         .post('/api/auth/logout')
@@ -376,9 +437,16 @@ describe('Auth Integration Tests', () => {
         id: userId,
         username: 'TestUser',
         email: 'test@example.com',
-        role: 'user',
+        role: 'PLAYER',
       };
 
+      // authenticate appelle User.scope('active').findByPk
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(mockUser),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
+
+      // me() appelle getUserWithSelectedCharacter -> User.findByPk avec includes
       User.findByPk.mockResolvedValue(mockUser);
 
       const res = await request(app)
@@ -663,26 +731,36 @@ describe('Auth Integration Tests', () => {
       const token = signToken(userId);
       const currentPassword = 'CurrentPass123!';
       const newPassword = 'NewValidPass123!';
-      const hashedPassword = await hashPassword(currentPassword);
 
-      const mockUser = {
+      const mockUserForAuth = {
         id: userId,
         username: 'TestUser',
         email: 'user@example.com',
-        password: hashedPassword,
-        validatePassword: jest.fn().mockResolvedValue(true),
-        save: jest.fn().mockResolvedValue(true),
-        toJSON: jest.fn().mockReturnValue({
-          id: userId,
-          username: 'TestUser',
-          email: 'user@example.com',
-        }),
+        role: 'PLAYER',
       };
 
-      User.findByPk.mockResolvedValue(mockUser);
-      User.scope.mockReturnValue({
-        findByPk: jest.fn().mockResolvedValue(mockUser),
-      });
+      // mockUser avec withPassword — incluant generateAuthToken
+      const mockUserWithPassword = {
+        id: userId,
+        username: 'TestUser',
+        email: 'user@example.com',
+        validatePassword: jest.fn().mockResolvedValue(true),
+        generateAuthToken: jest.fn().mockReturnValue('new-jwt-token-123'),
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+      // User.scope est appelé 2 fois :
+      //   1. authenticate -> scope('active').findByPk
+      //   2. changePassword -> scope('withPassword').findByPk
+      User.scope
+        .mockReturnValueOnce({
+          findByPk: jest.fn().mockResolvedValue(mockUserForAuth),
+          findOne: jest.fn().mockResolvedValue(null),
+        })
+        .mockReturnValueOnce({
+          findByPk: jest.fn().mockResolvedValue(mockUserWithPassword),
+          findOne: jest.fn().mockResolvedValue(null),
+        });
 
       const res = await request(app)
         .put('/api/auth/change-password')
@@ -715,15 +793,21 @@ describe('Auth Integration Tests', () => {
       const userId = 'user-123';
       const token = signToken(userId);
 
-      const mockUser = {
+      const mockUserForAuth = { id: userId, role: 'PLAYER' };
+      const mockUserWithPassword = {
         id: userId,
         validatePassword: jest.fn().mockResolvedValue(false),
       };
 
-      User.findByPk.mockResolvedValue(mockUser);
-      User.scope.mockReturnValue({
-        findByPk: jest.fn().mockResolvedValue(mockUser),
-      });
+      User.scope
+        .mockReturnValueOnce({
+          findByPk: jest.fn().mockResolvedValue(mockUserForAuth),
+          findOne: jest.fn().mockResolvedValue(null),
+        })
+        .mockReturnValueOnce({
+          findByPk: jest.fn().mockResolvedValue(mockUserWithPassword),
+          findOne: jest.fn().mockResolvedValue(null),
+        });
 
       const res = await request(app)
         .put('/api/auth/change-password')
@@ -744,22 +828,37 @@ describe('Auth Integration Tests', () => {
       const userId = 'user-123';
       const token = signToken(userId);
 
+      const mockUserForAuth = { id: userId, username: 'OldUsername', role: 'PLAYER' };
+
+      // mockUser pour User.findByPk dans updateProfile
+      // Le controller appelle user.update(updateData) puis user.reload()
+      const updatedUser = {
+        id: userId,
+        username: 'NewUsername',
+        email: 'user@example.com',
+        avatar: 'https://example.com/avatar.jpg',
+      };
       const mockUser = {
         id: userId,
         username: 'OldUsername',
         email: 'user@example.com',
         avatar: null,
-        save: jest.fn().mockResolvedValue(true),
-        toJSON: jest.fn().mockReturnValue({
-          id: userId,
-          username: 'NewUsername',
-          email: 'user@example.com',
-          avatar: 'https://example.com/avatar.jpg',
+        update: jest.fn().mockResolvedValue(true),
+        reload: jest.fn().mockImplementation(function () {
+          Object.assign(this, updatedUser);
+          return Promise.resolve(this);
         }),
       };
 
-      User.findByPk.mockResolvedValue(mockUser);
+      // authenticate -> scope('active').findByPk
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(mockUserForAuth),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
+
+      // updateProfile -> User.findOne (check username uniqueness) + User.findByPk
       User.findOne.mockResolvedValue(null); // Username disponible
+      User.findByPk.mockResolvedValue(mockUser);
 
       const res = await request(app)
         .put('/api/auth/update-profile')
@@ -787,17 +886,19 @@ describe('Auth Integration Tests', () => {
       const userId = 'user-123';
       const token = signToken(userId);
 
-      const mockUser = {
-        id: userId,
-        username: 'CurrentUsername',
-      };
-
+      const mockUserForAuth = { id: userId, username: 'CurrentUsername', role: 'PLAYER' };
       const mockExistingUser = {
         id: 'other-user-id',
         username: 'TakenUsername',
       };
 
-      User.findByPk.mockResolvedValue(mockUser);
+      // authenticate -> scope('active').findByPk
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(mockUserForAuth),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
+
+      // updateProfile -> User.findOne retourne un utilisateur existant (username pris)
       User.findOne.mockResolvedValue(mockExistingUser);
 
       const res = await request(app)
@@ -813,7 +914,11 @@ describe('Auth Integration Tests', () => {
       const userId = 'user-123';
       const token = signToken(userId);
 
-      User.findByPk.mockResolvedValue({ id: userId });
+      // authenticate -> scope('active').findByPk (besoin d'un user pour passer l'auth)
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue({ id: userId, role: 'PLAYER' }),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
 
       const res = await request(app)
         .put('/api/auth/update-profile')
@@ -826,16 +931,26 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('Security Tests', () => {
-    it('devrait rejeter les tentatives d\'injection SQL dans l\'email', async () => {
+    // Le field de login s'appelle 'identifier' (email ou username), pas 'email'
+    // Sequelize utilise des requêtes paramétrées, les injections SQL sont neutralisées
+    it('devrait rejeter les tentatives d\'injection SQL dans l\'identifier', async () => {
+      // Mock configuré AVANT la requête — identifier non vide passe la validation,
+      // Sequelize retourne null (ORM protège contre l'injection SQL)
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockResolvedValue(null),
+      });
+
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: "admin@example.com' OR '1'='1",
+          identifier: "admin@example.com' OR '1'='1",
           password: 'AnyPassword123!',
         });
 
-      // Devrait échouer à la validation
-      expect(res.status).toBe(422);
+      // Le validator laisse passer (identifier non vide), Sequelize retourne null -> 401
+      expect(res.status).toBe(401);
+      expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
     });
 
     it('devrait rejeter les scripts XSS dans le username', async () => {
@@ -855,12 +970,16 @@ describe('Auth Integration Tests', () => {
     });
 
     it('ne devrait pas exposer d\'informations sensibles dans les erreurs', async () => {
-      User.findOne.mockRejectedValue(new Error('Database connection failed with password: secret123'));
+      // Simule une erreur DB dans User.scope('withPassword').findOne
+      User.scope.mockReturnValue({
+        findByPk: jest.fn().mockResolvedValue(null),
+        findOne: jest.fn().mockRejectedValue(new Error('Database connection failed with password: secret123')),
+      });
 
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'user@example.com',
+          identifier: 'user@example.com',
           password: 'ValidPass123!',
         });
 

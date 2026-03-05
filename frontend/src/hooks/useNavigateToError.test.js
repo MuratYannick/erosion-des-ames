@@ -2,22 +2,23 @@
  * Tests pour le hook useNavigateToError
  */
 
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
 import { useNavigateToError } from './useNavigateToError';
 
 // Mock de react-router-dom
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  useNavigate: vi.fn(),
 }));
 
 describe('useNavigateToError', () => {
   let mockNavigate;
 
   beforeEach(() => {
-    mockNavigate = jest.fn();
+    mockNavigate = vi.fn();
     useNavigate.mockReturnValue(mockNavigate);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('navigateTo404', () => {
@@ -247,7 +248,7 @@ describe('useNavigateToError', () => {
     });
 
     it('doit afficher une erreur console et rediriger vers 404 pour un code invalide', () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation();
       const { result } = renderHook(() => useNavigateToError());
 
       act(() => {
@@ -266,7 +267,7 @@ describe('useNavigateToError', () => {
     });
 
     it('doit fallback vers 404 pour un code invalide avec options', () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation();
       const { result } = renderHook(() => useNavigateToError());
       const options = { replace: true, state: { test: true } };
 

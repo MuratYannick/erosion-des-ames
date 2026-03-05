@@ -3,7 +3,8 @@
  * Note: Ces tests nécessitent @testing-library/react et jest
  */
 
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, act } from 'vitest'
+import { render, screen, fireEvent, act as rtlAct } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { NotFound, Forbidden, ServerError, Maintenance } from './index'
 import { ErrorBoundary } from '../../components/errors'
@@ -35,8 +36,8 @@ describe('NotFound (404)', () => {
 
   it('affiche les deux boutons d\'action', () => {
     renderWithRouter(<NotFound />)
-    expect(screen.getByText(/retour à l'accueil/i)).toBeInTheDocument()
-    expect(screen.getByText(/page précédente/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/retour à l'accueil/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/page précédente/i).length).toBeGreaterThan(0)
   })
 
   it('affiche l\'illustration de la boussole', () => {
@@ -93,21 +94,21 @@ describe('ServerError (500)', () => {
 
   it('affiche le bouton "Réessayer"', () => {
     renderWithRouter(<ServerError />)
-    expect(screen.getByText(/réessayer/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /réessayer/i })).toBeInTheDocument()
   })
 
   it('appelle onRetry quand on clique sur Réessayer', () => {
-    const mockRetry = jest.fn()
+    const mockRetry = vi.fn()
     renderWithRouter(<ServerError onRetry={mockRetry} />)
 
-    const retryButton = screen.getByText(/réessayer/i)
+    const retryButton = screen.getByRole('button', { name: /réessayer/i })
     fireEvent.click(retryButton)
 
     expect(mockRetry).toHaveBeenCalledTimes(1)
   })
 
   it('recharge la page si pas de onRetry fourni', () => {
-    const mockReload = jest.fn()
+    const mockReload = vi.fn()
     Object.defineProperty(window, 'location', {
       writable: true,
       value: { reload: mockReload }
@@ -115,7 +116,7 @@ describe('ServerError (500)', () => {
 
     renderWithRouter(<ServerError />)
 
-    const retryButton = screen.getByText(/réessayer/i)
+    const retryButton = screen.getByRole('button', { name: /réessayer/i })
     fireEvent.click(retryButton)
 
     expect(mockReload).toHaveBeenCalled()
@@ -124,12 +125,12 @@ describe('ServerError (500)', () => {
 
 describe('Maintenance', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
   })
 
   it('affiche le titre "Rituel en Cours"', () => {
@@ -174,8 +175,10 @@ describe('Maintenance', () => {
     // Compte initial (60s)
     expect(screen.getByText(/60s/i)).toBeInTheDocument()
 
-    // Avancer de 1 seconde
-    jest.advanceTimersByTime(1000)
+    // Avancer de 1 seconde — envelopper dans act pour flush les mises à jour React
+    rtlAct(() => {
+      vi.advanceTimersByTime(1000)
+    })
 
     // Vérifier que le compte a décrémenté
     expect(screen.getByText(/59s/i)).toBeInTheDocument()
@@ -194,7 +197,7 @@ describe('Maintenance', () => {
 describe('ErrorBoundary', () => {
   // Supprimer les erreurs de console pour les tests d'ErrorBoundary
   beforeAll(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterAll(() => {
@@ -227,7 +230,7 @@ describe('ErrorBoundary', () => {
   })
 
   it('appelle onError quand une erreur est capturée', () => {
-    const mockOnError = jest.fn()
+    const mockOnError = vi.fn()
 
     const ThrowError = () => {
       throw new Error('Test error')

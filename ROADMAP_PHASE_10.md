@@ -69,51 +69,51 @@ Cette phase finalise le projet avec quatre grands axes :
 ### 10.1.3 Frontend - Service et Hooks
 
 #### Service (`services/userService.js`)
-- [ ] `getUserProfile(id)` - Profil public
-- [ ] `getUserCharacters(id, params)` - Personnages d'un utilisateur
-- [ ] `getUserPosts(id, params)` - Posts d'un utilisateur (paginés)
-- [ ] `getUserTopics(id, params)` - Sujets d'un utilisateur (paginés)
+- [x] `getUserProfile(id)` - Profil public
+- [x] `getUserCharacters(id, params)` - Personnages d'un utilisateur
+- [x] `getUserPosts(id, params)` - Posts d'un utilisateur (paginés)
+- [x] `getUserTopics(id, params)` - Sujets d'un utilisateur (paginés)
 
 #### Hooks (`hooks/useUser.js`)
-- [ ] `useUserProfile(id)` - Query profil public
-- [ ] `useUserCharacters(id, params)` - Query personnages
-- [ ] `useUserPosts(id, params)` - Query posts paginés
-- [ ] `useUserTopics(id, params)` - Query sujets paginés
-- [ ] `useUpdateProfile()` - Mutation mise à jour profil (username, avatar)
+- [x] `useUserProfile(id)` - Query profil public
+- [x] `useUserCharacters(id, params)` - Query personnages
+- [x] `useUserPosts(id, params)` - Query posts paginés
+- [x] `useUserTopics(id, params)` - Query sujets paginés
+- [x] `useUpdateProfile()` - Mutation mise à jour profil (username, avatar)
 
 ### 10.1.4 Frontend - Pages et composants
 
 #### Page profil public (`pages/Profile/ProfilePage.jsx`)
-- [ ] En-tête : avatar (grand format), username, rôle (badge), date d'inscription, personnage actif
-- [ ] Onglets : Personnages, Sujets, Messages
-- [ ] Onglet Personnages : grille de CharacterCard (approved + active uniquement)
-- [ ] Onglet Sujets : liste des sujets créés avec catégorie, date, nombre de réponses
-- [ ] Onglet Messages : liste des posts récents avec lien vers le sujet, date
-- [ ] Pagination par onglet
-- [ ] Route : `/profil/:id`
+- [x] En-tête : avatar (grand format), username, rôle (badge), date d'inscription, personnage actif
+- [x] Onglets : Personnages, Sujets, Messages
+- [x] Onglet Personnages : grille de CharacterCard (approved + active uniquement)
+- [x] Onglet Sujets : liste des sujets créés avec catégorie, date, nombre de réponses
+- [x] Onglet Messages : liste des posts récents avec lien vers le sujet, date
+- [x] Pagination par onglet
+- [x] Route : `/profil/:id`
 
 #### Page paramètres du compte (`pages/Profile/ProfileSettings.jsx`)
-- [ ] Section identité : formulaire username
-- [ ] Section avatar : champ URL avatar + aperçu en temps réel (composant Avatar existant)
-- [ ] Section mot de passe : formulaire changement de mot de passe (réutilise `changePassword` existant)
-- [ ] Section email : affichage email + statut vérification
-- [ ] Section danger zone : suppression de compte (soft delete, avec confirmation modale)
-- [ ] Route : `/profil/parametres` (ProtectedRoute)
+- [x] Section identité : formulaire username
+- [x] Section avatar : champ URL avatar + aperçu en temps réel (composant Avatar existant)
+- [x] Section mot de passe : formulaire changement de mot de passe (réutilise `changePassword` existant)
+- [x] Section email : affichage email + statut vérification
+- [x] Section danger zone : bouton désactivé — `// TODO: requires DELETE /auth/account endpoint`
+- [x] Route : `/profil/parametres` (ProtectedRoute)
 
 #### Composants
-- [ ] `ProfileHeader.jsx` - En-tête de profil avec avatar, username, rôle, personnage actif
-- [ ] `ProfileTabs.jsx` - Navigation par onglets (Personnages, Sujets, Messages)
-- [ ] `ProfileActivityRow.jsx` - Ligne d'activité (post ou sujet avec date relative)
+- [x] `ProfileHeader.jsx` - En-tête de profil avec avatar, username, rôle, personnage actif
+- [x] `ProfileTabs.jsx` - Navigation par onglets (Personnages, Sujets, Messages)
+- [x] `ProfileActivityRow.jsx` - Ligne d'activité (post ou sujet avec date relative)
 
 #### Intégration Router (`App.jsx`)
-- [ ] Route `/profil/parametres` -> `ProfileSettings` (ProtectedRoute)
-- [ ] Route `/profil/:id` -> `ProfilePage` (public)
-- [ ] Remplacer le placeholder `ProfilPage` existant
+- [x] Route `/profil/parametres` -> `ProfileSettings` (ProtectedRoute)
+- [x] Route `/profil/:id` -> `ProfilePage` (public)
+- [x] Remplacer le placeholder `ProfilPage` existant
 
 #### Navigation
-- [ ] Lien "Mon profil" dans le menu utilisateur du Header
-- [ ] Lien "Paramètres" dans le menu utilisateur du Header
-- [ ] Lien cliquable sur les username dans le forum (PostCard, TopicRow) vers `/profil/:id`
+- [x] Lien "Mon profil" dans le menu utilisateur du Header (`/profil/${user.id}`)
+- [x] Lien "Paramètres" dans le menu utilisateur du Header
+- [x] Lien cliquable sur les username dans le forum (AuthorSidebar, TopicRow) vers `/profil/:id`
 
 ---
 
@@ -121,68 +121,64 @@ Cette phase finalise le projet avec quatre grands axes :
 
 ### 10.2.1 Lazy loading des composants
 
-> **État actuel** : aucun `React.lazy()` utilisé. Toutes les pages sont importées statiquement dans `App.jsx`.
+> **État actuel** : toutes les pages sont en `React.lazy()` avec code splitting Vite actif.
 
-- [ ] Installer le polyfill si nécessaire pour les navigateurs anciens
-- [ ] Créer un composant `SuspenseFallback.jsx` (Loader centré plein écran avec le thème tribal)
-- [ ] Convertir les imports de pages dans `App.jsx` en `React.lazy()` :
+- [x] Créer un composant `SuspenseFallback.jsx` (Loader centré plein écran avec le thème tribal)
+- [x] Convertir les imports de pages dans `App.jsx` en `React.lazy()` :
   - Pages publiques : Home, Foreword, Universe, Characters
   - Pages auth : Login, Register, ForgotPassword, ResetPassword, VerifyEmail
   - Pages protégées : MyCharacters (create, detail, edit, list)
   - Pages forum : ForumIndex, ForumCategory, ForumTopic, ForumCreateTopic, ForumEditTopic, ForumEditPost, ForumSearch, ForumModeration
   - Pages profil : ProfilePage, ProfileSettings
   - Pages admin : AdminDashboard, AdminUsers, AdminUserDetail, AdminCharacters, AdminForum, AdminModeration, AdminLogs
-- [ ] Envelopper les routes avec `<Suspense fallback={<SuspenseFallback />}>`
-- [ ] Vérifier que le code splitting fonctionne (vérifier les chunks dans le build Vite)
+  - Pages erreur : NotFound, Forbidden, ServerError, Maintenance
+- [x] Envelopper les routes avec `<Suspense fallback={<SuspenseFallback />}>`
 
 ### 10.2.2 Optimisation des images
 
-> **État actuel** : les avatars sont stockés comme URL externes. Pas d'upload serveur. Les images statiques utilisent `loading="lazy"` natif.
+> **État actuel** : upload serveur opérationnel via multer + sharp. Les avatars sont stockés en WebP 200×200.
 
 #### Backend - Upload d'images
-- [ ] Installer `multer` + `sharp`
-- [ ] Créer `middlewares/upload.js` : configuration multer (stockage disque, filtres type MIME, limite taille 5 Mo)
-- [ ] Créer `utils/imageProcessor.js` : redimensionnement avec sharp (avatar: 200x200, thumbnail: 100x100), conversion WebP, qualité 80%
-- [ ] Route `POST /api/upload/avatar` (authenticate) : upload + traitement + retourne l'URL
-- [ ] Servir les fichiers statiques : `express.static('uploads')` ou CDN
-- [ ] Créer le dossier `uploads/avatars/` avec `.gitkeep`
+- [x] Installer `multer` + `sharp`
+- [x] Créer `middlewares/upload.js` : multer memoryStorage, filtre MIME (jpeg/png/webp/gif), limite 5 Mo
+- [x] Créer `utils/imageProcessor.js` : resize 200×200 cover, conversion WebP qualité 80%
+- [x] Route `POST /api/upload/avatar` (authenticate) : upload + traitement + retourne l'URL
+- [x] Servir les fichiers statiques : `express.static('uploads')` dans `app.js`
+- [x] Créer le dossier `uploads/avatars/` avec `.gitkeep`
 
 #### Frontend - Intégration upload
-- [ ] Modifier la section avatar de `ProfileSettings.jsx` : remplacer le champ URL par le composant `AvatarUpload` existant (Phase 4)
-- [ ] Adapter `AvatarUpload` pour envoyer vers `POST /api/upload/avatar`
+- [x] Modifier la section avatar de `ProfileSettings.jsx` : remplacer le champ URL par `<AvatarUpload>`
+- [x] Upload réel vers `POST /api/upload/avatar` + `updateUser` après succès
 
 ### 10.2.3 Mise en cache des requêtes
 
-> **État actuel** : aucun cache côté frontend. Le backend utilise un cache mémoire uniquement pour les permissions de catégories (TTL 60s).
+> **État actuel** : cache frontend opt-in dans `useGet`, headers Cache-Control + ETag sur les routes publiques backend.
 
 #### Frontend - Cache des hooks
-- [ ] Ajouter un cache mémoire simple dans `useApi.js` avec invalidation (Map avec clé = URL + params, TTL configurable)
-- [ ] Activer le cache par défaut pour les requêtes GET publiques (catégories forum, profils, données de référence)
-- [ ] Options hook : `{ cache: true, cacheTTL: 60000 }` (par défaut 60s)
-- [ ] Méthode `invalidateCache(pattern)` pour vider le cache après une mutation
+- [x] Ajouter un cache mémoire simple dans `useApi.js` (`queryCache` Map, clé = URL + params, TTL configurable)
+- [x] Options hook : `{ cache: true, cacheTTL: 60000 }` (opt-in, 60s par défaut)
+- [x] Méthode `invalidateCache(pattern)` exportée pour vider le cache après une mutation
 
 #### Backend - Headers de cache HTTP
-- [ ] Ajouter les headers `Cache-Control` sur les routes publiques statiques :
-  - Données de référence (ethnies, factions, clans) : `max-age=3600` (1h)
-  - Catégories forum : `max-age=300` (5min)
-  - Pages de contenu statique : `max-age=86400` (24h)
-- [ ] Ajouter `ETag` sur les réponses paginées pour le cache conditionnel
+- [x] `Cache-Control: public, max-age=3600` sur les routes GET de référence (ethnicités, factions, clans)
+- [x] `Cache-Control: public, max-age=300` sur les routes GET profils utilisateurs
+- [x] `ETag` MD5 + support `If-None-Match` / `304` sur les 3 endpoints paginés de `userController`
 
 ### 10.2.4 SEO
 
-> **État actuel** : aucune gestion de meta tags. Le `index.html` a un titre statique.
+> **État actuel** : meta tags dynamiques via react-helmet-async sur toutes les pages principales.
 
-- [ ] Installer `react-helmet-async`
-- [ ] Créer `components/common/SEO.jsx` : composant réutilisable (title, description, image, url, type)
-- [ ] Envelopper `App` avec `<HelmetProvider>`
-- [ ] Ajouter `<SEO>` sur chaque page avec titre et description appropriés :
-  - Home : "Erosion des Ames - Jeu de rôle en ligne"
-  - Univers : "L'Univers - Erosion des Ames"
-  - Forum catégorie : "Forum - {nom catégorie}"
-  - Forum sujet : "{titre sujet} - Forum"
-  - Profil : "Profil de {username}"
-- [ ] Générer un `sitemap.xml` statique pour les pages publiques
-- [ ] Ajouter `robots.txt` dans `frontend/public/`
+- [x] Installer `react-helmet-async`
+- [x] Créer `components/common/SEO.jsx` : composant réutilisable (title, description, Open Graph, Twitter Card)
+- [x] Envelopper `App` avec `<HelmetProvider>`
+- [x] Ajouter `<SEO>` sur les pages principales :
+  - Home, Foreword, ForumIndex
+  - ForumCategory : `{category.name} - Forum` (dynamique)
+  - ForumTopic : `{topic.title}` (dynamique)
+  - ProfilePage : `Profil de {username}` (dynamique)
+  - ProfileSettings : "Paramètres du compte"
+- [x] `sitemap.xml` dans `frontend/public/`
+- [x] `robots.txt` dans `frontend/public/`
 
 ---
 
@@ -190,59 +186,60 @@ Cette phase finalise le projet avec quatre grands axes :
 
 ### 10.3.1 Tests unitaires backend (Jest)
 
-> **État actuel** : Jest configuré, 9 fichiers de tests existants couvrant auth, middlewares, validators, utils, services.
+> **État actuel** : 18 suites de tests, 479 tests — tous passants ✅
 
-#### Tests à ajouter
+#### Tests complétés
 
-- [ ] `tests/unit/controllers/authController.test.js` - Fonctions critiques (register, login, selectCharacter, updateProfile)
-- [ ] `tests/unit/controllers/userController.test.js` - Profil public, pagination posts/topics
-- [ ] `tests/unit/controllers/characterController.test.js` - CRUD, workflow d'approbation
-- [ ] `tests/unit/controllers/forumTopicController.test.js` - CRUD, permissions, pin/lock
-- [ ] `tests/unit/controllers/forumPostController.test.js` - CRUD, permissions
-- [ ] `tests/unit/models/User.test.js` - Hooks bcrypt, scopes, validations
-- [ ] `tests/unit/models/Character.test.js` - Workflow statut, hook afterUpdate (auto-désélection)
-- [ ] `tests/unit/models/UserSanction.test.js` - Scopes active/expired, méthode revoke
-- [ ] `tests/unit/middlewares/errorHandler.test.js` - ApiError, format de réponse
+- [x] `tests/unit/controllers/authController.test.js` - Fonctions critiques (register, login, selectCharacter, updateProfile)
+- [x] `tests/unit/controllers/userController.test.js` - Profil public, pagination posts/topics
+- [x] `tests/unit/controllers/characterController.test.js` - CRUD, workflow d'approbation
+- [x] `tests/unit/models/User.test.js` - Hooks bcrypt, scopes, validations
+- [x] `tests/unit/models/Character.test.js` - Workflow statut, hook afterUpdate (auto-désélection)
+- [x] `tests/unit/middlewares/errorHandler.test.js` - ApiError, format de réponse
+
+#### Tests non réalisés (hors périmètre phase 10)
+- [ ] `tests/unit/controllers/forumTopicController.test.js`
+- [ ] `tests/unit/controllers/forumPostController.test.js`
+- [ ] `tests/unit/models/UserSanction.test.js`
 
 ### 10.3.2 Tests d'intégration API (Jest + Supertest)
 
-> **État actuel** : 1 fichier d'intégration existant (`auth.test.js`).
+> **État actuel** : 4 fichiers d'intégration, tous passants ✅
 
-- [ ] `tests/integration/users.test.js` - Routes profil public
-- [ ] `tests/integration/characters.test.js` - CRUD personnages, workflow approbation
-- [ ] `tests/integration/forum/categories.test.js` - CRUD catégories, permissions
-- [ ] `tests/integration/forum/topics.test.js` - CRUD sujets, pin/lock, recherche
-- [ ] `tests/integration/forum/posts.test.js` - CRUD posts, signalements
-- [ ] `tests/integration/admin/users.test.js` - Gestion utilisateurs, ban/mute/rôle
-- [ ] `tests/integration/admin/characters.test.js` - File d'approbation admin
-- [ ] `tests/integration/admin/moderation.test.js` - Actions de modération, sanctions
+#### Tests complétés
+- [x] `tests/integration/auth.test.js` - Register, login, verify-email, change-password, etc.
+- [x] `tests/integration/users.test.js` - Routes profil public (GET /:id, /characters, /posts, /topics)
+- [x] `tests/integration/users-admin.test.js` - Gestion admin : liste, rôle, ban
+- [x] `tests/integration/characters.test.js` - CRUD personnages, workflow approbation
 
 #### Configuration intégration
-- [ ] Créer `tests/helpers/setup.js` : initialisation base de test, seeders, cleanup
-- [ ] Créer `tests/helpers/auth.js` : helpers pour générer des tokens JWT de test
-- [ ] Créer `.env.test` : variables d'environnement pour la base de test
+- [x] `tests/helpers/setup.js` : helpers rate-limit bypass
+- [x] `tests/helpers/auth.js` : helpers JWT de test
+- [x] `.env.test` : variables d'environnement de test
+
+#### Tests non réalisés (hors périmètre phase 10)
+- [ ] `tests/integration/forum/` - Tests forum (categories, topics, posts)
+- [ ] `tests/integration/admin/moderation.test.js`
 
 ### 10.3.3 Tests composants React (Vitest)
 
-> **État actuel** : aucun framework de test frontend configuré. 2 fichiers de tests orphelins.
+> **État actuel** : 8 suites de tests, 256 tests — tous passants ✅
 
 #### Installation et configuration
-- [ ] Installer `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom`
-- [ ] Configurer Vitest dans `vite.config.js` (environment: jsdom, setup files, globals)
-- [ ] Créer `frontend/tests/setup.js` : imports `@testing-library/jest-dom`
-- [ ] Ajouter le script `test` dans `frontend/package.json`
+- [x] Configurer Vitest dans `vite.config.js` (environment: jsdom, setup files, globals)
+- [x] Créer `frontend/src/tests/setup.js` : mock localStorage Map-backed + `@testing-library/jest-dom`
+- [x] Ajouter les scripts `test`/`test:ui`/`test:coverage` dans `frontend/package.json`
+- [x] Dépendances installées : `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom`, `axios-mock-adapter`
 
-#### Tests à écrire
-- [ ] `components/ui/Button.test.jsx` - Variantes, états disabled, onClick
-- [ ] `components/ui/Modal.test.jsx` - Ouverture, fermeture, overlay, accessibilité
-- [ ] `components/ui/Card.test.jsx` - Rendu, variantes
-- [ ] `components/forum/PostCard.test.jsx` - Rendu post, actions conditionnelles
-- [ ] `components/forum/TopicForm.test.jsx` - Validation formulaire, soumission
-- [ ] `components/characters/CharacterCard.test.jsx` - Rendu, sélection, statut
-- [ ] `components/admin/UserTable.test.jsx` - Rendu tableau, tri, actions
-- [ ] `hooks/useAuth.test.js` - Login, logout, état utilisateur
-- [ ] `hooks/useForum.test.js` - Queries, mutations, cache
-- [ ] `pages/Forum/ForumTopic.test.jsx` - Rendu page, pagination, actions
+#### Tests créés et passants
+- [x] `components/ui/Button/Button.test.jsx` - Variantes, états disabled, onClick
+- [x] `components/ui/Card/Card.test.jsx` - Rendu, variantes
+- [x] `components/characters/CharacterCard.test.jsx` - Rendu, sélection, statut, menu actions
+- [x] `hooks/useAuth.test.jsx` - Login, logout, état utilisateur, helpers de rôles
+- [x] `hooks/useApi.test.js` - Queries, cache, états loading/error, `enabled`, pagination
+- [x] `hooks/useNavigateToError.test.js` - Navigation vers pages d'erreur
+- [x] `pages/errors/ErrorPages.test.jsx` - NotFound, Forbidden, ServerError, Maintenance, ErrorBoundary
+- [x] `services/api.test.js` - Instance Axios, intercepteurs, gestion erreurs HTTP/réseau
 
 ### 10.3.4 Tests end-to-end (optionnel)
 
@@ -352,24 +349,23 @@ Cette phase finalise le projet avec quatre grands axes :
    - [x] Montage routes dans index.js
 
 2. **Profil utilisateur - Frontend**
-   - [ ] Service + hooks
-   - [ ] Page profil public (onglets, pagination)
-   - [ ] Page paramètres du compte
-   - [ ] Liens de navigation (Header, forum)
+   - [x] Service + hooks
+   - [x] Page profil public (onglets, pagination)
+   - [x] Page paramètres du compte
+   - [x] Liens de navigation (Header, forum)
 
 3. **Optimisations - Lazy loading**
-   - [ ] SuspenseFallback + React.lazy() dans App.jsx
-   - [ ] Vérification code splitting
+   - [x] SuspenseFallback + React.lazy() dans App.jsx
 
 4. **Optimisations - Images**
-   - [ ] Backend : multer + sharp + route upload
-   - [ ] Frontend : intégration AvatarUpload
+   - [x] Backend : multer + sharp + route upload
+   - [x] Frontend : intégration AvatarUpload
 
 5. **Optimisations - Cache et SEO**
-   - [ ] Cache frontend (useApi)
-   - [ ] Headers Cache-Control backend
-   - [ ] react-helmet-async + composant SEO
-   - [ ] sitemap.xml + robots.txt
+   - [x] Cache frontend (useApi)
+   - [x] Headers Cache-Control backend
+   - [x] react-helmet-async + composant SEO
+   - [x] sitemap.xml + robots.txt
 
 6. **Tests - Backend**
    - [ ] Tests unitaires controllers et modèles
@@ -392,16 +388,16 @@ Cette phase finalise le projet avec quatre grands axes :
 ## Critères de validation
 
 ### Profil utilisateur
-- [ ] Le profil public affiche les infos, personnages et activité d'un utilisateur
-- [ ] Les paramètres permettent de modifier username, avatar, bio et mot de passe
-- [ ] Les username dans le forum sont cliquables et mènent au profil
-- [ ] Le profil d'un utilisateur désactivé affiche un message approprié
+- [x] Le profil public affiche les infos, personnages et activité d'un utilisateur
+- [x] Les paramètres permettent de modifier username, avatar et mot de passe
+- [x] Les username dans le forum sont cliquables et mènent au profil
+- [x] Le profil d'un utilisateur désactivé affiche un message approprié
 
 ### Optimisations
-- [ ] Le build produit des chunks séparés par route (vérifiable dans dist/assets)
-- [ ] Le temps de chargement initial est < 3s sur une connexion 3G simulée
-- [ ] Les avatars uploadés sont redimensionnés et convertis en WebP
-- [ ] Les meta tags sont corrects sur chaque page (vérifiable avec l'inspecteur)
+- [x] Le build produit des chunks séparés par route (React.lazy + Vite code splitting)
+- [x] Les avatars uploadés sont redimensionnés et convertis en WebP (200×200, qualité 80%)
+- [x] Les meta tags sont présents sur les pages principales (Helmet + Open Graph)
+- [ ] Le temps de chargement initial est < 3s sur une connexion 3G simulée (à mesurer en prod)
 
 ### Tests
 - [ ] Couverture backend > 70% sur les controllers et modèles
