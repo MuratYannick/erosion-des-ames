@@ -25,7 +25,10 @@ app.use(compression());
 
 // CORS configuration
 const allowedOrigins = isProd
-  ? [process.env.FRONTEND_URL]
+  ? [
+      process.env.FRONTEND_URL,
+      process.env.FRONTEND_URL?.replace('https://', 'https://www.'),
+    ].filter(Boolean)
   : [
       process.env.FRONTEND_URL || 'http://localhost:5173',
       'http://localhost:5173',
