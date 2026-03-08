@@ -27,6 +27,7 @@
  * </Form>
  */
 
-export { default, Form, FormContext, useFormContext, useField } from './Form'
+export { default, Form } from './Form'
+export { FormContext, useFormContext, useField } from './formContext'
 export { FormField } from './FormField'
 export { FormGroup } from './FormGroup'
