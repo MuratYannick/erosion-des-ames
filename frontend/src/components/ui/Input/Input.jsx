@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react'
+import { forwardRef, useState, useId } from 'react'
 import './Input.css'
 
 const inputStates = {
@@ -164,7 +164,8 @@ const Input = forwardRef(({
   ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false)
-  const inputId = id || `input-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const inputId = id || `input-${generatedId}`
 
   const state = error ? 'error' : success ? 'success' : 'default'
   const message = error || success || helperText
