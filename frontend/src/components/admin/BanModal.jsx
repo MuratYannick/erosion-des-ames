@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '@/components/ui/Modal/Modal'
 import Button from '@/components/ui/Button/Button'
 
@@ -43,12 +43,11 @@ const BanModal = ({
   const [reason, setReason] = useState('')
   const [durationHours, setDurationHours] = useState(null)
 
-  useEffect(() => {
-    if (!isOpen) {
-      setReason('')
-      setDurationHours(null)
-    }
-  }, [isOpen])
+  const handleClose = () => {
+    setReason('')
+    setDurationHours(null)
+    onClose?.()
+  }
 
   const handleConfirm = () => {
     if (reason.trim().length >= 10 && durationHours !== null) {
@@ -61,8 +60,8 @@ const BanModal = ({
   const initials = (user?.username || '?').charAt(0).toUpperCase()
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
-      <ModalHeader onClose={onClose}>Bannir un utilisateur</ModalHeader>
+    <Modal isOpen={isOpen} onClose={handleClose} size="md">
+      <ModalHeader onClose={handleClose}>Bannir un utilisateur</ModalHeader>
 
       <ModalBody>
         <div className="space-y-5">
@@ -141,7 +140,7 @@ const BanModal = ({
 
       <ModalFooter>
         <div className="flex items-center justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={handleClose}>
             Annuler
           </Button>
           <Button
