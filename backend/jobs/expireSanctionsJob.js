@@ -6,7 +6,7 @@ const { expireOutdatedSanctions } = require('../services/sanctionExpirationServi
 /**
  * Cron job that automatically expires outdated temporary sanctions.
  *
- * Schedule: every 5 minutes ('*/5 * * * *')
+ * Schedule: every 5 minutes (cron expression: star/5 * * * *)
  *
  * On each tick the job:
  *   1. Calls expireOutdatedSanctions() to deactivate elapsed ban/mute records
