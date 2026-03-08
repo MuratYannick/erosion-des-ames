@@ -1,6 +1,6 @@
 // FileUpload components exports
 export {
-  default as FileUpload,
+  default,
   FileUpload,
   UploadIcon,
   FileIcon,
