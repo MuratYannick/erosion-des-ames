@@ -18,7 +18,7 @@ class ErrorBoundary extends React.Component {
     }
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     // Mise à jour du state pour afficher le fallback UI
     return { hasError: true }
   }
@@ -40,7 +40,7 @@ class ErrorBoundary extends React.Component {
 
     // En production, vous pourriez envoyer l'erreur à un service de monitoring
     // comme Sentry, LogRocket, etc.
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // Exemple: Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } })
     }
   }
