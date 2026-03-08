@@ -80,12 +80,12 @@ router.patch(
 /**
  * @route   PATCH /api/admin/users/:id/mute
  * @desc    Mettre un utilisateur en sourdine
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/:id/mute',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   muteUserValidation,
   validate,
   adminUserController.mute
@@ -94,12 +94,12 @@ router.patch(
 /**
  * @route   PATCH /api/admin/users/:id/unmute
  * @desc    Retirer la sourdine d'un utilisateur
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/:id/unmute',
   authenticate,
-  authorize('ADMIN', 'MODERATOR'),
+  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
   adminUserController.unmute
 );
 
