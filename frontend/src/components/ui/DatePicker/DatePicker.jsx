@@ -170,13 +170,13 @@ const DatePicker = forwardRef(({
   if (valueKey !== prevValueKey || format !== prevFormat) {
     setPrevValueKey(valueKey)
     setPrevFormat(format)
+    const parsedSync = typeof value === 'string' ? parseDate(value, format) : null
     if (value instanceof Date) {
       setInputValue(formatDate(value, format))
       setViewDate(value)
     } else if (typeof value === 'string') {
       setInputValue(value)
-      const parsed = parseDate(value, format)
-      if (parsed) setViewDate(parsed)
+      if (parsedSync) setViewDate(parsedSync)
     } else if (value === null || value === '') {
       setInputValue('')
     }
@@ -302,35 +302,42 @@ const DatePicker = forwardRef(({
     let handled = false
 
     switch (e.key) {
-      case 'ArrowLeft':
+      case 'ArrowLeft': {
         newDate.setDate(newDate.getDate() - 1)
         handled = true
         break
-      case 'ArrowRight':
+      }
+      case 'ArrowRight': {
         newDate.setDate(newDate.getDate() + 1)
         handled = true
         break
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         newDate.setDate(newDate.getDate() - 7)
         handled = true
         break
-      case 'ArrowDown':
+      }
+      case 'ArrowDown': {
         newDate.setDate(newDate.getDate() + 7)
         handled = true
         break
+      }
       case 'Enter':
-      case ' ':
+      case ' ': {
         selectDate(date)
         handled = true
         break
-      case 'Home':
+      }
+      case 'Home': {
         newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1)
         handled = true
         break
-      case 'End':
+      }
+      case 'End': {
         newDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0)
         handled = true
         break
+      }
     }
 
     if (handled) {
