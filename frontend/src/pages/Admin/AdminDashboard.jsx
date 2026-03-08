@@ -289,7 +289,7 @@ const DashboardSkeleton = () => (
     </div>
 
     {/* Distribution */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {Array.from({ length: 2 }).map((_, i) => (
         <div key={i} className="bg-[#1a2027] border border-[#6b3212]/40 rounded-lg p-6">
           <div className="h-5 w-40 bg-[#232930] rounded mb-4" />
@@ -450,7 +450,7 @@ const AdminDashboard = () => {
       </section>
 
       {/* Distribution charts */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Role distribution */}
         <div className="bg-[#1a2027] border border-[#6b3212]/40 rounded-lg p-6">
           <SectionHeader title="Répartition des rôles" color="#5b8fb9" />
@@ -468,7 +468,7 @@ const AdminDashboard = () => {
       {(forum.totalTopics > 0 || forum.totalPosts > 0) && (
         <section className="bg-[#1a2027] border border-[#6b3212]/40 rounded-lg p-6">
           <SectionHeader title="Activité forum" color="#ff9635" linkTo="/admin/forum" linkLabel="Gérer" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-[#232930] rounded-md border border-[#6b3212]/20">
               <p className="text-2xl font-subheading text-[#d4c9ba] tabular-nums">
                 {(forum.totalTopics || 0).toLocaleString('fr-FR')}

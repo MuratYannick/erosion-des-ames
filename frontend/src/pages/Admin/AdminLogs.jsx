@@ -245,7 +245,7 @@ const AdminLogs = () => {
 
         {/* Advanced filters */}
         {showFilters && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[#6b3212]/20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-[#6b3212]/20">
             {/* Moderator ID */}
             <div>
               <label className="block text-[#8f99a5] text-xs uppercase tracking-wide mb-1.5">
