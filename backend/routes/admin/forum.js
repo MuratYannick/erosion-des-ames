@@ -26,19 +26,19 @@ const {
 router.get(
   '/categories',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   adminForumController.getCategories
 );
 
 /**
  * @route   POST /api/admin/forum/categories
  * @desc    Créer une catégorie (permission: create_subcategory sur le parent)
- * @access  ADMIN, MODERATOR, GAME_MASTER
+ * @access  ADMIN, MODERATOR
  */
 router.post(
   '/categories',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   checkMute,
   adminForumController.createCategory
 );
@@ -46,12 +46,12 @@ router.post(
 /**
  * @route   PUT /api/admin/forum/categories/:id
  * @desc    Mettre à jour une catégorie (permission: edit_category)
- * @access  ADMIN, MODERATOR, GAME_MASTER
+ * @access  ADMIN, MODERATOR
  */
 router.put(
   '/categories/:id',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   checkMute,
   adminForumController.updateCategory
 );
@@ -59,12 +59,12 @@ router.put(
 /**
  * @route   DELETE /api/admin/forum/categories/:id
  * @desc    Supprimer une catégorie (permission: edit_category)
- * @access  ADMIN, MODERATOR, GAME_MASTER
+ * @access  ADMIN
  */
 router.delete(
   '/categories/:id',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN'),
   checkMute,
   adminForumController.deleteCategory
 );
@@ -72,7 +72,7 @@ router.delete(
 /**
  * @route   PATCH /api/admin/forum/categories/reorder
  * @desc    Réorganiser l'ordre des catégories (permission: move_category)
- * @access  ADMIN, MODERATOR, GAME_MASTER
+ * @access  ADMIN, MODERATOR
  *
  * Note: cette route doit être déclarée avant /categories/:id
  * pour éviter que "reorder" soit interprété comme un :id param.
@@ -80,7 +80,7 @@ router.delete(
 router.patch(
   '/categories/reorder',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   checkMute,
   reorderCategoriesValidation,
   validate,
@@ -147,7 +147,7 @@ router.delete(
 router.patch(
   '/topics/:id/move',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   checkMute,
   moveTopicValidation,
   validate,
@@ -157,12 +157,12 @@ router.patch(
 /**
  * @route   PATCH /api/admin/forum/topics/merge
  * @desc    Fusionner deux sujets (sourceTopicId + targetTopicId dans le body)
- * @access  ADMIN, MODERATOR, GAME_MASTER
+ * @access  ADMIN, MODERATOR
  */
 router.patch(
   '/topics/merge',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   checkMute,
   mergeTopicsValidation,
   validate,

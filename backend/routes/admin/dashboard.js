@@ -14,7 +14,7 @@ const { authenticate, authorize } = require('../../middlewares/auth');
 router.get(
   '/stats',
   authenticate,
-  authorize('ADMIN', 'MODERATOR', 'GAME_MASTER'),
+  authorize('ADMIN', 'MODERATOR'),
   adminDashboardController.getStats
 );
 
