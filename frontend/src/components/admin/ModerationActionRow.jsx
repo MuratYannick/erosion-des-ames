@@ -228,15 +228,15 @@ const ModerationActionRow = ({
       ].filter(Boolean).join(' ')}
     >
       {/* Main row */}
-      <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
         {/* Timestamp */}
-        <div className="flex flex-col gap-0.5 flex-shrink-0 w-20">
+        <div className="flex flex-col gap-0.5 flex-shrink-0 w-20 shrink-0">
           <span className="text-[#8f99a5] text-xs tabular-nums">{formatDate(action.createdAt)}</span>
           <span className="text-[#64707e] text-xs tabular-nums">{formatTime(action.createdAt)}</span>
         </div>
 
         {/* Action type */}
-        <div className="flex items-center gap-2 flex-shrink-0 min-w-[160px]">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className={[
             'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
             colors.bg,
@@ -247,36 +247,37 @@ const ModerationActionRow = ({
           <span className="text-[#bba794] text-sm font-medium">{config.label}</span>
         </div>
 
-        {/* Moderator */}
-        {action.moderator && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <MiniAvatar user={action.moderator} />
-            <button
-              type="button"
-              onClick={() => onUserClick?.(action.moderator.id)}
-              className="text-[#d4c9ba] text-sm hover:text-[#ff9635] transition-colors cursor-pointer"
-            >
-              {action.moderator.username}
-            </button>
-          </div>
-        )}
+        {/* Moderator + Target user */}
+        <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap sm:flex-shrink-0">
+          {action.moderator && (
+            <div className="flex items-center gap-2">
+              <MiniAvatar user={action.moderator} />
+              <button
+                type="button"
+                onClick={() => onUserClick?.(action.moderator.id)}
+                className="text-[#d4c9ba] text-sm hover:text-[#ff9635] transition-colors cursor-pointer"
+              >
+                {action.moderator.username}
+              </button>
+            </div>
+          )}
 
-        {/* Target user */}
-        {action.targetUser && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-[#64707e] text-xs">→</span>
-            <MiniAvatar user={action.targetUser} />
-            <button
-              type="button"
-              onClick={() => onUserClick?.(action.targetUser.id)}
-              className="text-[#bba794] text-sm hover:text-[#ff9635] transition-colors cursor-pointer"
-            >
-              {action.targetUser.username}
-            </button>
-          </div>
-        )}
+          {action.targetUser && (
+            <div className="flex items-center gap-2">
+              <span className="text-[#64707e] text-xs">→</span>
+              <MiniAvatar user={action.targetUser} />
+              <button
+                type="button"
+                onClick={() => onUserClick?.(action.targetUser.id)}
+                className="text-[#bba794] text-sm hover:text-[#ff9635] transition-colors cursor-pointer"
+              >
+                {action.targetUser.username}
+              </button>
+            </div>
+          )}
+        </div>
 
-        {/* Reason */}
+        {/* Reason — desktop only (inline truncated) */}
         <div className="flex-1 min-w-0 hidden lg:block">
           {action.reason ? (
             <p className="text-[#8f99a5] text-sm italic line-clamp-1">{action.reason}</p>
@@ -286,7 +287,7 @@ const ModerationActionRow = ({
         </div>
 
         {/* Relative time + expand */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+        <div className="flex items-center gap-2 flex-shrink-0 sm:ml-auto">
           <span className="text-[#64707e] text-xs hidden sm:inline">
             {formatRelativeTime(action.createdAt)}
           </span>
@@ -309,7 +310,7 @@ const ModerationActionRow = ({
         </div>
       </div>
 
-      {/* Reason on mobile */}
+      {/* Reason on mobile/tablet (hidden at lg where it shows inline in the row) */}
       {action.reason && (
         <p className="text-[#8f99a5] text-sm italic mt-2 lg:hidden line-clamp-2">
           {action.reason}

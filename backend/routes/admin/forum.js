@@ -21,7 +21,7 @@ const {
 /**
  * @route   GET /api/admin/forum/categories
  * @desc    Lister toutes les catégories (y compris inactives)
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.get(
   '/categories',
@@ -142,7 +142,7 @@ router.delete(
 /**
  * @route   PATCH /api/admin/forum/topics/:id/move
  * @desc    Déplacer un sujet vers une autre catégorie
- * @access  ADMIN, MODERATOR
+ * @access  ADMIN, MODERATOR, GAME_MASTER
  */
 router.patch(
   '/topics/:id/move',

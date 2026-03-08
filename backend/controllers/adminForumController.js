@@ -3,6 +3,7 @@
 const { ForumCategory, ForumTopic, ForumPost, User, ModerationAction, sequelize } = require('../models');
 const { ApiError, asyncHandler } = require('../middlewares/errorHandler');
 const categoryPermissionService = require('../services/categoryPermissionService');
+const { recalculateCategoryLastPost } = require('../services/forumCountersService');
 
 /**
  * Liste toutes les catégories (actives ET inactives) pour la gestion admin
@@ -398,6 +399,10 @@ const moveTopic = asyncHandler(async (req, res) => {
       { transaction: t }
     );
 
+    // Recalculer lastPostId des deux catégories après le déplacement
+    await recalculateCategoryLastPost(fromCategoryId, t);
+    await recalculateCategoryLastPost(categoryId, t);
+
     await ModerationAction.log({
       actionType: 'move_topic',
       moderatorId: req.user.id,
@@ -511,6 +516,14 @@ const mergeTopics = asyncHandler(async (req, res) => {
 
     // Supprimer le sujet source (soft delete)
     await sourceTopic.destroy({ transaction: t });
+
+    // Recalculer lastPostId de la catégorie cible (toujours nécessaire)
+    await recalculateCategoryLastPost(targetTopic.categoryId, t);
+
+    // Si les catégories sont différentes, recalculer aussi la catégorie source
+    if (sourceTopic.categoryId !== targetTopic.categoryId) {
+      await recalculateCategoryLastPost(sourceTopic.categoryId, t);
+    }
 
     await ModerationAction.log({
       actionType: 'merge_topics',

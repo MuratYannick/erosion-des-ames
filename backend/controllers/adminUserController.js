@@ -291,6 +291,11 @@ const mute = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Vous ne pouvez pas vous muter vous-même');
   }
 
+  // Un GAME_MASTER ne peut muter qu'un PLAYER
+  if (req.user.role === 'GAME_MASTER' && target.role !== 'PLAYER') {
+    throw ApiError.forbidden('Un maître du jeu ne peut muter qu\'un joueur');
+  }
+
   // Un MODERATOR ne peut pas muter un ADMIN
   if (req.user.role === 'MODERATOR' && target.role === 'ADMIN') {
     throw ApiError.forbidden('Vous n\'êtes pas autorisé à muter un administrateur');
@@ -343,6 +348,11 @@ const unmute = asyncHandler(async (req, res) => {
   const target = await User.findByPk(req.params.id);
   if (!target) {
     throw ApiError.notFound('Utilisateur non trouvé');
+  }
+
+  // Un GAME_MASTER ne peut lever un mute que sur un PLAYER
+  if (req.user.role === 'GAME_MASTER' && target.role !== 'PLAYER') {
+    throw ApiError.forbidden('Un maître du jeu ne peut lever un mute que sur un joueur');
   }
 
   // Trouver le mute actif

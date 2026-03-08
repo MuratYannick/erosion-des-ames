@@ -300,29 +300,35 @@
 
 ## Phase 10: Finitions et optimisations
 
+> Détails complets : voir `ROADMAP_PHASE_10.md`
+
 ### 10.1 Profil utilisateur
-- [ ] Page profil public
-- [ ] Page paramètres du compte
-- [ ] Historique des posts
-- [ ] Liste des personnages
+- [x] Backend API : routes publiques utilisateurs (profil, personnages, posts, sujets)
+- [x] Frontend : `userService.js` + 5 hooks (`useUserProfile`, `useUserCharacters`, `useUserPosts`, `useUserTopics`, `useUpdateProfile`)
+- [ ] Page profil public (`/profil/:id`) — composants ProfileHeader, ProfileTabs, ProfileActivityRow
+- [ ] Page paramètres du compte (`/profil/parametres`) — ProtectedRoute
+- [ ] Mise à jour Header : lien "Mon profil" dynamique + lien "Paramètres"
+- [ ] Usernames cliquables dans le forum (AuthorSidebar, TopicRow)
 
-### 10.2 Optimisations
-- [ ] Lazy loading des composants
-- [ ] Optimisation des images
-- [ ] Mise en cache des requêtes fréquentes
-- [ ] SEO (meta tags, sitemap)
+### 10.2 Optimisations ✅
+- [x] Lazy loading des composants (React.lazy + code splitting Vite, SuspenseFallback)
+- [x] Optimisation des images (multer + sharp, upload avatar WebP 200×200)
+- [x] Mise en cache des requêtes fréquentes (queryCache frontend + Cache-Control/ETag backend)
+- [x] SEO : react-helmet-async + composant SEO + sitemap.xml + robots.txt
 
-### 10.3 Tests et qualité
-- [ ] Tests unitaires backend
-- [ ] Tests d'intégration API
-- [ ] Tests composants React
-- [ ] Tests end-to-end (optionnel)
+### 10.3 Tests et qualité ✅
+- [x] Tests unitaires backend (18 suites, 479 tests — Jest)
+- [x] Tests d'intégration API (4 fichiers — Jest + Supertest)
+- [x] Tests composants React (8 suites, 256 tests — Vitest)
+- [ ] Tests end-to-end (optionnel — non réalisé)
 
-### 10.4 Déploiement
-- [ ] Configuration environnement production
-- [ ] CI/CD pipeline
-- [ ] Documentation déploiement
-- [ ] Backup base de données
+### 10.4 Déploiement (partiel)
+- [x] Configuration production : `.env.production.example`, helmet, compression, CORS, Vite build optimisé (manualChunks)
+- [x] Déployé sur O2Switch (Apache + Passenger Node.js 20, MariaDB 11.4)
+- [ ] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool (max: 10)
+- [ ] CI/CD pipeline GitHub Actions
+- [ ] Documentation déploiement (`DEPLOYMENT.md`)
+- [ ] Scripts backup base de données + cron job quotidien
 
 ---
 
@@ -339,7 +345,7 @@
 | 7 | Phase 7 | Forum complet (BDD + API + Frontend + Recherche + Modération) | ✅ |
 | 8 | Phase 8 | Administration et modération | ✅ |
 | 9 | Phase 9 | Sélection de personnage et permissions | ✅ |
-| 10 | Phase 10 | Finitions et optimisations | |
+| 10 | Phase 10 | Finitions et optimisations | En cours |
 
 ---
 

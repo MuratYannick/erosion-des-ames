@@ -68,7 +68,7 @@ const ProfileHeader = ({ profile, isOwnProfile }) => {
                 </span>
                 {user.selectedCharacter.faction && (
                   <span className="font-ui text-xs text-primary-300">
-                    · {user.selectedCharacter.faction}
+                    · {user.selectedCharacter.faction.name}
                   </span>
                 )}
               </div>

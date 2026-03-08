@@ -40,7 +40,7 @@ const ProfilePage = () => {
     setPage(1)
   }
 
-  if (loading) {
+  if (loading || (!error && !profileData)) {
     return (
       <div className="flex justify-center py-20">
         <Loader />

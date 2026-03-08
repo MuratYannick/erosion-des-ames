@@ -111,7 +111,7 @@ const MuteModal = ({
             <label className="block text-[#bba794] text-sm font-medium mb-3">
               Durée <span className="text-[#ff9635]">*</span>
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {DURATION_OPTIONS.map((opt) => (
                 <button
                   key={opt.hours}

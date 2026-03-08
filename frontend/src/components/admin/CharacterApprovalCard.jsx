@@ -133,8 +133,8 @@ const CharacterApprovalCard = ({
         </div>
       </div>
 
-      {/* Meta grid */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Meta grid — 2 cols holds fine at 320px (each col ~140px) */}
+      <div className="grid grid-cols-2 gap-3 min-w-0">
         {character.ethnicity && (
           <div>
             <p className="text-[#64707e] text-xs uppercase tracking-wide">Ethnie</p>
@@ -168,7 +168,7 @@ const CharacterApprovalCard = ({
       )}
 
       {/* Action buttons */}
-      <div className="flex gap-3 pt-4 border-t border-[#6b3212]/30">
+      <div className="flex flex-wrap gap-3 pt-4 border-t border-[#6b3212]/30">
         <button
           type="button"
           onClick={() => onApprove?.(character.id)}

@@ -186,7 +186,7 @@ const AdminUserDetail = () => {
               <div className="h-6 w-24 bg-[#232930] rounded animate-pulse" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="h-16 bg-[#232930] rounded animate-pulse" />
             <div className="h-16 bg-[#232930] rounded animate-pulse" />
           </div>
@@ -333,7 +333,7 @@ const AdminUserDetail = () => {
         </div>
 
         {/* Meta info grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[#6b3212]/40">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#6b3212]/40">
           <div className="bg-[#232930] rounded p-3">
             <div className="text-xs text-[#8f99a5] mb-1 uppercase tracking-wide">
               Inscrit le
@@ -520,7 +520,7 @@ const AdminUserDetail = () => {
             <p className="text-[#8f99a5]">Aucun personnage</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {characters.map((character) => {
               const statusConfig = CHARACTER_STATUS_CONFIG[character.status] || { label: character.status, color: '#64707e' };
               return (

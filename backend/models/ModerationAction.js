@@ -33,13 +33,16 @@ module.exports = (sequelize, DataTypes) => {
         'merge_topics',
         'review_report',
         'edit_category',
-        'delete_category'
+        'delete_category',
+        'expire_sanction'
       ),
       allowNull: false,
     },
     moderatorId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      // NULL is allowed for system-triggered actions (e.g. automatic sanction
+      // expiration) that are not performed by a human moderator.
+      allowNull: true,
     },
     targetUserId: {
       type: DataTypes.UUID,
