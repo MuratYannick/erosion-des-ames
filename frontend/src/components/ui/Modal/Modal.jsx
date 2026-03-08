@@ -47,13 +47,6 @@ const Modal = forwardRef(({
   const [isExiting, setIsExiting] = useState(false)
   const [shouldRender, setShouldRender] = useState(isOpen)
 
-  // Handle escape key
-  const handleEscape = useCallback((e) => {
-    if (e.key === 'Escape' && closeOnEscape && onClose) {
-      handleClose()
-    }
-  }, [closeOnEscape, onClose])
-
   // Handle close with animation
   const handleClose = useCallback(() => {
     setIsExiting(true)
@@ -62,6 +55,13 @@ const Modal = forwardRef(({
       onClose?.()
     }, 200)
   }, [onClose])
+
+  // Handle escape key
+  const handleEscape = useCallback((e) => {
+    if (e.key === 'Escape' && closeOnEscape && onClose) {
+      handleClose()
+    }
+  }, [closeOnEscape, onClose, handleClose])
 
   // Handle overlay click
   const handleOverlayClick = (e) => {
