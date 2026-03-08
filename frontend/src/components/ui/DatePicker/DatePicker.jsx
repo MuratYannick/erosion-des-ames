@@ -161,8 +161,15 @@ const DatePicker = forwardRef(({
   const generatedId = useId().replace(/:/g, '')
   const datePickerId = id || `datepicker-${generatedId}`
 
-  // Update input value when value prop changes
-  useEffect(() => {
+  // Sync inputValue/viewDate when value or format prop changes (render-time update,
+  // avoids calling setState inside useEffect which causes cascading renders)
+  const valueKey = value instanceof Date ? value.getTime() : (value ?? '')
+  const [prevValueKey, setPrevValueKey] = useState(valueKey)
+  const [prevFormat, setPrevFormat] = useState(format)
+
+  if (valueKey !== prevValueKey || format !== prevFormat) {
+    setPrevValueKey(valueKey)
+    setPrevFormat(format)
     if (value instanceof Date) {
       setInputValue(formatDate(value, format))
       setViewDate(value)
@@ -173,7 +180,7 @@ const DatePicker = forwardRef(({
     } else if (value === null || value === '') {
       setInputValue('')
     }
-  }, [value, format])
+  }
 
   // Handle input change (manual typing)
   const handleInputChange = (e) => {
