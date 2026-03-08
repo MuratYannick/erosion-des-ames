@@ -6,7 +6,6 @@ import Button from '@/components/ui/Button/Button'
 
 const TopicForm = ({
   initialValues = {},
-  categoryId,
   categoryName,
   isRpCategory = false,
   characters = [],
