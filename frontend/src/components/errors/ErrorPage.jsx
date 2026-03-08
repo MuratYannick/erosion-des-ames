@@ -33,14 +33,6 @@ const ErrorPage = ({
     navigate('/')
   }
 
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1)
-    } else {
-      navigate('/')
-    }
-  }
-
   // Actions par défaut si aucune n'est fournie
   const defaultActions = showHomeLink ? [
     {
