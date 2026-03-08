@@ -20,7 +20,7 @@
 
 import { describe, it, expect, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { AuthContext } from '@/contexts/AuthContext'
+import { AuthContext } from '@/contexts/AuthContextDef'
 import { useAuth } from '@/hooks/useAuth'
 
 // ---------------------------------------------------------------------------
