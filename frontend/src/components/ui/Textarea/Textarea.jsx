@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useRef, useId } from 'react'
 import '../Input/Input.css'
 
 const textareaStates = {
@@ -161,7 +161,8 @@ const Textarea = forwardRef(({
   onChange,
   ...props
 }, ref) => {
-  const textareaId = id || `textarea-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const textareaId = id || `textarea-${generatedId}`
   const internalRef = useRef(null)
   const textareaRef = ref || internalRef
 
