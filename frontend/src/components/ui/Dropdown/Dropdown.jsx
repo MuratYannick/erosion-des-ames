@@ -70,24 +70,28 @@ const Dropdown = forwardRef(({
     const currentIndex = Array.from(items).indexOf(document.activeElement)
 
     switch (e.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
         e.preventDefault()
         const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0
         items[nextIndex]?.focus()
         break
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         e.preventDefault()
         const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1
         items[prevIndex]?.focus()
         break
-      case 'Home':
+      }
+      case 'Home': {
         e.preventDefault()
         items[0]?.focus()
         break
-      case 'End':
+      }
+      case 'End': {
         e.preventDefault()
         items[items.length - 1]?.focus()
         break
+      }
     }
   }
 
