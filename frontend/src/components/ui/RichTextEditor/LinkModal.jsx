@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Button from '../Button';
 import Input from '../Input';
 
@@ -17,10 +17,15 @@ const LinkModal = ({
   const [url, setUrl] = useState(currentUrl);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevCurrentUrl, setPrevCurrentUrl] = useState(currentUrl);
+
+  if (isOpen !== prevIsOpen || currentUrl !== prevCurrentUrl) {
+    setPrevIsOpen(isOpen);
+    setPrevCurrentUrl(currentUrl);
     setUrl(currentUrl);
     setError('');
-  }, [currentUrl, isOpen]);
+  }
 
   const validateUrl = (value) => {
     if (!value) {
