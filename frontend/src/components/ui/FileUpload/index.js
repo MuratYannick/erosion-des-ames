@@ -5,8 +5,8 @@ export {
   UploadIcon,
   FileIcon,
   TrashIcon,
-  formatSize
 } from './FileUpload'
+export { formatSize } from './fileUploadUtils'
 
 export {
   default as ImageUpload,
