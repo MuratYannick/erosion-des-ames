@@ -101,6 +101,7 @@ export const useAdminUsers = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -108,7 +109,8 @@ export const useAdminUsers = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getUsers(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getUsers(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -128,7 +130,7 @@ export const useAdminUsers = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
@@ -239,6 +241,7 @@ export const useAdminCharacters = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -246,7 +249,8 @@ export const useAdminCharacters = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getCharacters(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getCharacters(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -266,7 +270,7 @@ export const useAdminCharacters = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
@@ -308,6 +312,7 @@ export const usePendingCharacters = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -315,7 +320,8 @@ export const usePendingCharacters = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getPendingCharacters(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getPendingCharacters(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -335,7 +341,7 @@ export const usePendingCharacters = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
@@ -446,6 +452,7 @@ export const useModerationActions = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -453,7 +460,8 @@ export const useModerationActions = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getModerationActions(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getModerationActions(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -473,7 +481,7 @@ export const useModerationActions = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
@@ -519,6 +527,7 @@ export const useUserSanctions = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -526,7 +535,8 @@ export const useUserSanctions = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getSanctions(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getSanctions(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -546,7 +556,7 @@ export const useUserSanctions = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
@@ -588,6 +598,7 @@ export const useAdminReports = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -595,7 +606,8 @@ export const useAdminReports = (params = {}, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const response = await adminService.getReports(params);
+      const currentParams = JSON.parse(paramsKey);
+      const response = await adminService.getReports(currentParams);
       const responseData = response.data;
       setData(responseData);
 
@@ -615,7 +627,7 @@ export const useAdminReports = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]);
 
   useEffect(() => {
     if (enabled) {
