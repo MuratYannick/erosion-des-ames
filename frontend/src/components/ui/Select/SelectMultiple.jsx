@@ -1,4 +1,4 @@
-import { forwardRef, useState, useEffect, useRef } from 'react'
+import { forwardRef, useState, useEffect, useRef, useId } from 'react'
 import './Select.css'
 
 /**
@@ -151,7 +151,8 @@ const SelectMultiple = forwardRef(({
   const [isOpen, setIsOpen] = useState(false)
   const [isExiting, setIsExiting] = useState(false)
   const dropdownRef = useRef(null)
-  const selectId = id || `select-multiple-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const selectId = id || `select-multiple-${generatedId}`
   const message = error || hint
 
   const handleClose = () => {
