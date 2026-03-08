@@ -1,42 +1,42 @@
 import PropTypes from 'prop-types';
 
+// Section component for consistent styling
+const Section = ({ title, content, icon }) => {
+  if (!content || content.trim() === '') return null;
+
+  return (
+    <section className="mb-8 last:mb-0">
+      {/* Section header with icon and decorative line */}
+      <div className="flex items-center gap-3 mb-4">
+        <span className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 flex-shrink-0" aria-hidden="true">
+          {icon}
+        </span>
+        <h2 className="font-heading text-xl sm:text-2xl text-primary-900 whitespace-nowrap">
+          {title}
+        </h2>
+        <div className="flex-1 h-px bg-gradient-to-r from-primary-400 to-transparent" />
+      </div>
+
+      {/* Section content */}
+      <div className="font-body text-base sm:text-lg text-primary-800 leading-relaxed whitespace-pre-line pl-0 sm:pl-10">
+        {content}
+      </div>
+    </section>
+  );
+};
+
+Section.propTypes = {
+  title: PropTypes.string.isRequired,
+  content: PropTypes.string,
+  icon: PropTypes.node.isRequired
+};
+
 /**
  * Full character detail sheet with scroll/parchment aesthetic
  * Displays all character fields in organized sections with tribal separators
  */
 const CharacterSheet = ({ character }) => {
   const { appearance, personality, background, goals } = character;
-
-  // Section component for consistent styling
-  const Section = ({ title, content, icon }) => {
-    if (!content || content.trim() === '') return null;
-
-    return (
-      <section className="mb-8 last:mb-0">
-        {/* Section header with icon and decorative line */}
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 flex-shrink-0" aria-hidden="true">
-            {icon}
-          </span>
-          <h2 className="font-heading text-xl sm:text-2xl text-primary-900 whitespace-nowrap">
-            {title}
-          </h2>
-          <div className="flex-1 h-px bg-gradient-to-r from-primary-400 to-transparent" />
-        </div>
-
-        {/* Section content */}
-        <div className="font-body text-base sm:text-lg text-primary-800 leading-relaxed whitespace-pre-line pl-0 sm:pl-10">
-          {content}
-        </div>
-      </section>
-    );
-  };
-
-  Section.propTypes = {
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string,
-    icon: PropTypes.node.isRequired
-  };
 
   return (
     <div className="bg-surface border-2 border-primary-400 rounded-xl shadow-lg p-6 sm:p-8 md:p-10">
