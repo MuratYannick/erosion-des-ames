@@ -17,5 +17,5 @@ export {
   SidebarBorder,
   SectionRitualMark,
   CollapseTotem,
-  useSidebar,
 } from './Sidebar'
+export { useSidebar } from './sidebarContext'
