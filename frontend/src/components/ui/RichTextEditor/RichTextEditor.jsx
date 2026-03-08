@@ -1,4 +1,4 @@
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useId } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -92,7 +92,8 @@ const RichTextEditor = forwardRef(({
   mentionSuggestions,
   ...props
 }, ref) => {
-  const editorId = id || `rte-${Math.random().toString(36).slice(2, 9)}`;
+  const generatedId = useId().replace(/:/g, '');
+  const editorId = id || `rte-${generatedId}`;
 
   const editor = useEditor({
     extensions: [
@@ -144,7 +145,7 @@ const RichTextEditor = forwardRef(({
         },
         suggestion: mentionSuggestions || {
           // Configuration par défaut - liste vide
-          items: ({ query }) => {
+          items: () => {
             return [];
           },
           render: () => {
