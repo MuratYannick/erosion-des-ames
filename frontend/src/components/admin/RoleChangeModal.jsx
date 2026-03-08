@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '@/components/ui/Modal/Modal'
 import Button from '@/components/ui/Button/Button'
 
@@ -45,11 +45,10 @@ const RoleChangeModal = ({
 }) => {
   const [selectedRole, setSelectedRole] = useState(user?.role || 'PLAYER')
 
-  useEffect(() => {
-    if (isOpen && user) {
-      setSelectedRole(user.role)
-    }
-  }, [isOpen, user])
+  const handleClose = () => {
+    setSelectedRole(user?.role || 'PLAYER')
+    onClose?.()
+  }
 
   const handleConfirm = () => {
     if (selectedRole !== user?.role) {
@@ -64,8 +63,8 @@ const RoleChangeModal = ({
   const currentLabel = ROLES.find(r => r.value === user?.role)?.label || user?.role
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
-      <ModalHeader onClose={onClose}>Modifier le rôle</ModalHeader>
+    <Modal isOpen={isOpen} onClose={handleClose} size="md">
+      <ModalHeader onClose={handleClose}>Modifier le rôle</ModalHeader>
 
       <ModalBody>
         <div className="space-y-5">
@@ -162,7 +161,7 @@ const RoleChangeModal = ({
 
       <ModalFooter>
         <div className="flex items-center justify-end gap-3">
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={handleClose}>
             Annuler
           </Button>
           <Button
