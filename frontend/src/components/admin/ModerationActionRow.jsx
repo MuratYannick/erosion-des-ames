@@ -230,7 +230,7 @@ const ModerationActionRow = ({
       {/* Main row */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
         {/* Timestamp */}
-        <div className="flex flex-col gap-0.5 flex-shrink-0 w-20 shrink-0">
+        <div className="flex flex-col gap-0.5 shrink-0 w-20">
           <span className="text-[#8f99a5] text-xs tabular-nums">{formatDate(action.createdAt)}</span>
           <span className="text-[#64707e] text-xs tabular-nums">{formatTime(action.createdAt)}</span>
         </div>
@@ -238,7 +238,7 @@ const ModerationActionRow = ({
         {/* Action type */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className={[
-            'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+            'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
             colors.bg,
             colors.icon,
           ].join(' ')}>
@@ -248,7 +248,7 @@ const ModerationActionRow = ({
         </div>
 
         {/* Moderator + Target user */}
-        <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap sm:flex-shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap sm:shrink-0">
           {action.moderator && (
             <div className="flex items-center gap-2">
               <MiniAvatar user={action.moderator} />
@@ -287,7 +287,7 @@ const ModerationActionRow = ({
         </div>
 
         {/* Relative time + expand */}
-        <div className="flex items-center gap-2 flex-shrink-0 sm:ml-auto">
+        <div className="flex items-center gap-2 shrink-0 sm:ml-auto">
           <span className="text-[#64707e] text-xs hidden sm:inline">
             {formatRelativeTime(action.createdAt)}
           </span>
