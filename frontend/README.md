@@ -1,16 +1,46 @@
-# React + Vite
+# Erosion des Ames — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application React pour le forum et site communautaire du jeu de rôle *Érosion des Âmes*.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19 + Vite
+- TailwindCSS 3
+- React Router 7
+- Axios (appels API)
+- react-helmet-async (SEO)
+- @fontsource (polices auto-hébergées)
+- Vitest + Testing Library (tests)
 
-## React Compiler
+## Commandes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run dev          # Serveur de développement (port 5173)
+npm run build        # Build production (génère dist/)
+npm run lint         # ESLint --max-warnings=0
+npm run test         # Vitest
+npm run test:ui      # Interface Vitest
+npm run test:coverage # Rapport de couverture
+```
 
-## Expanding the ESLint configuration
+## Variable d'environnement
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```env
+VITE_API_URL=http://localhost:3001
+```
+
+## Structure
+
+```
+src/
+├── components/
+│   ├── common/     # SEO, SuspenseFallback, ScrollToTop, ErrorBoundary
+│   └── ui/         # Button, Card, Modal, Avatar, Toast, FileUpload, etc.
+├── hooks/          # useApi, useAuth, useForum, useAdmin, useUser, etc.
+├── layouts/        # MainLayout (Header + Footer)
+├── pages/          # Home, Foreword, Universe, Characters, Forum, Profile, Admin, errors
+├── services/       # api.js + services par ressource (auth, character, forum, etc.)
+├── App.jsx         # Routes (React.lazy + Suspense)
+├── main.jsx        # Point d'entrée
+└── index.css       # Variables CSS globales + styles de base
+```

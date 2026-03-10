@@ -302,13 +302,13 @@
 
 > Détails complets : voir `ROADMAP_PHASE_10.md`
 
-### 10.1 Profil utilisateur
+### 10.1 Profil utilisateur ✅
 - [x] Backend API : routes publiques utilisateurs (profil, personnages, posts, sujets)
 - [x] Frontend : `userService.js` + 5 hooks (`useUserProfile`, `useUserCharacters`, `useUserPosts`, `useUserTopics`, `useUpdateProfile`)
-- [ ] Page profil public (`/profil/:id`) — composants ProfileHeader, ProfileTabs, ProfileActivityRow
-- [ ] Page paramètres du compte (`/profil/parametres`) — ProtectedRoute
-- [ ] Mise à jour Header : lien "Mon profil" dynamique + lien "Paramètres"
-- [ ] Usernames cliquables dans le forum (AuthorSidebar, TopicRow)
+- [x] Page profil public (`/profil/:id`) — composants ProfileHeader, ProfileTabs, ProfileActivityRow
+- [x] Page paramètres du compte (`/profil/parametres`) — ProtectedRoute
+- [x] Mise à jour Header : lien "Mon profil" dynamique + lien "Paramètres"
+- [x] Usernames cliquables dans le forum (AuthorSidebar, TopicRow)
 
 ### 10.2 Optimisations ✅
 - [x] Lazy loading des composants (React.lazy + code splitting Vite, SuspenseFallback)
@@ -322,13 +322,13 @@
 - [x] Tests composants React (8 suites, 256 tests — Vitest)
 - [ ] Tests end-to-end (optionnel — non réalisé)
 
-### 10.4 Déploiement (partiel)
+### 10.4 Déploiement ✅
 - [x] Configuration production : `.env.production.example`, helmet, compression, CORS, Vite build optimisé (manualChunks)
 - [x] Déployé sur O2Switch (Apache + Passenger Node.js 20, MariaDB 11.4)
-- [ ] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool (max: 10)
-- [ ] CI/CD pipeline GitHub Actions
-- [ ] Documentation déploiement (`DEPLOYMENT.md`)
-- [ ] Scripts backup base de données + cron job quotidien
+- [x] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool (max: 10)
+- [x] CI/CD pipeline GitHub Actions (lint + tests + build + deploy)
+- [x] Documentation déploiement (`DEPLOYMENT.md`)
+- [x] Scripts backup base de données + cron job quotidien (node-cron, 02:00 Europe/Paris)
 
 ---
 
@@ -345,7 +345,7 @@
 | 7 | Phase 7 | Forum complet (BDD + API + Frontend + Recherche + Modération) | ✅ |
 | 8 | Phase 8 | Administration et modération | ✅ |
 | 9 | Phase 9 | Sélection de personnage et permissions | ✅ |
-| 10 | Phase 10 | Finitions et optimisations | En cours |
+| 10 | Phase 10 | Finitions et optimisations | ✅ |
 
 ---
 

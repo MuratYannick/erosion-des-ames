@@ -27,12 +27,21 @@ cp backend/.env.example backend/.env
 ## Commandes
 
 ```bash
-npm run dev            # Lance frontend + backend
+npm run dev            # Lance frontend + backend en parallèle
 npm run dev:frontend   # Frontend uniquement (port 5173)
 npm run dev:backend    # Backend uniquement (port 3001)
 npm run build          # Build production du frontend
-npm run db:migrate     # Exécuter les migrations
-npm run db:seed        # Exécuter les seeders
+
+# Base de données (depuis la racine)
+npm run db:migrate     # Exécuter toutes les migrations
+npm run db:seed        # Seeders de production uniquement
+npm run db:seed:dev    # Seeders de développement (données de test)
+npm run db:clear       # Vider les tables (garde la structure)
+npm run db:drop        # Annuler toutes les migrations
+
+# Tests
+npm run test:backend   # Jest (backend)
+npm run test:frontend  # Vitest (frontend)
 ```
 
 ## Arborescence
@@ -40,51 +49,57 @@ npm run db:seed        # Exécuter les seeders
 ```
 erosion-des-ames/
 ├── frontend/
-│   ├── public/
+│   ├── public/               # Fichiers statiques (sitemap, robots, images)
 │   ├── src/
-│   │   ├── assets/
 │   │   ├── components/
-│   │   │   ├── ui/
-│   │   │   │   ├── Alert/
-│   │   │   │   ├── Avatar/
-│   │   │   │   ├── Badge/
-│   │   │   │   ├── Button/
-│   │   │   │   ├── Card/
-│   │   │   │   ├── Dropdown/
-│   │   │   │   ├── ImageCard/
-│   │   │   │   ├── Input/
-│   │   │   │   ├── Loader/
-│   │   │   │   ├── MenuBurgerButton/
-│   │   │   │   ├── Modal/
-│   │   │   │   ├── Pagination/
-│   │   │   │   ├── Sidebar/
-│   │   │   │   ├── Textarea/
-│   │   │   │   ├── Toast/
-│   │   │   │   └── Tooltip/
-│   │   │   └── index.js
-│   │   ├── layouts/
-│   │   │   ├── MainLayout/
-│   │   │   └── index.js
+│   │   │   ├── common/       # SEO, SuspenseFallback, ScrollToTop…
+│   │   │   └── ui/           # Button, Card, Modal, Avatar, Toast, FileUpload…
+│   │   ├── hooks/            # useApi, useAuth, useForum, useAdmin, useUser…
+│   │   ├── layouts/          # MainLayout (Header + Footer)
+│   │   ├── pages/
+│   │   │   ├── Home/
+│   │   │   ├── Foreword/
+│   │   │   ├── Universe/
+│   │   │   ├── Characters/
+│   │   │   ├── auth/         # Login, Register, ForgotPassword…
+│   │   │   ├── MyCharacters/ # Liste, création, détail, édition
+│   │   │   ├── Forum/        # Index, catégorie, sujet, modération, recherche
+│   │   │   ├── Profile/      # ProfilePage, ProfileSettings
+│   │   │   ├── Admin/        # Dashboard, Users, Characters, Forum, Logs
+│   │   │   └── errors/       # 404, 403, 500, Maintenance
+│   │   ├── services/         # api.js, authService, characterService, forumService…
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
 │   ├── index.html
 │   ├── eslint.config.js
-│   ├── jsconfig.json
-│   ├── postcss.config.js
-│   ├── tailwind.config.js
 │   ├── vite.config.js
 │   └── package.json
 ├── backend/
 │   ├── config/
-│   │   └── database.js
-│   ├── models/
-│   │   └── index.js
-│   ├── migrations/
+│   │   └── database.js       # Sequelize config (pool, dialecte)
+│   ├── controllers/          # authController, characterController, forumController…
+│   ├── jobs/
+│   │   └── backupJob.js      # Cron backup DB quotidien (02:00 Europe/Paris)
+│   ├── middlewares/          # auth, errorHandler, upload, categoryPermission
+│   ├── migrations/           # Migrations Sequelize (snake_case)
+│   ├── models/               # User, Character, ForumTopic, ForumPost…
+│   ├── routes/               # index.js + auth, users, characters, forum, admin, upload
+│   ├── scripts/              # backup-db.sh, restore-db.sh, db-clear.js…
 │   ├── seeders/
-│   ├── server.js
+│   │   └── production/       # Seeders de production (données de référence)
+│   ├── tests/                # Jest : unit (controllers, models, middlewares) + integration
+│   ├── utils/                # imageProcessor, validators helpers
+│   ├── validators/           # express-validator chains par ressource
+│   ├── app.js                # Express app (CORS, helmet, rate-limit, routes)
+│   ├── server.js             # Démarrage serveur + backup job
 │   └── package.json
-├── package.json
+├── .github/
+│   └── workflows/
+│       ├── ci.yml            # Lint + tests + build sur chaque push
+│       └── deploy.yml        # Déploiement automatique sur push main
+├── package.json              # Scripts racine (dev, build, install:all)
+├── DEPLOYMENT.md             # Guide de déploiement production
 ├── ROADMAP.md
 ├── .gitignore
 └── README.md
@@ -103,4 +118,13 @@ DB_NAME=erosion_des_ames
 DB_USER=root
 DB_PASSWORD=votre_mot_de_passe
 FRONTEND_URL=http://localhost:5173
+JWT_SECRET=votre_secret_jwt
+JWT_EXPIRES_IN=7d
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=noreply@example.com
+SMTP_PASS=votre_mot_de_passe_smtp
+EMAIL_FROM=noreply@example.com
 ```
+
+Voir `backend/.env.example` pour la liste complète. Pour la production, consulter `DEPLOYMENT.md`.
