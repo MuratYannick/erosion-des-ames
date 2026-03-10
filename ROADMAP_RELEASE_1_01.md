@@ -4,25 +4,25 @@
 
 ### Phase 8 — Critères de validation non réalisés
 
-1. Expiration automatique des sanctions temporaires (ban/mute avec durée)
-2. Recalcul des compteurs de posts/topics après déplacement ou fusion de sujets
-3. Les modérateurs ne peuvent pas modifier les comptes admins
-4. Vérification que les routes admin sont accessibles uniquement aux rôles corrects
-5. Panel d'administration responsive sur mobile
+1. [x] Expiration automatique des sanctions temporaires (ban/mute avec durée)
+2. [x] Recalcul des compteurs de posts/topics après déplacement ou fusion de sujets
+3. [x] Les modérateurs ne peuvent pas modifier les comptes admins
+4. [x] Vérification que les routes admin sont accessibles uniquement aux rôles corrects
+5. [x] Panel d'administration responsive sur mobile
 
 ### Phase 10.1 — Pages profil (en cours)
 
-6. `ProfilePage.jsx` (`/profil/:id`) — composants ProfileHeader, ProfileTabs, ProfileActivityRow
-7. `ProfileSettings.jsx` (`/profil/parametres`) — ProtectedRoute
-8. Mise à jour Header : lien "Mon profil" dynamique (`/profil/${user.id}`) + lien "Paramètres"
-9. Usernames cliquables dans AuthorSidebar et TopicRow
+6. [x] `ProfilePage.jsx` (`/profil/:id`) — composants ProfileHeader, ProfileTabs, ProfileActivityRow
+7. [x] `ProfileSettings.jsx` (`/profil/parametres`) — ProtectedRoute
+8. [x] Mise à jour Header : lien "Mon profil" dynamique (`/profil/${user.id}`) + lien "Paramètres"
+9. [x] Usernames cliquables dans AuthorSidebar et TopicRow
 
 ### Phase 10.4 — Déploiement (partiel)
 
-10. Rate limiting global (100 req/15min) + morgan logging + Sequelize pool max:10
-11. CI/CD GitHub Actions (lint + tests + build + deploy)
-12. `DEPLOYMENT.md` — documentation pour mise en production
-13. Scripts `backup-db.sh` / `restore-db.sh` + cron job quotidien
+10. [ ] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool max:10
+11. [ ] CI/CD GitHub Actions (lint + tests + build + deploy)
+12. [ ] `DEPLOYMENT.md` — documentation pour mise en production
+13. [ ] Scripts `backup-db.sh` / `restore-db.sh` + cron job quotidien
 
 ## Éléments reportés (hors périmètre, non bloquants)
 

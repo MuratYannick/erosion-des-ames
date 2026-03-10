@@ -9,13 +9,11 @@ export {
 export { formatSize } from './fileUploadUtils'
 
 export {
-  default as ImageUpload,
   ImageUpload,
   ImageIcon
 } from './ImageUpload'
 
 export {
-  default as AvatarUpload,
   AvatarUpload,
   EditIcon,
   DefaultAvatarIcon
