@@ -379,7 +379,11 @@ const RuneSymbol = ({ type }) => {
     )
   }
 
-  return symbols[type] || symbols['◉']
+  return (
+    <svg className="timeline-sidebar__rune-svg" viewBox="0 0 40 40" aria-hidden="true">
+      {symbols[type] || symbols['◉']}
+    </svg>
+  )
 }
 
 /**
