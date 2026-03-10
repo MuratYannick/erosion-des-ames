@@ -1,0 +1,86 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+# Un seul déploiement à la fois — annule le précédent si encore en cours
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to production (O2Switch)
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Build frontend ──────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      # ── Prépare la clé SSH ─────────────────────────────────────────────
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # ── Déploiement backend ────────────────────────────────────────────
+      - name: Deploy backend
+        run: |
+          rsync -az --delete \
+            --exclude='.env' \
+            --exclude='node_modules/' \
+            --exclude='uploads/' \
+            --exclude='logs/' \
+            --exclude='coverage/' \
+            --exclude='tests/' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }}" \
+            backend/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_BACKEND_PATH }}/
+
+      - name: Install backend production dependencies
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ secrets.REMOTE_BACKEND_PATH }} && npm ci --omit=dev"
+
+      - name: Run database migrations
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ secrets.REMOTE_BACKEND_PATH }} && npx sequelize-cli db:migrate"
+
+      # ── Déploiement frontend ───────────────────────────────────────────
+      - name: Deploy frontend (dist)
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }}" \
+            frontend/dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_FRONTEND_PATH }}/
+
+      # ── Redémarrage de l'application Node.js ──────────────────────────
+      - name: Restart Node.js app
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "touch ${{ secrets.REMOTE_BACKEND_PATH }}/tmp/restart.txt"
