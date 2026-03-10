@@ -21,7 +21,7 @@ const getPublicProfile = asyncHandler(async (req, res) => {
           {
             model: Faction,
             as: 'faction',
-            attributes: ['id', 'name', 'color'],
+            attributes: ['id', 'name', 'emblem'],
           },
         ],
       },
@@ -84,7 +84,7 @@ const getUserCharacters = asyncHandler(async (req, res) => {
     where,
     include: [
       { model: Ethnicity, as: 'ethnicity', attributes: ['id', 'name'] },
-      { model: Faction, as: 'faction', attributes: ['id', 'name', 'color'] },
+      { model: Faction, as: 'faction', attributes: ['id', 'name', 'emblem'] },
       { model: Clan, as: 'clan', attributes: ['id', 'name'] },
     ],
     order: [['createdAt', 'DESC']],
@@ -144,7 +144,7 @@ const getUserPosts = asyncHandler(async (req, res) => {
           {
             model: ForumCategory,
             as: 'category',
-            attributes: ['id', 'name', 'slug', 'color'],
+            attributes: ['id', 'name', 'slug'],
           },
         ],
       },
@@ -205,7 +205,7 @@ const getUserTopics = asyncHandler(async (req, res) => {
       {
         model: ForumCategory,
         as: 'category',
-        attributes: ['id', 'name', 'slug', 'color'],
+        attributes: ['id', 'name', 'slug'],
       },
       {
         model: Character,
