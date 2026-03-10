@@ -22,7 +22,7 @@
 10. [x] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool max:10
 11. [x] CI/CD GitHub Actions (lint + tests + build + deploy)
 12. [x] `DEPLOYMENT.md` — documentation pour mise en production
-13. [ ] Scripts `backup-db.sh` / `restore-db.sh` + cron job quotidien
+13. [x] Scripts `backup-db.sh` / `restore-db.sh` + cron job quotidien
 
 ## Éléments reportés (hors périmètre, non bloquants)
 
