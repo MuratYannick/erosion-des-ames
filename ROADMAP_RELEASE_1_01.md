@@ -19,7 +19,7 @@
 
 ### Phase 10.4 — Déploiement (partiel)
 
-10. [ ] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool max:10
+10. [x] Rate limiting global (100 req/15min) + morgan logging + Sequelize pool max:10
 11. [ ] CI/CD GitHub Actions (lint + tests + build + deploy)
 12. [ ] `DEPLOYMENT.md` — documentation pour mise en production
 13. [ ] Scripts `backup-db.sh` / `restore-db.sh` + cron job quotidien
