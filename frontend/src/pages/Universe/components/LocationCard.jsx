@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { locationTypes, dangerLevels } from '@/data/locationData'
-import { locationIcons } from './LocationIcons'
+import { locationIcons } from './locationIconsMap'
 import './LocationCard.css'
 
 /**

@@ -1,4 +1,7 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
+
+// Offsets aléatoires pour les courbes de Bézier, calculés une fois au chargement du module (hors render)
+const ROUTE_OFFSETS = [...Array(6)].map(() => 30 + Math.random() * 20)
 import PropTypes from 'prop-types'
 import './WorldMap.css'
 
@@ -333,7 +336,7 @@ const MapRoutes = ({ locations, coordsToSVG }) => {
         // Point de contrôle pour courbe de Bézier
         const midX = (from.x + to.x) / 2
         const midY = (from.y + to.y) / 2
-        const offset = 30 + Math.random() * 20
+        const offset = ROUTE_OFFSETS[index]
 
         return (
           <path

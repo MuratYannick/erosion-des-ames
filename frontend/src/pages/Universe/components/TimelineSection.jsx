@@ -1,4 +1,11 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
+
+// Valeurs aléatoires pour les braises, calculées une fois au chargement du module (hors render)
+const EMBER_STYLES = [...Array(12)].map(() => ({
+  left: `${Math.random() * 100}%`,
+  animationDelay: `${Math.random() * 15}s`,
+  animationDuration: `${12 + Math.random() * 8}s`,
+}))
 import PropTypes from 'prop-types'
 import './TimelineSection.css'
 
@@ -176,9 +183,13 @@ const TimelineEra = ({ era, isActive, isExpanded, isVisible, onClick, index, ref
   const [contentHeight, setContentHeight] = useState(0)
 
   useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0)
-    }
+    const el = contentRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => {
+      setContentHeight(isExpanded ? el.scrollHeight : 0)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [isExpanded])
 
   return (
@@ -287,7 +298,7 @@ const TimelineEvent = ({ event, index }) => {
 /**
  * Connecteur entre ères (flux de lave)
  */
-const TimelineConnector = ({ isFlowing, fromTemperature, toTemperature }) => {
+const TimelineConnector = ({ isFlowing }) => {
   return (
     <div className={`timeline-connector ${isFlowing ? 'is-flowing' : ''}`}>
       <svg
@@ -538,15 +549,11 @@ const StrataDivider = () => {
 const EmbersOverlay = () => {
   return (
     <div className="timeline-embers" aria-hidden="true">
-      {[...Array(12)].map((_, i) => (
+      {EMBER_STYLES.map((style, i) => (
         <span
           key={i}
           className="timeline-embers__particle"
-          style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 15}s`,
-            animationDuration: `${12 + Math.random() * 8}s`
-          }}
+          style={style}
         />
       ))}
     </div>
@@ -586,9 +593,7 @@ TimelineEvent.propTypes = {
 }
 
 TimelineConnector.propTypes = {
-  isFlowing: PropTypes.bool.isRequired,
-  fromTemperature: PropTypes.string,
-  toTemperature: PropTypes.string
+  isFlowing: PropTypes.bool.isRequired
 }
 
 RuneSymbol.propTypes = {

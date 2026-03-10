@@ -97,24 +97,26 @@ const MyCharactersList = () => {
     },
   })
 
+  const dataCharacters = data?.characters
+
   // Filter characters based on status
   const filteredCharacters = useMemo(() => {
-    if (!data?.characters) return []
-    if (statusFilter === 'all') return data.characters
-    return data.characters.filter((char) => char.status === statusFilter)
-  }, [data?.characters, statusFilter])
+    if (!dataCharacters) return []
+    if (statusFilter === 'all') return dataCharacters
+    return dataCharacters.filter((char) => char.status === statusFilter)
+  }, [dataCharacters, statusFilter])
 
   // Calculate status counts
   const statusCounts = useMemo(() => {
-    if (!data?.characters) return { approved: 0, draft: 0, pending: 0, rejected: 0 }
-    return data.characters.reduce(
+    if (!dataCharacters) return { approved: 0, draft: 0, pending: 0, rejected: 0 }
+    return dataCharacters.reduce(
       (acc, char) => {
         acc[char.status] = (acc[char.status] || 0) + 1
         return acc
       },
       { approved: 0, draft: 0, pending: 0, rejected: 0 }
     )
-  }, [data?.characters])
+  }, [dataCharacters])
 
   const handleView = (character) => {
     navigate(`/mes-personnages/${character.id}`)

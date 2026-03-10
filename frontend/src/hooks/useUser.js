@@ -86,6 +86,7 @@ export const useUserCharacters = (id, params = {}, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const paramsKey = JSON.stringify(params);
 
   const refetch = useCallback(async () => {
     if (!enabled || !id) return;
@@ -114,7 +115,7 @@ export const useUserCharacters = (id, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [id, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [id, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && id) {
@@ -150,6 +151,7 @@ export const useUserPosts = (id, params = {}, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const paramsKey = JSON.stringify(params);
 
   const refetch = useCallback(async () => {
     if (!enabled || !id) return;
@@ -178,7 +180,7 @@ export const useUserPosts = (id, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [id, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [id, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && id) {
@@ -214,6 +216,7 @@ export const useUserTopics = (id, params = {}, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const paramsKey = JSON.stringify(params);
 
   const refetch = useCallback(async () => {
     if (!enabled || !id) return;
@@ -242,7 +245,7 @@ export const useUserTopics = (id, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [id, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [id, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && id) {

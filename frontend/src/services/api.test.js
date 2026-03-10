@@ -8,7 +8,7 @@
  * npm test api.test.js
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import api from './api';
 import MockAdapter from 'axios-mock-adapter';
 

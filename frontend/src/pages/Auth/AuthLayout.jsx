@@ -8,9 +8,8 @@ import './AuthLayout.css';
  *
  * @param {Object} props - Props du composant
  * @param {React.ReactNode} props.children - Contenu de la page auth
- * @param {string} [props.title] - Titre optionnel (non utilisé pour l'instant)
  */
-function AuthLayout({ children, title }) {
+function AuthLayout({ children }) {
   return (
     <div className="auth-layout min-h-screen flex flex-col items-center justify-center p-5 relative bg-primary-900">
       {/* Texture de bruit (pseudo-element CSS) */}
@@ -53,7 +52,6 @@ function AuthLayout({ children, title }) {
 
 AuthLayout.propTypes = {
   children: PropTypes.node.isRequired,
-  title: PropTypes.string,
 };
 
 export default AuthLayout;

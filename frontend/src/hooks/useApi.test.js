@@ -37,7 +37,7 @@
  *   - does not remove non-matching keys
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useApi, useGet, useMutation, invalidateCache } from '@/hooks/useApi'
 

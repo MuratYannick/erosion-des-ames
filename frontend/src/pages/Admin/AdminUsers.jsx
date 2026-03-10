@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAdminUsers, useBanUser, useMuteUser, useUnbanUser, useUnmuteUser, useChangeUserRole } from '@/hooks/useAdmin';
+import { useAdminUsers, useBanUser, useMuteUser, useChangeUserRole } from '@/hooks/useAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import { UserTable, BanModal, MuteModal, RoleChangeModal } from '@/components/admin';
 

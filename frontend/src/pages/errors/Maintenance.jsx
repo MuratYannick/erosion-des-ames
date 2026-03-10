@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import ErrorPage from '../../components/errors/ErrorPage'
 import { RefreshCw, Clock } from 'lucide-react'
@@ -298,7 +297,6 @@ const RitualAltarIllustration = () => {
  * "Rituel en Cours" - Restauration temporaire du système
  */
 const Maintenance = ({ estimatedTime, message: customMessage }) => {
-  const navigate = useNavigate()
   const [autoRefresh, setAutoRefresh] = useState(true)
   const [countdown, setCountdown] = useState(60)
 

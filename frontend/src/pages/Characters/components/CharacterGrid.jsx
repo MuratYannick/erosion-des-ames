@@ -9,6 +9,13 @@ import CharacterCard from './CharacterCard'
 import { SoulFlameIcon } from './SoulShardElements'
 import './CharacterGrid.css'
 
+// Valeurs aléatoires calculées une fois au chargement du module (hors render)
+const EMBER_STYLES = [...Array(8)].map((_, i) => ({
+  '--delay': `${i * 1.5}s`,
+  '--x': `${10 + Math.random() * 80}%`,
+  '--duration': `${8 + Math.random() * 6}s`
+}))
+
 const CharacterGrid = ({
   characters,
   filteredIds,
@@ -38,15 +45,11 @@ const CharacterGrid = ({
     <div className="character-grid-container">
       {/* Particules d'ambiance */}
       <div className="character-grid__ambient" aria-hidden="true">
-        {[...Array(8)].map((_, i) => (
+        {EMBER_STYLES.map((style, i) => (
           <span
             key={i}
             className="character-grid__ambient-ember"
-            style={{
-              '--delay': `${i * 1.5}s`,
-              '--x': `${10 + Math.random() * 80}%`,
-              '--duration': `${8 + Math.random() * 6}s`
-            }}
+            style={style}
           />
         ))}
       </div>

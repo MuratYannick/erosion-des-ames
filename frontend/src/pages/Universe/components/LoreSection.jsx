@@ -220,9 +220,14 @@ const ChapterTablet = ({ chapter, isActive, isExpanded, onToggle, index }) => {
   const [contentHeight, setContentHeight] = useState(0)
 
   useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0)
-    }
+    const el = contentRef.current
+    if (!el) return
+    // setState appelé dans le callback ResizeObserver (système externe) — pattern autorisé
+    const observer = new ResizeObserver(() => {
+      setContentHeight(isExpanded ? el.scrollHeight : 0)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [isExpanded])
 
   return (

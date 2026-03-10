@@ -19,18 +19,18 @@ import { useCallback } from 'react';
  * // Fonction générique
  * navigateToError(500);
  */
+/**
+ * Routes des pages d'erreur
+ */
+const ERROR_ROUTES = {
+  404: '/page-non-trouvee',
+  403: '/interdit',
+  500: '/erreur',
+  maintenance: '/maintenance',
+};
+
 export const useNavigateToError = () => {
   const navigate = useNavigate();
-
-  /**
-   * Routes des pages d'erreur
-   */
-  const ERROR_ROUTES = {
-    404: '/page-non-trouvee',
-    403: '/interdit',
-    500: '/erreur',
-    maintenance: '/maintenance',
-  };
 
   /**
    * Navigue vers une page d'erreur

@@ -27,7 +27,6 @@ export const invalidateCache = (pattern) => {
  *
  * @param {Function} apiFunc - Fonction qui fait l'appel API
  * @param {Object} options - Options du hook
- * @param {boolean} options.skipErrorRedirect - Désactiver la redirection automatique (défaut: true)
  * @param {Function} options.onSuccess - Callback appelé en cas de succès
  * @param {Function} options.onError - Callback appelé en cas d'erreur
  * @returns {Object} État et fonction d'exécution
@@ -42,11 +41,7 @@ export const invalidateCache = (pattern) => {
  * );
  */
 export const useApi = (apiFunc, options = {}) => {
-  const {
-    skipErrorRedirect = true, // Par défaut, gérer les erreurs manuellement
-    onSuccess,
-    onError,
-  } = options;
+  const { onSuccess, onError } = options;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -118,7 +113,6 @@ export const useApi = (apiFunc, options = {}) => {
  * @param {Object} config - Configuration Axios
  * @param {Object} options - Options du hook
  * @param {boolean} options.enabled - Activer la requête automatique (défaut: true)
- * @param {Array} options.deps - Dépendances pour réexécuter la requête
  * @param {boolean} options.cache - Activer le cache mémoire (défaut: false)
  * @param {number} options.cacheTTL - Durée de vie du cache en ms (défaut: 60000)
  * @returns {Object} État de la requête
@@ -132,7 +126,7 @@ export const useApi = (apiFunc, options = {}) => {
  * const { data } = useGet('/forum/categories', {}, { cache: true, cacheTTL: 120000 });
  */
 export const useGet = (url, config = {}, options = {}) => {
-  const { enabled = true, deps = [], onSuccess, onError, cache = false, cacheTTL = 60000 } = options;
+  const { enabled = true, onSuccess, onError, cache = false, cacheTTL = 60000 } = options;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
