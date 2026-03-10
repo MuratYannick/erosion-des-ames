@@ -1,10 +1,8 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as authService from '@/services/authService';
 import { isTokenExpired } from '@/services/authService';
-
-// Création du context
-export const AuthContext = createContext(null);
+import { AuthContext } from './AuthContextDef';
 
 /**
  * Provider pour l'authentification

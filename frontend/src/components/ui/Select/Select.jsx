@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 import './Select.css'
 
 const selectStates = {
@@ -127,7 +127,8 @@ const Select = forwardRef(({
   id,
   ...props
 }, ref) => {
-  const selectId = id || `select-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const selectId = id || `select-${generatedId}`
   const state = error ? 'error' : 'default'
   const message = error || hint
 

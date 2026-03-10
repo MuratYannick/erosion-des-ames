@@ -1,5 +1,14 @@
-import { forwardRef, useState, useEffect, useRef } from 'react'
+import { forwardRef, useState, useEffect, useRef, useId } from 'react'
 import './DatePicker.css'
+import {
+  MONTHS_FR,
+  WEEKDAYS_FR,
+  formatDate,
+  parseDate,
+  isSameDay,
+  isToday,
+  getCalendarDays,
+} from './datePickerUtils'
 
 /**
  * Tribal Calendar Icon
@@ -117,140 +126,6 @@ const LabelUnderline = () => (
 )
 
 /**
- * French month names
- */
-const MONTHS_FR = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre'
-]
-
-/**
- * French weekday abbreviations (starting Monday)
- */
-const WEEKDAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-
-/**
- * Format date according to format string
- */
-const formatDate = (date, format = 'dd/MM/yyyy') => {
-  if (!date || !(date instanceof Date) || isNaN(date)) return ''
-
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-
-  return format
-    .replace('dd', day)
-    .replace('MM', month)
-    .replace('yyyy', year)
-}
-
-/**
- * Parse date string according to format
- */
-const parseDate = (str, format = 'dd/MM/yyyy') => {
-  if (!str) return null
-
-  const parts = str.match(/\d+/g)
-  if (!parts || parts.length < 3) return null
-
-  let day, month, year
-
-  if (format === 'dd/MM/yyyy') {
-    [day, month, year] = parts
-  } else if (format === 'MM/dd/yyyy') {
-    [month, day, year] = parts
-  } else if (format === 'yyyy-MM-dd') {
-    [year, month, day] = parts
-  } else {
-    // Default to dd/MM/yyyy
-    [day, month, year] = parts
-  }
-
-  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-  return isNaN(date) ? null : date
-}
-
-/**
- * Check if two dates are the same day
- */
-const isSameDay = (date1, date2) => {
-  if (!date1 || !date2) return false
-  return (
-    date1.getDate() === date2.getDate() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getFullYear() === date2.getFullYear()
-  )
-}
-
-/**
- * Check if date is today
- */
-const isToday = (date) => {
-  return isSameDay(date, new Date())
-}
-
-/**
- * Get calendar days for a given month
- * Returns array of day objects with date, dayNumber, and isOtherMonth flag
- */
-const getCalendarDays = (year, month) => {
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
-
-  // Get day of week (0 = Sunday, 1 = Monday, etc.)
-  // Convert to Monday-based (0 = Monday, 6 = Sunday)
-  let firstDayOfWeek = firstDay.getDay() - 1
-  if (firstDayOfWeek === -1) firstDayOfWeek = 6
-
-  const daysInMonth = lastDay.getDate()
-  const days = []
-
-  // Previous month padding
-  const prevMonthLastDay = new Date(year, month, 0).getDate()
-  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-    days.push({
-      date: new Date(year, month - 1, prevMonthLastDay - i),
-      dayNumber: prevMonthLastDay - i,
-      isOtherMonth: true
-    })
-  }
-
-  // Current month days
-  for (let day = 1; day <= daysInMonth; day++) {
-    days.push({
-      date: new Date(year, month, day),
-      dayNumber: day,
-      isOtherMonth: false
-    })
-  }
-
-  // Next month padding (complete the last week)
-  const remainingDays = 7 - (days.length % 7)
-  if (remainingDays < 7) {
-    for (let day = 1; day <= remainingDays; day++) {
-      days.push({
-        date: new Date(year, month + 1, day),
-        dayNumber: day,
-        isOtherMonth: true
-      })
-    }
-  }
-
-  return days
-}
-
-/**
  * DatePicker Component
  */
 const DatePicker = forwardRef(({
@@ -283,21 +158,29 @@ const DatePicker = forwardRef(({
   const containerRef = useRef(null)
   const inputRef = useRef(null)
   const calendarRef = useRef(null)
-  const datePickerId = id || `datepicker-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const datePickerId = id || `datepicker-${generatedId}`
 
-  // Update input value when value prop changes
-  useEffect(() => {
+  // Sync inputValue/viewDate when value or format prop changes (render-time update,
+  // avoids calling setState inside useEffect which causes cascading renders)
+  const valueKey = value instanceof Date ? value.getTime() : (value ?? '')
+  const [prevValueKey, setPrevValueKey] = useState(valueKey)
+  const [prevFormat, setPrevFormat] = useState(format)
+
+  if (valueKey !== prevValueKey || format !== prevFormat) {
+    setPrevValueKey(valueKey)
+    setPrevFormat(format)
+    const parsedSync = typeof value === 'string' ? parseDate(value, format) : null
     if (value instanceof Date) {
       setInputValue(formatDate(value, format))
       setViewDate(value)
     } else if (typeof value === 'string') {
       setInputValue(value)
-      const parsed = parseDate(value, format)
-      if (parsed) setViewDate(parsed)
+      if (parsedSync) setViewDate(parsedSync)
     } else if (value === null || value === '') {
       setInputValue('')
     }
-  }, [value, format])
+  }
 
   // Handle input change (manual typing)
   const handleInputChange = (e) => {
@@ -419,35 +302,42 @@ const DatePicker = forwardRef(({
     let handled = false
 
     switch (e.key) {
-      case 'ArrowLeft':
+      case 'ArrowLeft': {
         newDate.setDate(newDate.getDate() - 1)
         handled = true
         break
-      case 'ArrowRight':
+      }
+      case 'ArrowRight': {
         newDate.setDate(newDate.getDate() + 1)
         handled = true
         break
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         newDate.setDate(newDate.getDate() - 7)
         handled = true
         break
-      case 'ArrowDown':
+      }
+      case 'ArrowDown': {
         newDate.setDate(newDate.getDate() + 7)
         handled = true
         break
+      }
       case 'Enter':
-      case ' ':
+      case ' ': {
         selectDate(date)
         handled = true
         break
-      case 'Home':
+      }
+      case 'Home': {
         newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1)
         handled = true
         break
-      case 'End':
+      }
+      case 'End': {
         newDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0)
         handled = true
         break
+      }
     }
 
     if (handled) {
@@ -628,12 +518,4 @@ const DatePicker = forwardRef(({
 DatePicker.displayName = 'DatePicker'
 
 export default DatePicker
-export {
-  DatePicker,
-  formatDate,
-  parseDate,
-  isSameDay,
-  isToday,
-  MONTHS_FR,
-  WEEKDAYS_FR
-}
+export { DatePicker }

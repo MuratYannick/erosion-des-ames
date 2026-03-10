@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
@@ -41,7 +41,6 @@ function getPasswordStrengthInfo(score) {
  * Permet à un nouvel utilisateur de créer un compte
  */
 function Register() {
-  const navigate = useNavigate();
   const { register } = useAuth();
   const { addToast } = useToast();
 

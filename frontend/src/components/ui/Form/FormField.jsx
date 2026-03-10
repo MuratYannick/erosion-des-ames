@@ -1,5 +1,5 @@
-import { forwardRef, cloneElement, isValidElement, Children } from 'react'
-import { useField } from './Form'
+import { cloneElement, isValidElement, Children } from 'react'
+import { useField } from './formContext'
 import { WarningIcon } from '@/components/ui/Input'
 import './Form.css'
 
@@ -36,7 +36,7 @@ const LabelUnderline = () => (
  *   <Input type="email" placeholder="..." />
  * </FormField>
  */
-const FormField = forwardRef(({
+const FormField = ({
   name,
   label,
   required = false,
@@ -45,7 +45,7 @@ const FormField = forwardRef(({
   children,
   className = '',
   ...props
-}, ref) => {
+}) => {
   // Get field state from form context
   const field = useField(name)
 
@@ -67,7 +67,6 @@ const FormField = forwardRef(({
   }
 
   const enhancedInput = cloneElement(childInput, {
-    ref,
     id: fieldId,
     name: field.name,
     value: field.value,
@@ -129,7 +128,7 @@ const FormField = forwardRef(({
       )}
     </div>
   )
-})
+}
 
 FormField.displayName = 'FormField'
 

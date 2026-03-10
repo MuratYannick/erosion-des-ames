@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Button from '../Button';
 import Input from '../Input';
 
@@ -17,11 +17,18 @@ const ImageModal = ({
   const [alt, setAlt] = useState(currentAlt);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevCurrentUrl, setPrevCurrentUrl] = useState(currentUrl);
+  const [prevCurrentAlt, setPrevCurrentAlt] = useState(currentAlt);
+
+  if (isOpen !== prevIsOpen || currentUrl !== prevCurrentUrl || currentAlt !== prevCurrentAlt) {
+    setPrevIsOpen(isOpen);
+    setPrevCurrentUrl(currentUrl);
+    setPrevCurrentAlt(currentAlt);
     setUrl(currentUrl);
     setAlt(currentAlt);
     setError('');
-  }, [currentUrl, currentAlt, isOpen]);
+  }
 
   const validateUrl = (value) => {
     if (!value) {

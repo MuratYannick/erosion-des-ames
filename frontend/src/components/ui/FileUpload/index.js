@@ -1,21 +1,19 @@
 // FileUpload components exports
 export {
-  default as FileUpload,
+  default,
   FileUpload,
   UploadIcon,
   FileIcon,
   TrashIcon,
-  formatSize
 } from './FileUpload'
+export { formatSize } from './fileUploadUtils'
 
 export {
-  default as ImageUpload,
   ImageUpload,
   ImageIcon
 } from './ImageUpload'
 
 export {
-  default as AvatarUpload,
   AvatarUpload,
   EditIcon,
   DefaultAvatarIcon

@@ -1,5 +1,6 @@
 import { forwardRef, useState, useRef } from 'react'
 import './FileUpload.css'
+import { formatSize } from './fileUploadUtils'
 
 /**
  * Upload icon - Arrow pointing up with tribal patterns
@@ -124,16 +125,6 @@ const WarningIcon = () => (
   </svg>
 )
 
-/**
- * Format file size for display
- */
-const formatSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
-}
 
 const FileUpload = forwardRef(({
   accept,
@@ -378,4 +369,4 @@ const FileUpload = forwardRef(({
 FileUpload.displayName = 'FileUpload'
 
 export default FileUpload
-export { FileUpload, UploadIcon, FileIcon, TrashIcon, formatSize }
+export { FileUpload, UploadIcon, FileIcon, TrashIcon }

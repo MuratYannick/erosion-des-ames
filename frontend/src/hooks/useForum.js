@@ -90,6 +90,8 @@ export const useForumCategory = (id, params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled || !id) return;
 
@@ -117,7 +119,7 @@ export const useForumCategory = (id, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [id, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [id, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && id) {
@@ -223,6 +225,8 @@ export const useRecentTopics = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -250,7 +254,7 @@ export const useRecentTopics = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled) {
@@ -292,6 +296,8 @@ export const useTopicsByCategory = (categoryId, params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled || !categoryId) return;
 
@@ -324,7 +330,7 @@ export const useTopicsByCategory = (categoryId, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [categoryId, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [categoryId, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && categoryId) {
@@ -366,6 +372,8 @@ export const useTopic = (id, params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled || !id) return;
 
@@ -399,7 +407,7 @@ export const useTopic = (id, params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [id, JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [id, paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled && id) {
@@ -441,6 +449,8 @@ export const usePendingReports = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -473,7 +483,7 @@ export const usePendingReports = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled) {
@@ -753,6 +763,8 @@ export const useForumSearch = (params = {}, options = {}) => {
 
   const shouldFetch = enabled && params.query && params.query.length >= 2;
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!shouldFetch) return;
 
@@ -792,7 +804,7 @@ export const useForumSearch = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), shouldFetch, onSuccess, onError]);
+  }, [paramsKey, shouldFetch, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (shouldFetch) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCharacter, useUpdateCharacter, useSubmitCharacter, useReferenceData } from '@/hooks'
 import { useToast, Loader, ScrollToTop } from '@/components'
@@ -8,7 +8,25 @@ const MyCharacterEdit = () => {
   const navigate = useNavigate()
   const { addToast } = useToast()
 
-  const { data: characterData, loading: characterLoading, error: characterError } = useCharacter(id)
+  const { data: characterData, loading: characterLoading, error: characterError } = useCharacter(id, {
+    onSuccess: (data) => {
+      if (!hasInitializedRef.current && data?.character) {
+        hasInitializedRef.current = true
+        const char = data.character
+        setFormData({
+          name: char.name || '',
+          ethnicityId: char.ethnicityId ? char.ethnicityId.toString() : '',
+          factionId: char.factionId ? char.factionId.toString() : '',
+          clanId: char.clanId ? char.clanId.toString() : '',
+          age: char.age ? char.age.toString() : '',
+          appearance: char.appearance || '',
+          personality: char.personality || '',
+          background: char.background || '',
+          goals: char.goals || '',
+        })
+      }
+    },
+  })
   const { data: refData, loading: refLoading } = useReferenceData()
 
   const [formData, setFormData] = useState({
@@ -24,7 +42,7 @@ const MyCharacterEdit = () => {
   })
 
   const [errors, setErrors] = useState({})
-  const [hasInitialized, setHasInitialized] = useState(false)
+  const hasInitializedRef = useRef(false)
 
   const { mutate: updateCharacter, loading: updating } = useUpdateCharacter({
     onSuccess: () => {
@@ -60,25 +78,6 @@ const MyCharacterEdit = () => {
       })
     },
   })
-
-  // Initialize form data when character is loaded
-  useEffect(() => {
-    if (characterData?.character && !hasInitialized) {
-      const char = characterData.character
-      setFormData({
-        name: char.name || '',
-        ethnicityId: char.ethnicityId ? char.ethnicityId.toString() : '',
-        factionId: char.factionId ? char.factionId.toString() : '',
-        clanId: char.clanId ? char.clanId.toString() : '',
-        age: char.age ? char.age.toString() : '',
-        appearance: char.appearance || '',
-        personality: char.personality || '',
-        background: char.background || '',
-        goals: char.goals || '',
-      })
-      setHasInitialized(true)
-    }
-  }, [characterData, hasInitialized])
 
   // Redirect if character is not editable
   useEffect(() => {

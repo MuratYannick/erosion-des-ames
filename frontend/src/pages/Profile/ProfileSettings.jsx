@@ -21,7 +21,6 @@ const ProfileSettings = () => {
   const [username, setUsername] = useState(user?.username || '')
 
   // --- Avatar ---
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '')
   const [avatarUploading, setAvatarUploading] = useState(false)
 
   // --- Password ---

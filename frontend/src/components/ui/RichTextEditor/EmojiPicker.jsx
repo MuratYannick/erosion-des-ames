@@ -24,7 +24,7 @@ const EMOJI_CATEGORIES = {
   }
 };
 
-const EmojiPicker = ({ isOpen, onClose, onSelectEmoji, editor }) => {
+const EmojiPicker = ({ isOpen, onClose, onSelectEmoji }) => {
   const [selectedCategory, setSelectedCategory] = useState('frequent');
   const pickerRef = useRef(null);
 

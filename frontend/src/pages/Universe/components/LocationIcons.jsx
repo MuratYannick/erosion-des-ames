@@ -191,16 +191,3 @@ export const SettlementIcon = ({ className = '', ...props }) => (
   </svg>
 )
 
-/**
- * Map object for easy access
- */
-export const locationIcons = {
-  ruins: RuinsIcon,
-  sanctuary: SanctuaryIcon,
-  desert: DesertIcon,
-  forest: ForestIcon,
-  chasm: ChasmIcon,
-  settlement: SettlementIcon
-}
-
-export default locationIcons

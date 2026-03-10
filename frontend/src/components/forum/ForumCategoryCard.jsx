@@ -17,7 +17,6 @@ const FireIcon = () => (
 
 const ForumCategoryCard = ({ category, className = '' }) => {
   const {
-    id,
     name,
     slug,
     description,

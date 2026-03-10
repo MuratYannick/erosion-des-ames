@@ -3,7 +3,7 @@
  * Note: Ces tests nécessitent @testing-library/react et jest
  */
 
-import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, act } from 'vitest'
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest'
 import { render, screen, fireEvent, act as rtlAct } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { NotFound, Forbidden, ServerError, Maintenance } from './index'
@@ -139,7 +139,7 @@ describe('Maintenance', () => {
   })
 
   it('n\'affiche pas de code d\'erreur', () => {
-    const { container } = renderWithRouter(<Maintenance />)
+    renderWithRouter(<Maintenance />)
     // Vérifier qu'il n'y a pas de grand nombre affiché
     const errorCodes = ['400', '401', '403', '404', '500', '502', '503']
     errorCodes.forEach(code => {

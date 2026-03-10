@@ -1,5 +1,6 @@
-import { forwardRef, useState, useEffect, useCallback, createContext, useContext } from 'react'
+import { forwardRef, useState, useEffect, useCallback } from 'react'
 import './Toast.css'
+import { ToastContext } from './toastContext'
 
 /**
  * Compact icons for Toast notifications
@@ -172,8 +173,6 @@ ToastContainer.displayName = 'ToastContainer'
 /**
  * Toast Context for managing toasts globally
  */
-const ToastContext = createContext(null)
-
 let toastId = 0
 
 const ToastProvider = ({ children, position = 'top-right' }) => {
@@ -215,16 +214,5 @@ const ToastProvider = ({ children, position = 'top-right' }) => {
   )
 }
 
-/**
- * Hook to use toast notifications
- */
-const useToast = () => {
-  const context = useContext(ToastContext)
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider')
-  }
-  return context
-}
-
 export default Toast
-export { Toast, ToastContainer, ToastProvider, useToast }
+export { Toast, ToastContainer, ToastProvider }

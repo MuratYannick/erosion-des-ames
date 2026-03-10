@@ -1,7 +1,5 @@
 import {
   forwardRef,
-  createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
@@ -10,20 +8,7 @@ import {
 import { NavLink } from 'react-router-dom'
 import { Tooltip } from '@/components'
 import './Sidebar.css'
-
-// ============================================
-// CONTEXT
-// ============================================
-
-const SidebarContext = createContext({
-  isCollapsed: false,
-  isMobile: false,
-  isOpen: false,
-  toggleCollapse: () => {},
-  toggleOpen: () => {},
-})
-
-const useSidebar = () => useContext(SidebarContext)
+import { SidebarContext, useSidebar } from './sidebarContext'
 
 // ============================================
 // SVG COMPONENTS
@@ -531,6 +516,17 @@ const Sidebar = forwardRef(({
     }
   }, [isCollapsed, storageKey])
 
+  const handleClose = useCallback(() => {
+    setIsOpen(false)
+    onOpenChange?.(false)
+  }, [onOpenChange])
+
+  const toggleCollapse = useCallback(() => {
+    const newState = !isCollapsed
+    setIsCollapsed(newState)
+    onToggle?.(newState)
+  }, [isCollapsed, onToggle])
+
   // Handle escape key for mobile
   useEffect(() => {
     if (!mobile) return
@@ -543,7 +539,7 @@ const Sidebar = forwardRef(({
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [mobile, isOpen])
+  }, [mobile, isOpen, handleClose])
 
   // Prevent body scroll when mobile sidebar is open
   useEffect(() => {
@@ -557,17 +553,6 @@ const Sidebar = forwardRef(({
       document.body.style.overflow = ''
     }
   }, [mobile, isOpen])
-
-  const toggleCollapse = useCallback(() => {
-    const newState = !isCollapsed
-    setIsCollapsed(newState)
-    onToggle?.(newState)
-  }, [isCollapsed, onToggle])
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false)
-    onOpenChange?.(false)
-  }, [onOpenChange])
 
   const handleOpen = useCallback(() => {
     setIsOpen(true)
@@ -673,5 +658,4 @@ export {
   SidebarBorder,
   SectionRitualMark,
   CollapseTotem,
-  useSidebar,
 }

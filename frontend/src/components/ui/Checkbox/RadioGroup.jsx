@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 import Radio from './Radio'
 import './Checkbox.css'
 
@@ -70,7 +70,8 @@ const RadioGroup = forwardRef(({
   className = '',
   ...props
 }, ref) => {
-  const groupId = name || `radio-group-${Math.random().toString(36).slice(2, 9)}`
+  const generatedId = useId().replace(/:/g, '')
+  const groupId = name || `radio-group-${generatedId}`
   const message = error || hint
 
   const handleRadioChange = (selectedValue) => {

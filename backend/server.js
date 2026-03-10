@@ -2,6 +2,7 @@ require('dotenv').config();
 const { sequelize } = require('./models');
 const app = require('./app');
 const { startExpireSanctionsJob } = require('./jobs/expireSanctionsJob');
+const { startBackupJob } = require('./jobs/backupJob');
 
 const PORT = process.env.PORT || 3001;
 
@@ -13,6 +14,9 @@ const startServer = async () => {
 
     // Start background jobs after the DB connection is confirmed
     startExpireSanctionsJob();
+    if (process.env.NODE_ENV === 'production') {
+      startBackupJob();
+    }
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

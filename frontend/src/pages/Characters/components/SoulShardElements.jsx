@@ -404,17 +404,20 @@ ClassSymbol.propTypes = {
 /**
  * Particules de cendres flottantes pour les cards
  */
+// Valeurs aléatoires calculées une fois au chargement du module (hors render)
+const ASH_PARTICLE_STYLES = [...Array(10)].map((_, i) => ({
+  '--delay': `${i * 0.4}s`,
+  '--x-offset': `${(Math.random() - 0.5) * 40}px`,
+  '--duration': `${2 + Math.random() * 2}s`
+}))
+
 export const AshParticles = ({ count = 5, className }) => (
   <div className={`ash-particles ${className || ''}`} aria-hidden="true">
-    {[...Array(count)].map((_, i) => (
+    {ASH_PARTICLE_STYLES.slice(0, count).map((style, i) => (
       <span
         key={i}
         className="ash-particle"
-        style={{
-          '--delay': `${i * 0.4}s`,
-          '--x-offset': `${(Math.random() - 0.5) * 40}px`,
-          '--duration': `${2 + Math.random() * 2}s`
-        }}
+        style={style}
       />
     ))}
   </div>

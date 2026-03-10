@@ -1,4 +1,5 @@
 import { forwardRef, useMemo } from 'react'
+import { formatRemainingTime } from './sanctionUtils'
 
 // ============================================
 // ICONS
@@ -36,34 +37,6 @@ const sanctionConfig = {
     icon: <MuteIcon />,
     classes: 'bg-[#c2580d]/20 border-[#e67315]/50 text-[#ff9635] shadow-[0_0_8px_rgba(255,150,53,0.25)]',
   },
-}
-
-// ============================================
-// DURATION HELPER
-// ============================================
-
-function formatRemainingTime(expiresAt) {
-  if (!expiresAt) return null
-
-  const now = new Date()
-  const expires = new Date(expiresAt)
-  const diffMs = expires - now
-
-  if (diffMs <= 0) return null
-
-  const minutes = Math.floor(diffMs / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) {
-    const remainingHours = hours % 24
-    return remainingHours > 0 ? `${days}j ${remainingHours}h` : `${days}j`
-  }
-  if (hours > 0) {
-    const remainingMinutes = minutes % 60
-    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`
-  }
-  return `${minutes}m`
 }
 
 // ============================================
@@ -115,4 +88,4 @@ const UserSanctionBadge = forwardRef(({
 UserSanctionBadge.displayName = 'UserSanctionBadge'
 
 export default UserSanctionBadge
-export { UserSanctionBadge, formatRemainingTime }
+export { UserSanctionBadge }

@@ -118,7 +118,6 @@ const NewsSection = ({
  */
 const NewsCard = ({ news, featured = false }) => {
   const {
-    id,
     type = 'update',
     title,
     excerpt,

@@ -45,14 +45,7 @@ const Modal = forwardRef(({
   ...props
 }, ref) => {
   const [isExiting, setIsExiting] = useState(false)
-  const [shouldRender, setShouldRender] = useState(isOpen)
-
-  // Handle escape key
-  const handleEscape = useCallback((e) => {
-    if (e.key === 'Escape' && closeOnEscape && onClose) {
-      handleClose()
-    }
-  }, [closeOnEscape, onClose])
+  const shouldRender = isOpen || isExiting
 
   // Handle close with animation
   const handleClose = useCallback(() => {
@@ -62,6 +55,13 @@ const Modal = forwardRef(({
       onClose?.()
     }, 200)
   }, [onClose])
+
+  // Handle escape key
+  const handleEscape = useCallback((e) => {
+    if (e.key === 'Escape' && closeOnEscape && onClose) {
+      handleClose()
+    }
+  }, [closeOnEscape, onClose, handleClose])
 
   // Handle overlay click
   const handleOverlayClick = (e) => {
@@ -73,7 +73,6 @@ const Modal = forwardRef(({
   // Manage body scroll and escape listener
   useEffect(() => {
     if (isOpen) {
-      setShouldRender(true)
       document.body.style.overflow = 'hidden'
       document.addEventListener('keydown', handleEscape)
     } else {
@@ -85,13 +84,6 @@ const Modal = forwardRef(({
       document.removeEventListener('keydown', handleEscape)
     }
   }, [isOpen, handleEscape])
-
-  // Handle render state after close animation
-  useEffect(() => {
-    if (!isOpen && !isExiting) {
-      setShouldRender(false)
-    }
-  }, [isOpen, isExiting])
 
   if (!shouldRender) return null
 

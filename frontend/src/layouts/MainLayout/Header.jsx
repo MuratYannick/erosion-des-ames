@@ -168,16 +168,6 @@ const navItems = [
 ]
 
 /**
- * User Dropdown Items
- */
-const userDropdownItems = [
-  { label: 'Mon profil', href: '/profil', icon: 'profile' },
-  { label: 'Mes personnages', href: '/mes-personnages', icon: 'characters' },
-  { divider: true },
-  { label: 'Deconnexion', onClick: () => console.log('Logout'), icon: 'logout', danger: true },
-]
-
-/**
  * Header Component
  */
 const Header = ({
@@ -187,8 +177,10 @@ const Header = ({
   const { user, isAuthenticated, logout, isAdmin, isModerator, isGameMaster } = useAuth()
   const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
+  // Menu ouvert uniquement pour le pathname courant — naviguer ferme le menu sans effet
+  const [menuOpenForPathname, setMenuOpenForPathname] = useState(null)
+  const isMobileMenuOpen = menuOpenForPathname === location.pathname
 
   // Handle scroll for header compression
   useEffect(() => {
@@ -200,16 +192,11 @@ const Header = ({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location.pathname])
-
   // Close mobile menu on Escape
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false)
+        setMenuOpenForPathname(null)
       }
     }
 
@@ -231,15 +218,8 @@ const Header = ({
   }, [isMobileMenuOpen])
 
   const toggleMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen(prev => !prev)
-  }, [])
-
-  const isActiveLink = (href) => {
-    if (href === '/') {
-      return location.pathname === '/'
-    }
-    return location.pathname.startsWith(href)
-  }
+    setMenuOpenForPathname(prev => prev === location.pathname ? null : location.pathname)
+  }, [location.pathname])
 
   return (
     <>
@@ -392,7 +372,7 @@ const Header = ({
         className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            setIsMobileMenuOpen(false)
+            setMenuOpenForPathname(null)
           }
         }}
         aria-hidden={!isMobileMenuOpen}
@@ -400,14 +380,14 @@ const Header = ({
         <div className="mobile-menu-content">
           {/* Mobile menu header */}
           <div className="mobile-menu-header">
-            <Link to="/" className="logo-container" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link to="/" className="logo-container" onClick={() => setMenuOpenForPathname(null)}>
               <LogoEmblem className="w-10 h-10" />
               <span className="logo-text text-xl">Erosion des Ames</span>
             </Link>
             <button
               type="button"
               className="mobile-menu-close"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => setMenuOpenForPathname(null)}
               aria-label="Fermer le menu"
             >
               <BurgerIcon isOpen={true} />
@@ -423,7 +403,7 @@ const Header = ({
                 className={({ isActive }) =>
                   `mobile-nav-item ${isActive ? 'active' : ''}`
                 }
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => setMenuOpenForPathname(null)}
               >
                 {item.label}
               </NavLink>
@@ -456,21 +436,21 @@ const Header = ({
                   <Link
                     to={`/profil/${user?.id}`}
                     className="mobile-nav-item"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setMenuOpenForPathname(null)}
                   >
                     Mon profil
                   </Link>
                   <Link
                     to="/profil/parametres"
                     className="mobile-nav-item"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setMenuOpenForPathname(null)}
                   >
                     Paramètres
                   </Link>
                   <Link
                     to="/mes-personnages"
                     className="mobile-nav-item"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setMenuOpenForPathname(null)}
                   >
                     Mes personnages
                   </Link>
@@ -478,7 +458,7 @@ const Header = ({
                     <Link
                       to="/admin"
                       className="mobile-nav-item"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={() => setMenuOpenForPathname(null)}
                     >
                       Panel admin
                     </Link>
@@ -487,7 +467,7 @@ const Header = ({
                     type="button"
                     className="btn-auth btn-auth-secondary"
                     onClick={async () => {
-                      setIsMobileMenuOpen(false)
+                      setMenuOpenForPathname(null)
                       navigate('/', { replace: true })
                       await logout()
                     }}
@@ -501,14 +481,14 @@ const Header = ({
                 <Link
                   to="/connexion"
                   className="btn-auth btn-auth-secondary"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => setMenuOpenForPathname(null)}
                 >
                   Connexion
                 </Link>
                 <Link
                   to="/inscription"
                   className="btn-auth btn-auth-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => setMenuOpenForPathname(null)}
                 >
                   Inscription
                 </Link>

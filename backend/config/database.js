@@ -28,7 +28,7 @@ module.exports = {
     dialect: 'mysql',
     logging: false,
     pool: {
-      max: 5,
+      max: 10,
       min: 0,
       acquire: 30000,
       idle: 10000,

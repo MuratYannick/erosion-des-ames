@@ -155,13 +155,14 @@ const AdminUserDetail = () => {
     }
   }, [id, unmuteUser]);
 
+  const isActive = data?.user?.isActive;
   const handleToggleStatus = useCallback(async () => {
     try {
-      await updateStatus({ id, data: { isActive: !data?.user?.isActive } });
+      await updateStatus({ id, data: { isActive: !isActive } });
     } catch {
       // Error is already stored in mutation state
     }
-  }, [id, data?.user?.isActive, updateStatus]);
+  }, [id, isActive, updateStatus]);
 
   // Loading state
   if (loading) {

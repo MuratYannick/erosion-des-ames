@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 import Checkbox from './Checkbox'
 import './Checkbox.css'
 
@@ -70,7 +70,7 @@ const CheckboxGroup = forwardRef(({
   className = '',
   ...props
 }, ref) => {
-  const groupId = `checkbox-group-${Math.random().toString(36).slice(2, 9)}`
+  const groupId = `checkbox-group-${useId().replace(/:/g, '')}`
   const message = error || hint
 
   const handleCheckboxChange = (optionValue, isChecked) => {
@@ -119,7 +119,7 @@ const CheckboxGroup = forwardRef(({
       )}
 
       <div className={optionsContainerClasses}>
-        {options.map((option, index) => (
+        {options.map((option) => (
           <Checkbox
             key={option.value}
             name={name}

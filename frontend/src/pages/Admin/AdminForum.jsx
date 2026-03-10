@@ -874,11 +874,15 @@ const AdminForum = () => {
   const editFormRef = useRef(null);
 
   // --- Category state ---
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(() => !!searchParams.get('parentId'));
   const [editingCategory, setEditingCategory] = useState(null);
-  const [defaultParentId, setDefaultParentId] = useState(null);
+  const [defaultParentId, setDefaultParentId] = useState(() => {
+    const p = searchParams.get('parentId');
+    return p ? Number(p) : null;
+  });
   const [deleteError, setDeleteError] = useState(null);
-  const [expandedIds, setExpandedIds] = useState(new Set());
+  const [userExpandedIds, setUserExpandedIds] = useState(new Set());
+  const [userCollapsedIds, setUserCollapsedIds] = useState(new Set());
   const [showTopics, setShowTopics] = useState(false);
 
   // --- Topic tools state ---
@@ -888,13 +892,9 @@ const AdminForum = () => {
   const [mergeTargetId, setMergeTargetId] = useState('');
   const [topicMessage, setTopicMessage] = useState(null);
 
-  // --- Auto-open create form from URL ?parentId=X ---
+  // --- Clean up URL if parentId was consumed on mount ---
   useEffect(() => {
-    const parentIdParam = searchParams.get('parentId');
-    if (parentIdParam) {
-      setDefaultParentId(Number(parentIdParam));
-      setShowCreateForm(true);
-      // Clean up the URL
+    if (searchParams.get('parentId')) {
       searchParams.delete('parentId');
       setSearchParams(searchParams, { replace: true });
     }
@@ -913,32 +913,34 @@ const AdminForum = () => {
   }, [categories]);
 
   // --- Tree structure ---
-  const categoryTree = useMemo(() => {
-    const tree = buildTree(categories);
-    // Auto-expand: parent categories + categories with topics when showTopics is on
-    if (categories.length > 0) {
-      setExpandedIds(prev => {
-        const next = new Set(prev);
-        categories.forEach(c => {
-          // Always expand parent nodes
-          if (categories.some(ch => ch.parentId === c.id)) next.add(c.id);
-          // Expand categories with topics when showTopics is on
-          if (showTopics && c.topics?.length > 0) next.add(c.id);
-        });
-        return next.size !== prev.size ? next : prev;
-      });
-    }
-    return tree;
+  const categoryTree = useMemo(() => buildTree(categories), [categories]);
+
+  // Auto-expand IDs derived from data — no effect needed
+  const autoExpandedIds = useMemo(() => {
+    const ids = new Set();
+    categories.forEach(c => {
+      if (categories.some(ch => ch.parentId === c.id)) ids.add(c.id);
+      if (showTopics && c.topics?.length > 0) ids.add(c.id);
+    });
+    return ids;
   }, [categories, showTopics]);
 
+  // Effective expanded = auto + userExpanded - userCollapsed
+  const expandedIds = useMemo(() => {
+    const ids = new Set([...autoExpandedIds, ...userExpandedIds]);
+    userCollapsedIds.forEach(id => ids.delete(id));
+    return ids;
+  }, [autoExpandedIds, userExpandedIds, userCollapsedIds]);
+
   const handleToggleExpand = useCallback((id) => {
-    setExpandedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
+    if (expandedIds.has(id)) {
+      setUserCollapsedIds(prev => new Set([...prev, id]));
+      setUserExpandedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+    } else {
+      setUserExpandedIds(prev => new Set([...prev, id]));
+      setUserCollapsedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+    }
+  }, [expandedIds]);
 
   // --- Category mutations ---
   const { mutate: createMutate, loading: createLoading } = useCreateCategory({

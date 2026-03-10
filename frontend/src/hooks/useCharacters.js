@@ -32,6 +32,8 @@ export const useCharacters = (params = {}, options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const paramsKey = JSON.stringify(params);
+
   const refetch = useCallback(async () => {
     if (!enabled) return;
 
@@ -59,7 +61,7 @@ export const useCharacters = (params = {}, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(params), enabled, onSuccess, onError]);
+  }, [paramsKey, enabled, onSuccess, onError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (enabled) {

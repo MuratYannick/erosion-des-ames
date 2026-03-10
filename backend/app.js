@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const routes = require('./routes');
 const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
@@ -17,11 +19,30 @@ if (isProd) {
   app.set('trust proxy', 1);
 }
 
+// HTTP request logging — 'combined' en prod (Apache-like), 'dev' en développement
+app.use(morgan(isProd ? 'combined' : 'dev'));
+
 // Sécurité HTTP headers
 app.use(helmet());
 
 // Compression gzip des réponses
 app.use(compression());
+
+// Rate limiting global : 100 requêtes par 15 minutes par IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: {
+      message: 'Trop de requêtes, veuillez réessayer dans quelques minutes.',
+      code: 'RATE_LIMIT_EXCEEDED',
+    },
+  },
+});
+app.use('/api', globalLimiter);
 
 // CORS configuration
 const allowedOrigins = isProd

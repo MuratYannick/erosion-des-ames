@@ -4,7 +4,8 @@
 // ===========================================
 
 export { StatCard } from './StatCard'
-export { UserSanctionBadge, formatRemainingTime } from './UserSanctionBadge'
+export { UserSanctionBadge } from './UserSanctionBadge'
+export { formatRemainingTime } from './sanctionUtils'
 export { ModerationActionRow, ACTION_CONFIG, CATEGORY_COLORS } from './ModerationActionRow'
 export { UserTable, RoleBadge, ROLE_CONFIG } from './UserTable'
 export { CharacterApprovalCard } from './CharacterApprovalCard'

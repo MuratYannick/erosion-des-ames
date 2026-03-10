@@ -18,7 +18,7 @@ const CharacterCard = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
 
-  const { id, name, ethnicity, faction, clan, avatar, status, rejectionReason, age } = character;
+  const { name, ethnicity, faction, clan, avatar, status, rejectionReason } = character;
 
   // Determine which actions are available based on status
   const canEdit = status === 'draft' || status === 'rejected';

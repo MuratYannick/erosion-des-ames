@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { ErrorBoundary } from '../../components/errors'
 import { NotFound, Forbidden, ServerError, Maintenance } from './index'
 
@@ -31,7 +31,7 @@ const BasicRoutesExample = () => (
 
 const AppWithErrorBoundary = () => (
   <ErrorBoundary
-    onError={(error, errorInfo) => {
+    onError={(error) => {
       // Envoyer à votre service de monitoring
       console.error('Global error caught:', error)
       // Sentry.captureException(error, { contexts: { react: errorInfo } })
@@ -159,8 +159,8 @@ const DataPageWithErrorHandling = () => {
 
 const AppWithMaintenanceMode = () => {
   // Cette valeur pourrait venir d'une variable d'environnement ou d'une API
-  const isUnderMaintenance = process.env.REACT_APP_MAINTENANCE_MODE === 'true'
-  const maintenanceEnd = process.env.REACT_APP_MAINTENANCE_END
+  const isUnderMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true'
+  const maintenanceEnd = import.meta.env.VITE_MAINTENANCE_END
 
   if (isUnderMaintenance) {
     return (
@@ -264,12 +264,15 @@ const useErrorHandler = () => {
   return handleError
 }
 
+// Remplacer par votre client API réel
+const api = { getData: () => fetch('/api/data').then(r => r.json()) }
+
 const ComponentWithErrorHandling = () => {
   const handleError = useErrorHandler()
 
   const fetchData = async () => {
     try {
-      const response = await api.getData()
+      await api.getData()
       // Traiter les données...
     } catch (error) {
       handleError(error)
@@ -288,16 +291,7 @@ const ComponentWithErrorHandling = () => {
 // ============================================
 
 const SmartForbidden = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
-
-  // Si non authentifié, stocker l'URL pour y revenir après login
-  const handleLogin = () => {
-    navigate('/login', {
-      state: { from: location.pathname }
-    })
-  }
 
   return <Forbidden userAuthenticated={isAuthenticated} />
 }
@@ -317,12 +311,12 @@ const RecommendedAppStructure = () => {
 
   return (
     <ErrorBoundary
-      onError={(error, errorInfo) => {
+      onError={(error, _errorInfo) => {
         // Production: envoyer à Sentry, LogRocket, etc.
-        if (process.env.NODE_ENV === 'production') {
-          // Sentry.captureException(error, { contexts: { react: errorInfo } })
+        if (!import.meta.env.DEV) {
+          // Sentry.captureException(error, { contexts: { react: _errorInfo } })
         }
-        console.error('App error:', error, errorInfo)
+        console.error('App error:', error, _errorInfo)
       }}
     >
       <BrowserRouter>
@@ -357,7 +351,7 @@ const RecommendedAppStructure = () => {
           />
 
           {/* Routes d'erreur explicites pour tests/debug */}
-          {process.env.NODE_ENV === 'development' && (
+          {import.meta.env.DEV && (
             <>
               <Route path="/test/403" element={<Forbidden userAuthenticated={true} />} />
               <Route path="/test/404" element={<NotFound />} />
@@ -397,7 +391,7 @@ const useMaintenanceStatus = () => {
         const response = await fetch('/api/health')
         const data = await response.json()
         setIsUnderMaintenance(data.maintenance)
-      } catch (error) {
+      } catch {
         console.error('Could not check maintenance status')
       }
     }

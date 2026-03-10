@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import PropTypes from 'prop-types';
 import { resetPassword } from '@/services/authService';
 import AuthLayout from './AuthLayout';
@@ -41,7 +41,6 @@ function getPasswordStrengthInfo(score) {
  */
 function ResetPassword() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const token = searchParams.get('token');
 
   const [formData, setFormData] = useState({
