@@ -28,23 +28,8 @@ app.use(helmet());
 // Compression gzip des réponses
 app.use(compression());
 
-// Rate limiting global : 100 requêtes par 15 minutes par IP
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    error: {
-      message: 'Trop de requêtes, veuillez réessayer dans quelques minutes.',
-      code: 'RATE_LIMIT_EXCEEDED',
-    },
-  },
-});
-app.use('/api', globalLimiter);
-
-// CORS configuration
+// CORS configuration — doit être AVANT le rate limiter pour que les headers
+// Access-Control-Allow-Origin soient présents sur toutes les réponses (y compris 429)
 const allowedOrigins = isProd
   ? [
       process.env.FRONTEND_URL,
@@ -67,6 +52,26 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+// Rate limiting global : 100 requêtes par 15 minutes par IP
+// Production uniquement — en développement le StrictMode React double les appels
+// et le forum charge de nombreuses routes simultanément
+if (isProd) {
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      success: false,
+      error: {
+        message: 'Trop de requêtes, veuillez réessayer dans quelques minutes.',
+        code: 'RATE_LIMIT_EXCEEDED',
+      },
+    },
+  });
+  app.use('/api', globalLimiter);
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
