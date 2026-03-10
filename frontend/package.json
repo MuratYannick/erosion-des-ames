@@ -13,6 +13,16 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@fontsource/architects-daughter": "^5.2.7",
+    "@fontsource/caveat": "^5.2.8",
+    "@fontsource/caveat-brush": "^5.2.8",
+    "@fontsource/cinzel-decorative": "^5.2.8",
+    "@fontsource/indie-flower": "^5.2.7",
+    "@fontsource/metal-mania": "^5.2.7",
+    "@fontsource/patrick-hand": "^5.2.8",
+    "@fontsource/permanent-marker": "^5.2.7",
+    "@fontsource/rubik-distressed": "^5.2.7",
+    "@fontsource/rubik-moonrocks": "^5.2.8",
     "@tiptap/extension-code-block-lowlight": "^3.19.0",
     "@tiptap/extension-image": "^3.19.0",
     "@tiptap/extension-link": "^3.19.0",
