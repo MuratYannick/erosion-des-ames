@@ -54,10 +54,24 @@ const MyCharacterEdit = () => {
       navigate(`/mes-personnages/${id}`)
     },
     onError: (err) => {
+      // Propager les erreurs de validation par champ retournées par le serveur
+      const serverErrors = err?.response?.data?.errors
+      if (serverErrors && serverErrors.length > 0) {
+        const fieldErrors = {}
+        serverErrors.forEach((e) => {
+          if (e.path || e.param) {
+            fieldErrors[e.path || e.param] = e.msg
+          }
+        })
+        if (Object.keys(fieldErrors).length > 0) {
+          setErrors(fieldErrors)
+          return
+        }
+      }
       addToast({
         variant: 'error',
         title: 'Erreur',
-        description: err.message || 'Impossible de mettre à jour le personnage.',
+        description: err?.response?.data?.message || err.message || 'Impossible de mettre à jour le personnage.',
       })
     },
   })
@@ -124,8 +138,10 @@ const MyCharacterEdit = () => {
 
     if (!formData.name.trim()) {
       newErrors.name = 'Le nom est requis'
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Le nom doit contenir au moins 2 caractères'
     } else if (formData.name.length > 50) {
-      newErrors.name = 'Le nom ne peut pas dépasser 50 caractères'
+      newErrors.name = 'Le nom ne doit pas dépasser 50 caractères'
     }
 
     if (!formData.ethnicityId) {

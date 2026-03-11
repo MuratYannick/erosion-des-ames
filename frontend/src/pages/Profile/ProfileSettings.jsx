@@ -19,6 +19,7 @@ const ProfileSettings = () => {
 
   // --- Identity ---
   const [username, setUsername] = useState(user?.username || '')
+  const [usernameError, setUsernameError] = useState('')
 
   // --- Avatar ---
   const [avatarUploading, setAvatarUploading] = useState(false)
@@ -35,17 +36,45 @@ const ProfileSettings = () => {
   const { mutate: updateProfile, loading: profileLoading } = useUpdateProfile({
     onSuccess: (data) => {
       if (data?.user) updateUser(data.user)
+      setUsernameError('')
       addToast({ variant: 'success', title: 'Profil mis à jour', description: 'Vos informations ont été sauvegardées.' })
     },
     onError: (err) => {
-      addToast({ variant: 'error', title: 'Erreur', description: err.message || 'Impossible de mettre à jour le profil.' })
+      // Afficher les erreurs de validation par champ retournées par le serveur
+      const serverErrors = err?.response?.data?.errors
+      if (serverErrors && serverErrors.length > 0) {
+        const usernameErr = serverErrors.find((e) => (e.path || e.param) === 'username')
+        if (usernameErr) {
+          setUsernameError(usernameErr.msg)
+          return
+        }
+      }
+      const serverMessage = err?.response?.data?.message || err.message
+      addToast({ variant: 'error', title: 'Erreur', description: serverMessage || 'Impossible de mettre à jour le profil.' })
     },
   })
 
   const handleUsernameSubmit = async (e) => {
     e.preventDefault()
-    if (!username.trim()) return
-    await updateProfile({ username: username.trim() })
+    const trimmed = username.trim()
+    if (!trimmed) {
+      setUsernameError('Le nom d\'utilisateur est requis')
+      return
+    }
+    if (trimmed.length < 5) {
+      setUsernameError('Le nom d\'utilisateur doit contenir au moins 5 caractères')
+      return
+    }
+    if (trimmed.length > 50) {
+      setUsernameError('Le nom d\'utilisateur ne doit pas dépasser 50 caractères')
+      return
+    }
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9]|[_ -](?=[a-zA-Z0-9]))*$/.test(trimmed)) {
+      setUsernameError('Le nom d\'utilisateur doit commencer et finir par un caractère alphanumérique. Les underscores, espaces et tirets doivent être entre deux caractères alphanumériques')
+      return
+    }
+    setUsernameError('')
+    await updateProfile({ username: trimmed })
   }
 
   const handleAvatarChange = async (file) => {
@@ -78,12 +107,32 @@ const ProfileSettings = () => {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault()
     const { currentPassword, newPassword, confirmNewPassword } = passwordForm
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError('Tous les champs sont obligatoires.')
+    if (!currentPassword) {
+      setPasswordError('Le mot de passe actuel est requis.')
+      return
+    }
+    if (!newPassword) {
+      setPasswordError('Le nouveau mot de passe est requis.')
+      return
+    }
+    if (newPassword.length < 8) {
+      setPasswordError('Le nouveau mot de passe doit contenir au moins 8 caractères.')
+      return
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/.test(newPassword)) {
+      setPasswordError('Le nouveau mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.')
+      return
+    }
+    if (!confirmNewPassword) {
+      setPasswordError('La confirmation du nouveau mot de passe est requise.')
       return
     }
     if (newPassword !== confirmNewPassword) {
       setPasswordError('Les nouveaux mots de passe ne correspondent pas.')
+      return
+    }
+    if (newPassword === currentPassword) {
+      setPasswordError('Le nouveau mot de passe doit être différent de l\'ancien.')
       return
     }
     try {
@@ -92,7 +141,9 @@ const ProfileSettings = () => {
       setPasswordForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' })
       addToast({ variant: 'success', title: 'Mot de passe modifié', description: 'Votre mot de passe a été mis à jour.' })
     } catch (err) {
-      setPasswordError(err.message || 'Impossible de modifier le mot de passe.')
+      // Afficher le message précis retourné par le serveur si disponible
+      const serverMessage = err?.response?.data?.errors?.[0]?.msg || err?.response?.data?.message || err.message
+      setPasswordError(serverMessage || 'Impossible de modifier le mot de passe.')
     } finally {
       setPasswordLoading(false)
     }
@@ -118,9 +169,12 @@ const ProfileSettings = () => {
               id="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg font-body text-sm focus:outline-none focus:border-primary-500"
+              onChange={(e) => { setUsername(e.target.value); if (usernameError) setUsernameError('') }}
+              className={`w-full px-3 py-2 border rounded-lg font-body text-sm focus:outline-none focus:border-primary-500 ${usernameError ? 'border-error' : 'border-neutral-300'}`}
             />
+            {usernameError && (
+              <p className="font-ui text-sm text-error mt-1">{usernameError}</p>
+            )}
           </div>
           <button
             type="submit"

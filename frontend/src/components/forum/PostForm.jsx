@@ -19,9 +19,19 @@ const PostForm = ({
 }) => {
   const [content, setContent] = useState(initialContent)
   const [characterId, setCharacterId] = useState('')
+  const [localErrors, setLocalErrors] = useState({})
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const newErrors = {}
+    if (!content || !content.trim() || content.trim() === '<p></p>') {
+      newErrors.content = 'Le contenu est requis'
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setLocalErrors(newErrors)
+      return
+    }
+    setLocalErrors({})
     const data = { content }
     if (isRpTopic && characterId) {
       data.characterId = characterId
@@ -31,6 +41,9 @@ const PostForm = ({
     }
     onSubmit?.(data)
   }
+
+  // Fusionner les erreurs locales et serveur (les erreurs serveur ont la priorité)
+  const mergedErrors = { ...localErrors, ...errors }
 
   const characterOptions = characters.map((c) => ({
     value: String(c.id),
@@ -77,7 +90,7 @@ const PostForm = ({
           onChange={(e) => setCharacterId(e.target.value)}
           options={characterOptions}
           placeholder="Choisir un personnage"
-          error={errors.characterId}
+          error={mergedErrors.characterId}
         />
       )}
 
@@ -85,10 +98,10 @@ const PostForm = ({
       <RichTextEditor
         label={isEditing ? 'Modifier le message' : 'Votre réponse'}
         content={content}
-        onChange={setContent}
+        onChange={(val) => { setContent(val); if (localErrors.content) setLocalErrors((prev) => ({ ...prev, content: '' })) }}
         placeholder="Écrivez votre message..."
         minHeight="180px"
-        error={errors.content}
+        error={mergedErrors.content}
       />
 
       {/* Actions */}

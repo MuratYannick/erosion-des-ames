@@ -22,6 +22,7 @@ const TopicForm = ({
   const [characterId, setCharacterId] = useState(initialValues.characterId || '')
   const [isPinned, setIsPinned] = useState(initialValues.isPinned || false)
   const [isLocked, setIsLocked] = useState(initialValues.isLocked || false)
+  const [localErrors, setLocalErrors] = useState({})
 
   const [showCharacterSelect, setShowCharacterSelect] = useState(isRpCategory)
 
@@ -31,6 +32,22 @@ const TopicForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const newErrors = {}
+    if (!title.trim()) {
+      newErrors.title = 'Le titre est requis'
+    } else if (title.trim().length < 3) {
+      newErrors.title = 'Le titre doit contenir au moins 3 caractères'
+    } else if (title.length > 200) {
+      newErrors.title = 'Le titre ne doit pas dépasser 200 caractères'
+    }
+    if (!content || !content.trim() || content.trim() === '<p></p>') {
+      newErrors.content = 'Le contenu est requis'
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setLocalErrors(newErrors)
+      return
+    }
+    setLocalErrors({})
     const data = { title, content }
     if (showCharacterSelect && characterId) {
       data.characterId = characterId
@@ -41,6 +58,9 @@ const TopicForm = ({
     }
     onSubmit?.(data)
   }
+
+  // Fusionner les erreurs locales et serveur (les erreurs serveur ont la priorité)
+  const mergedErrors = { ...localErrors, ...errors }
 
   const characterOptions = characters.map((c) => ({
     value: String(c.id),
@@ -65,9 +85,9 @@ const TopicForm = ({
       <Input
         label="Titre du sujet"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => { setTitle(e.target.value); if (localErrors.title) setLocalErrors((prev) => ({ ...prev, title: '' })) }}
         placeholder="Entrez le titre de votre sujet"
-        error={errors.title}
+        error={mergedErrors.title}
         maxLength={200}
         required
       />
@@ -80,7 +100,7 @@ const TopicForm = ({
           onChange={(e) => setCharacterId(e.target.value)}
           options={characterOptions}
           placeholder="Choisir un personnage"
-          error={errors.characterId}
+          error={mergedErrors.characterId}
           hint="Les catégories RP nécessitent un personnage"
         />
       )}
@@ -89,10 +109,10 @@ const TopicForm = ({
       <RichTextEditor
         label="Message"
         content={content}
-        onChange={setContent}
+        onChange={(val) => { setContent(val); if (localErrors.content) setLocalErrors((prev) => ({ ...prev, content: '' })) }}
         placeholder="Écrivez votre message..."
         minHeight="250px"
-        error={errors.content}
+        error={mergedErrors.content}
       />
 
       {/* Staff options */}

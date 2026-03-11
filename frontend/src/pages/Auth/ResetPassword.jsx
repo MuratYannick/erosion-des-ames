@@ -83,7 +83,9 @@ function ResetPassword() {
     if (!formData.password) {
       newErrors.password = 'Le nouveau sceau est requis';
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Le sceau doit contenir au moins 8 caractères';
+      newErrors.password = 'Le nouveau sceau doit contenir au moins 8 caractères';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/.test(formData.password)) {
+      newErrors.password = 'Le nouveau sceau doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial';
     }
 
     if (!formData.confirmPassword) {

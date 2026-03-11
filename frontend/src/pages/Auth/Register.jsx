@@ -80,7 +80,11 @@ function Register() {
     if (!formData.username) {
       newErrors.username = 'Le nom de guerrier est requis';
     } else if (formData.username.length < 5) {
-      newErrors.username = 'Le nom doit contenir au moins 5 caractères';
+      newErrors.username = 'Le nom de guerrier doit contenir au moins 5 caractères';
+    } else if (formData.username.length > 50) {
+      newErrors.username = 'Le nom de guerrier ne doit pas dépasser 50 caractères';
+    } else if (!/^[a-zA-Z0-9]([a-zA-Z0-9]|[_ -](?=[a-zA-Z0-9]))*$/.test(formData.username)) {
+      newErrors.username = 'Le nom de guerrier doit commencer et finir par un caractère alphanumérique. Les underscores, espaces et tirets doivent être entre deux caractères alphanumériques';
     }
 
     if (!formData.email) {
@@ -92,7 +96,9 @@ function Register() {
     if (!formData.password) {
       newErrors.password = 'Le sceau secret est requis';
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Le sceau doit contenir au moins 8 caractères';
+      newErrors.password = 'Le sceau secret doit contenir au moins 8 caractères';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/.test(formData.password)) {
+      newErrors.password = 'Le sceau secret doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial';
     }
 
     if (!formData.confirmPassword) {
@@ -256,6 +262,8 @@ function Register() {
             value={formData.password}
             onChange={handleChange}
             placeholder="••••••••"
+            autoComplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$"
             className={`form-input w-full py-3 px-4 bg-primary-800/50 border rounded-md font-body text-primary-100 placeholder:text-primary-400 focus:border-secondary-500 focus:outline-none transition-all duration-normal ${
               errors.password ? 'border-error' : 'border-primary-600'
             }`}
@@ -263,6 +271,9 @@ function Register() {
             required
           />
           {errors.password && <FieldError message={errors.password} />}
+          <p className="font-body text-xs text-primary-400 mt-1.5">
+            Au moins 8 caractères, une majuscule, un chiffre et un caractère spécial (ex&nbsp;: !@#$%^&amp;*)
+          </p>
 
           {/* Password Strength Indicator */}
           {formData.password && (
@@ -298,6 +309,8 @@ function Register() {
             value={formData.confirmPassword}
             onChange={handleChange}
             placeholder="••••••••"
+            autoComplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$"
             className={`form-input w-full py-3 px-4 bg-primary-800/50 border rounded-md font-body text-primary-100 placeholder:text-primary-400 focus:border-secondary-500 focus:outline-none transition-all duration-normal ${
               errors.confirmPassword ? 'border-error' : 'border-primary-600'
             }`}
