@@ -45,8 +45,8 @@
 
 ## Phase B — Données de base (seeders de production)
 
-- [ ] **Clans initiaux** : créer les seeders de production pour les clans (factions) du jeu de rôle — noms, descriptions, visuels associés.
-- [ ] **Personnages de base (staff RP)** : créer les seeders de production pour les personnages prédéfinis utilisés par le staff à des fins narratives (`userId = null`).
+- [x] **Clans initiaux** : créer les seeders de production pour les clans (factions) du jeu de rôle — noms, descriptions, visuels associés.
+- [x] **Personnages de base (staff RP)** : créer les seeders de production pour les personnages prédéfinis utilisés par le staff à des fins narratives (`userId = null`).
 - [ ] **Sous-catégories et topics** : ajouter les sous-catégories dans les seeders de production :
   - Catégorie **Générale** : "Annonces", "Règlement et CGU", "Informations Générales"
   - Catégorie **Hors Role-Play** : "Discussions Autour du Jeu", "Discussions Libres"
