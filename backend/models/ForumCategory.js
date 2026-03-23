@@ -64,6 +64,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    permissionMode: {
+      type: DataTypes.ENUM('inherit', 'override'),
+      allowNull: false,
+      defaultValue: 'inherit',
+    },
   }, {
     tableName: 'forum_categories',
     underscored: true,

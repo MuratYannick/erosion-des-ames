@@ -70,10 +70,10 @@ const getCategories = asyncHandler(async (req, res) => {
 /**
  * Crée une nouvelle catégorie
  * POST /api/admin/forum/categories
- * Body: { name, description, parentId, icon, displayOrder, isActive, isRp }
+ * Body: { name, description, parentId, icon, displayOrder, isActive, isRp, permissionMode }
  */
 const createCategory = asyncHandler(async (req, res) => {
-  const { name, description, parentId, icon, displayOrder, isActive, isRp } = req.body;
+  const { name, description, parentId, icon, displayOrder, isActive, isRp, permissionMode } = req.body;
 
   // Vérifier la catégorie parente si fournie
   if (parentId) {
@@ -113,6 +113,7 @@ const createCategory = asyncHandler(async (req, res) => {
       displayOrder: displayOrder !== undefined ? displayOrder : 0,
       isActive: isActive !== undefined ? isActive : true,
       isRp: isRp || false,
+      permissionMode: permissionMode || 'inherit',
     });
     category.generateSlug();
     await category.save({ transaction: t });
@@ -138,7 +139,7 @@ const createCategory = asyncHandler(async (req, res) => {
 /**
  * Modifie une catégorie
  * PUT /api/admin/forum/categories/:id
- * Body: { name, description, parentId, icon, displayOrder, isActive, isRp }
+ * Body: { name, description, parentId, icon, displayOrder, isActive, isRp, permissionMode }
  */
 const updateCategory = asyncHandler(async (req, res) => {
   const category = await ForumCategory.findByPk(req.params.id);
@@ -157,7 +158,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     }
   }
 
-  const { name, description, parentId, icon, displayOrder, isActive, isRp } = req.body;
+  const { name, description, parentId, icon, displayOrder, isActive, isRp, permissionMode } = req.body;
   const updateData = {};
 
   // Non-ADMIN : si le parentId change, vérifier move_category sur le parent source ET destination
@@ -207,6 +208,7 @@ const updateCategory = asyncHandler(async (req, res) => {
   if (displayOrder !== undefined) updateData.displayOrder = displayOrder;
   if (isActive !== undefined) updateData.isActive = isActive;
   if (isRp !== undefined) updateData.isRp = isRp;
+  if (permissionMode !== undefined) updateData.permissionMode = permissionMode;
 
   await sequelize.transaction(async (t) => {
     await category.update(updateData, { transaction: t });

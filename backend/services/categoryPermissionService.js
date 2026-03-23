@@ -29,7 +29,7 @@ async function getCategoryChain(categoryId, visited = new Set(), depth = 0) {
   visited.add(categoryId);
 
   const category = await ForumCategory.findByPk(categoryId, {
-    attributes: ['id', 'parentId'],
+    attributes: ['id', 'parentId', 'permissionMode'],
   });
 
   if (!category) {
@@ -37,6 +37,11 @@ async function getCategoryChain(categoryId, visited = new Set(), depth = 0) {
   }
 
   const chain = [category.id];
+
+  // En mode override, on ne remonte pas aux parents
+  if (category.permissionMode === 'override') {
+    return chain;
+  }
 
   // Recursively add parent chain
   if (category.parentId) {
