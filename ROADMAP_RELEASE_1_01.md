@@ -47,12 +47,12 @@
 
 - [x] **Clans initiaux** : créer les seeders de production pour les clans (factions) du jeu de rôle — noms, descriptions, visuels associés.
 - [x] **Personnages de base (staff RP)** : créer les seeders de production pour les personnages prédéfinis utilisés par le staff à des fins narratives (`userId = null`).
-- [ ] **Sous-catégories et topics** : ajouter les sous-catégories dans les seeders de production :
+- [x] **Sous-catégories et topics** : ajouter les sous-catégories dans les seeders de production :
   - Catégorie **Générale** : "Annonces", "Règlement et CGU", "Informations Générales"
   - Catégorie **Hors Role-Play** : "Discussions Autour du Jeu", "Discussions Libres"
   - Catégorie **Role-Play** : "Les Veilleurs de l'Ancien Monde", "Les Éclaireurs de l'Aube Nouvelle", "Les Terres Abandonnées"
-- [ ] **Permissions des sous-catégories** : ajouter les permissions associées à chaque sous-catégorie dans les seeders de production.
-- [ ] **Topics épinglés "Règlement et CGU"** : ajouter dans la sous-catégorie "Règlement et CGU" les deux topics suivants, verrouillés et épinglés :
+- [x] **Permissions des sous-catégories** : ajouter les permissions associées à chaque sous-catégorie dans les seeders de production.
+- [x] **Topics épinglés "Règlement et CGU"** : ajouter dans la sous-catégorie "Règlement et CGU" les deux topics suivants, verrouillés et épinglés :
   - "Règlement du Forum"
   - "Conditions Générales d'Utilisation"
 
