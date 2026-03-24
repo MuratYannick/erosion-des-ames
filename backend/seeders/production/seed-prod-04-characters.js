@@ -348,7 +348,7 @@ module.exports = {
       // 13. Les Fouilleurs de Ruines — ethnicity null, faction null, playable
       {
         user_id: null,
-        ethnicity_id: null,
+        ethnicity_id: inalteres.id,
         faction_id: null,
         clan_id: getClan('Les Fouilleurs de Ruines').id,
         name: 'Corvus Sablier',
@@ -374,7 +374,7 @@ module.exports = {
       // 14. Les Vagabonds du Vent — ethnicity null, faction null, playable
       {
         user_id: null,
-        ethnicity_id: null,
+        ethnicity_id: eveilles.id,
         faction_id: null,
         clan_id: getClan('Les Vagabonds du Vent').id,
         name: 'Maëlle la Marchande',
@@ -452,7 +452,7 @@ module.exports = {
       // 17. Les Collecteurs de Chuchotis — ethnicity null, faction null, non-playable
       {
         user_id: null,
-        ethnicity_id: null,
+        ethnicity_id: inalteres.id,
         faction_id: null,
         clan_id: getClan('Les Collecteurs de Chuchotis').id,
         name: 'Voix-Grise',
@@ -478,7 +478,7 @@ module.exports = {
       // 18. Les Loups Solitaires — ethnicity null, faction null, non-playable
       {
         user_id: null,
-        ethnicity_id: null,
+        ethnicity_id: eveilles.id,
         faction_id: null,
         clan_id: getClan('Les Loups Solitaires').id,
         name: 'Brann le Fléau',
